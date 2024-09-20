@@ -7,8 +7,8 @@ This browser based web application to ...
 ## 2. Names of Contributors
 List team members and/or short bio's here... 
 * Hi, my name is Shinyoung! I am excited to start this journey of creating a web application!
-* ...
 * Hi, I am Kiana! I am excited to start this journey of creating a web application!
+* Hi, My Name is Ramandeep Kaur, I am 22 years old, I am new to computer language.
 	
 ## 3. Technologies and Resources Used
 List technologies (with version numbers), API's, icons, fonts, images, media or data sources, and other resources that were used.
