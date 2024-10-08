@@ -1,3 +1,26 @@
+/* Mobile */
 h1 img {
-    width: 20rem;
+    width: 10rem;
+}
+
+p.lead {
+    font-size: 0.875rem;
+}
+
+h2.cover-heading {
+    font-size: 1.25rem;
+}
+
+/* Desktop */
+@media (min-width: 768px) {
+    h1 img {
+        width: 15rem;
+    }
+
+    p.lead {
+        font-size: 1.25rem;
+    }
+    h2.cover-heading {
+        font-size: 2rem;
+    }
 }
