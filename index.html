@@ -23,6 +23,17 @@
             crossorigin="anonymous"
         ></script>
 
+        <!-------------------------------------------------------->
+        <!-- Firebase 8 Library related CSS, JS, JQuery go here -->
+        <!-------------------------------------------------------->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/ui/4.8.1/firebase-ui-auth.js"></script> 
+        <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/4.8.1/firebase-ui-auth.css" />
+        <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+    
         <!-- Other libraries go here -->
         <!-- Link to styles of your own -->
         <link rel="stylesheet" href="./styles/style.css" />
@@ -66,7 +77,12 @@
         <!---------------------------------------------->
         <!-- Your own JavaScript functions go here    -->
         <!---------------------------------------------->
+        <script src="./scripts/firebaseAPI_DTC13.js"></script>
+        <script src="./scripts/skeleton.js"></script>
         <!-- Link to scripts of your own -->
-        <!-- <script src="./scripts/script.js"></script> -->
+        <script src="./scripts/script.js"></script>
+        <script>
+            logout();       //make sure user is logged out
+        </script>
     </body>
 </html>
