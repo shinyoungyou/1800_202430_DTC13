@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timer App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body>
+    <nav class="bg-zinc-500 text-white flex flex-col p-4">
+        <!-- Header -->
+        <div class="flex justify-between w-full">
+            <div class="flex space-x-2">
+                <span class="text-lg">&#9776;</span>
+                <span class="text-gray-400 text-sm">Tue, 10-29</span>
+            </div>
+            <div><span class="text-3xl font-semibold">00:00:28</span></div>
+            <span class="text-gray-400 text-sm">D-Day</span>
+        </div>
+    </nav>
+
+    <!-- Tabs -->
+    <div class="flex justify-around w-full bg-black">
+        <button class="text-gray-400 border-b-2 border-white pb-2">Timer</button>
+        <button class="text-gray-400">Books</button>
+        <button class="text-gray-400">Insights</button>
+        <button class="text-gray-400">Planner</button>
+    </div>
+
+    <!-- Timer Section -->
+    <div class="mt-8 w-full">
+        <div class="space-y-4">
+            <!-- Subject 1 -->
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <button class="w-8 h-8 rounded-full bg-white flex items-center justify-center">
+                        <span class="text-white text-lg">&#9654;</span>
+                    </button>
+                    <span class="text-lg">English</span>
+                </div>
+                <span class="text-lg">00:00:28</span>
+            </div>
+
+            <!-- Subject 2 -->
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <button class="w-8 h-8 rounded-full bg-white flex items-center justify-center">
+                        <span class="text-white text-lg">&#9654;</span>
+                    </button>
+                    <span class="text-lg">French</span>
+                </div>
+                <span class="text-lg">00:00:00</span>
+            </div>
+
+            <!-- Subject 3 -->
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <button class="w-8 h-8 rounded-full bg-white flex items-center justify-center">
+                        <span class="text-white text-lg">&#9654;</span>
+                    </button>
+                    <span class="text-lg">Math</span>
+                </div>
+                <span class="text-lg">00:00:00</span>
+            </div>
+
+            <!-- Subject 4 -->
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <button class="w-8 h-8 rounded-full bg-white flex items-center justify-center">
+                        <span class="text-white text-lg">&#9654;</span>
+                    </button>
+                    <span class="text-lg">Science</span>
+                </div>
+                <span class="text-lg">00:00:00</span>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="flex justify-around items-center w-full mt-10 border-t border-gray-700 pt-4">
+            <button class="text-gray-400 flex flex-col items-center">
+                <span class="text-2xl">&#8962;</span>
+                <span class="text-xs">Home</span>
+            </button>
+            <button class="text-gray-400 flex flex-col items-center">
+                <span class="text-2xl">&#128101;</span>
+                <span class="text-xs">Groups</span>
+            </button>
+            <button class="text-gray-400 flex flex-col items-center">
+                <span class="text-2xl">&#8942;</span>
+                <span class="text-xs">More</span>
+            </button>
+        </div>
+</body>
+
+</html>
