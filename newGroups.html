@@ -10,7 +10,7 @@
         <nav>
             <h4 class="text-center text-white py-10">New Groups</h>
         </nav>
-        <main>
+        <main >
             <div class="p-5 space-y-2 rounded-full">
                 <div class="card p-10 bg-zinc-800 hover:bg-zinc-600">
                     <h2 style="color: aqua;">Group A</h2>
@@ -37,7 +37,7 @@
                     <p class="text-xs">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Et sapiente id numquam exercitationem quibusdam iste beatae, consequatur nihil repellendus, labore veritatis tempore. Earum eos distinctio culpa ut expedita sunt molestiae!</p>
                 </div>
             </div>
-            <div class="p-10">
+            <div class="p-10 w-full flex flex-row-reverse">
                 <button class="p-3 rounded-full" style="background-color: aqua;">
                     <svg xmlns="http://www.w3.org/2000/svg" x-bind:width="size" x-bind:height="size" viewBox="0 0 24 24" fill="none" stroke="currentColor" x-bind:stroke-width="stroke" stroke-linecap="round" stroke-linejoin="round" width="24" height="24" stroke-width="2">
                         <path d="M12 5l0 14"></path>
@@ -45,5 +45,15 @@
                     </svg>
                 </button>
             </div>
+            
         </main>
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 translate-y-1/2">
+            <div class="z-0 bg-zinc-700 rounded p-10" style="height: 160px; width: 400px;">
+                <h2 style="color: aqua;">Group A</h2>
+                <div class="space-x-5 py-10 flex justify-end">
+                    <a src="#">Join</a>
+                    <a src="#">Cancel</a>
+                </div>
+            </div>
+        </div>
 </body>
