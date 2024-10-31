@@ -109,6 +109,19 @@ h2.cover-heading {
   font-size: 2.5rem;
 }
 
+.hoome-tabs > a {
+  color: #9e9e9e;
+}
+
+.hoome-tabs > a:hover {
+  color: #222222;
+}
+
+.hoome-tabs > a:first-child {
+  color: #222222;
+  border-color: #222222;
+}
+
 .home-main {
   max-height: 60vh;
   padding-bottom: 13vh;
