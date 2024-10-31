@@ -100,3 +100,51 @@ h2.cover-heading {
 .btn-aqua:hover {
   background-color: #8fe4d3;
 }
+
+.home-header {
+  height: 25vh;
+}
+
+.home-header h1 {
+  font-size: 2.5rem;
+}
+
+.home-main {
+  max-height: 60vh;
+  padding-bottom: 13vh;
+}
+
+.home-play-btn {
+  font-size: 2.3rem;
+}
+
+.more-for-each-subject {
+  color: #9f9f9f
+}
+
+.home-actions > a {
+  border-radius: 0.7rem;
+  background-color: #ededed;
+  color: #5e5e5e;
+}
+
+.home-actions > a:hover {
+  background-color: #cacaca;
+}
+
+.home-navbar {
+  background-color: #F5F5F5;
+}
+
+.home-navbar > a > * {
+  color: #7b7b7b;
+}
+
+.home-navbar > a:hover > * {
+  color: #212121;
+  transition: 0.4s;
+}
+
+.home-navbar > a:first-child > *{
+  color: #212121;
+}
