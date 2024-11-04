@@ -60,10 +60,17 @@ function setup() {
             homeIcon.classList.add("bi-house-fill");
             groupIcon.classList.add("bi-people");
             console.log("Icons set for home.html");
-        } else if (window.location.href.includes("mygroups.html")) {
+        } else if (
+            window.location.href.includes("mygroups.html") ||
+            window.location.href.includes("newGroups.html")
+        ) {
             homeIcon.classList.add("bi-house");
             groupIcon.classList.add("bi-people-fill");
             console.log("Icons set for mygroups.html");
+        } else {
+            homeIcon.classList.add("bi-house");
+            groupIcon.classList.add("bi-people");
+            console.log("Icons set for other pages");
         }
     } else {
         console.error("homeIcon or groupIcon not found in the DOM.");

@@ -1,97 +1,89 @@
 <!DOCTYPE html>
 <html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Focus Timer</title>
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css"
+        />
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Timer App</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+        />
+        <!-------------------------------------------------------->
+        <!-- Firebase 8 Library related CSS, JS, JQuery go here -->
+        <!-------------------------------------------------------->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/ui/4.8.1/firebase-ui-auth.js"></script>
+        <link
+            type="text/css"
+            rel="stylesheet"
+            href="https://www.gstatic.com/firebasejs/ui/4.8.1/firebase-ui-auth.css"
+        />
+        <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
 
-<body>
-    <nav class="bg-zinc-500 text-white flex flex-col p-4">
-        <!-- Header -->
-        <div class="flex justify-between w-full">
-            <div class="flex space-x-2">
-                <span class="text-lg">&#9776;</span>
-                <span class="text-gray-400 text-sm">Tue, 10-29</span>
-            </div>
-            <div><span class="text-3xl font-semibold">00:00:28</span></div>
-            <span class="text-gray-400 text-sm">D-Day</span>
-        </div>
-    </nav>
+        <!-- Other libraries go here -->
+        <link
+            href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+            rel="stylesheet"
+        />
+        <!-- Link to styles of your own -->
+        <link rel="stylesheet" href="./styles/style.css" />
+        <style>
+            .home-navbar > a:first-child > * {
+                color: #7b7b7b;
+            }
+            .my-groups-navbar i {
+                padding-bottom: 0.5rem;
+                padding-left: 0.1rem;
+            }
+        </style>
+    </head>
 
-    <!-- Tabs -->
-    <div class="flex justify-around w-full bg-black">
-        <button class="text-gray-400 border-b-2 border-white pb-2">Timer</button>
-        <button class="text-gray-400">Books</button>
-        <button class="text-gray-400">Insights</button>
-        <button class="text-gray-400">Planner</button>
-    </div>
+    <body class="bg-white text-black font-sans text-center">
+        <nav class="text-left pl-5 pt-16">
+            <a href="home.html">
+                <i class="text-xl bi bi-chevron-left"></i>
+            </a>
+        </nav>
+        <main class="flex flex-col items-center gap-y-36 p-8">
+            <div id="time" class="text-6xl font-bold">00:00:00</div>
 
-    <!-- Timer Section -->
-    <div class="mt-8 w-full">
-        <div class="space-y-4">
-            <!-- Subject 1 -->
-            <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-3">
-                    <button class="w-8 h-8 rounded-full bg-white flex items-center justify-center">
-                        <span class="text-white text-lg">&#9654;</span>
-                    </button>
-                    <span class="text-lg">English</span>
-                </div>
-                <span class="text-lg">00:00:28</span>
-            </div>
-
-            <!-- Subject 2 -->
-            <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-3">
-                    <button class="w-8 h-8 rounded-full bg-white flex items-center justify-center">
-                        <span class="text-white text-lg">&#9654;</span>
-                    </button>
-                    <span class="text-lg">French</span>
-                </div>
-                <span class="text-lg">00:00:00</span>
-            </div>
-
-            <!-- Subject 3 -->
-            <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-3">
-                    <button class="w-8 h-8 rounded-full bg-white flex items-center justify-center">
-                        <span class="text-white text-lg">&#9654;</span>
-                    </button>
-                    <span class="text-lg">Math</span>
-                </div>
-                <span class="text-lg">00:00:00</span>
-            </div>
-
-            <!-- Subject 4 -->
-            <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-3">
-                    <button class="w-8 h-8 rounded-full bg-white flex items-center justify-center">
-                        <span class="text-white text-lg">&#9654;</span>
-                    </button>
-                    <span class="text-lg">Science</span>
-                </div>
-                <span class="text-lg">00:00:00</span>
-            </div>
-        </div>
-
-        <!-- Bottom Navigation -->
-        <div class="flex justify-around items-center w-full mt-10 border-t border-gray-700 pt-4">
-            <button class="text-gray-400 flex flex-col items-center">
-                <span class="text-2xl">&#8962;</span>
-                <span class="text-xs">Home</span>
+            <button
+                id="toggleButton"
+                class="rounded-full bg-black text-white text-6xl p-6"
+            >
+                <i class="fas fa-play"></i>
             </button>
-            <button class="text-gray-400 flex flex-col items-center">
-                <span class="text-2xl">&#128101;</span>
-                <span class="text-xs">Groups</span>
-            </button>
-            <button class="text-gray-400 flex flex-col items-center">
-                <span class="text-2xl">&#8942;</span>
-                <span class="text-xs">More</span>
-            </button>
-        </div>
-</body>
+            <div class="flex justify-between w-full">
+                <div>
+                    <p class="text-2xl font-bold text-[#9f9f9f]">COMP1800</p>
+                    <p class="text-2xl text-[#9f9f9f]">01:34:18</p>
+                </div>
+                <div>
+                    <p class="text-2xl font-bold text-[#9f9f9f]">Today</p>
+                    <p class="text-2xl text-[#9f9f9f]">11:34:85</p>
+                </div>
+            </div>
+        </main>
 
+        <!-- Footer Navigation -->
+        <footer>
+            <nav id="navbarPlaceholder"></nav>
+        </footer>
+        <!---------------------------------------------->
+        <!-- Your own JavaScript functions go here    -->
+        <!---------------------------------------------->
+        <script src="./scripts/firebaseAPI_DTC13.js"></script>
+        <script src="./scripts/skeleton.js"></script>
+        <script src="./scripts/main.js"></script>
+        <!-- Link to scripts of your own -->
+        <!-- <script src="./scripts/script.js"></script> -->
+    </body>
 </html>

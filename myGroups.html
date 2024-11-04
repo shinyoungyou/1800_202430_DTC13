@@ -64,10 +64,13 @@
     </head>
     <body class="flex justify-center bg-white text-black">
         <div class="relative h-screen cover-container">
-            <nav>
-                <h4 class="text-center pt-20 pb-5">My Groups</h4>
+            <nav class="text-left pl-5 pt-16">
+                <a href="home.html">
+                    <i class="text-xl bi bi-chevron-left"></i>
+                </a>
             </nav>
-            <main class="">
+            <h4 class="text-center pb-5">My Groups</h4>
+            <main class="pb-32">
                 <div class="mygroups-main grid grid-cols-1 divide-y">
                     <article
                         class="flex flex-col gap-y-1 px-7 py-3 card hover:bg-[#d1d1d6]"
@@ -96,7 +99,7 @@
                         <p class="text-[#666] text-xs">27/50 person • Raman</p>
                     </article>
                 </div>
-                <div class="absolute bottom-40 right-5">
+                <a href="newGroups.html" class="fixed bottom-32 right-5">
                     <button class="shadow-xl p-3 rounded-full bg-[#222]">
                         <svg
                             class="text-white"
@@ -117,7 +120,7 @@
                             <path d="M5 12l14 0"></path>
                         </svg>
                     </button>
-                </div>
+                </a>
             </main>
             <footer>
                 <nav id="navbarPlaceholder"></nav>

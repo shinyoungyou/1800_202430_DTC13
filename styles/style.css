@@ -170,3 +170,7 @@ h2.cover-heading {
   max-height: 80vh;
   padding-bottom: 13vh;
 }
+
+.home-navbar > a:first-child:hover > * {
+      color: #212121;
+}
