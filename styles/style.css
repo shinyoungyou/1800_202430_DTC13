@@ -174,3 +174,17 @@ h2.cover-heading {
 .home-navbar > a:first-child:hover > * {
       color: #212121;
 }
+
+/* Background colors based on hours */
+.calendar-cell {
+  padding-left: 2vw;
+  padding-right: 2vw;
+  padding-top: 1vw;
+  padding-bottom: 1vw;
+  text-align: center;
+  color: #212121;
+}
+.calendar-cell[data-hours="0"] { background-color: #fafafa; }
+.calendar-cell[data-hours="4"] { background-color: #eee; }
+.calendar-cell[data-hours="7"] { background-color: #e0e0e0; }
+.calendar-cell[data-hours="10"] { background-color: #bdbdbd; }
