@@ -1,6 +1,6 @@
 function writeHikes() {
     //define a variable for the collection you want to create in Firestore to populate data
-    var hikesRef = db.collection("hikes");
+    var groupsRef = db.collection("groups");
 
     groupsRef.add({
         name: "Group 1",
