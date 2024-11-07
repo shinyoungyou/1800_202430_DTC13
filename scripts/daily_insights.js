@@ -1,4 +1,4 @@
-const calendarBody = document.getElementById("calendar"); // Target the tbody of the calendar table
+const calendar = document.getElementById("daily-calendar"); // Target the tbody of the calendar table
 const monthYear = document.getElementById("monthYear");
 const studyData = {
     "2024-11-01": 1.5,
@@ -9,8 +9,8 @@ const studyData = {
 
 let currentDate = new Date();
 
-function renderCalendar() {
-    calendarBody.innerHTML = ""; // Clear the previous calendar content
+function renderDailyCalendar() {
+    calendar.innerHTML = ""; // Clear the previous calendar content
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
     let firstDay = new Date(year, month, 1).getDay();
@@ -39,7 +39,7 @@ function renderCalendar() {
     for (let day = 1; day <= daysInMonth; day++) {
         if (row.children.length === 7) {
             // If the row has 7 cells, append it to the calendar body and start a new row
-            calendarBody.appendChild(row);
+            calendar.appendChild(row);
             row = document.createElement("tr");
         }
 
@@ -58,14 +58,16 @@ function renderCalendar() {
             dataHours = 10;
         } 
 
-        const hoursDecimal = studyData[date] || 0;
-        const hours = Math.floor(hoursDecimal);
-        const minutes = Math.round((hoursDecimal - hours) * 60);
+        let hoursDecimal = studyData[date] || 0;
+        let hours = Math.floor(hoursDecimal);
+        let minutes = Math.round((hoursDecimal - hours) * 60);
 
-        const cell = document.createElement("td");
+        let cell = document.createElement("td");
         cell.classList.add("calendar-cell");
         cell.dataset.hours = dataHours; 
-        cell.innerHTML = `<div>${day}</div><div>${hours}:${String(minutes).padStart(2, "0")}</div>`;
+        cell.innerHTML = `
+            <p>${day}</p>
+            <p>${hours}:${String(minutes).padStart(2, "0")}</p>`;
         row.appendChild(cell);
     }
 
@@ -77,18 +79,18 @@ function renderCalendar() {
     }
 
     // Append the last row to the calendar body
-    calendarBody.appendChild(row);
+    calendar.appendChild(row);
 }
 
 // Month navigation
 document.getElementById("prevMonth").onclick = () => {
     currentDate.setMonth(currentDate.getMonth() - 1);
-    renderCalendar();
+    renderDailyCalendar();
 };
 
 document.getElementById("nextMonth").onclick = () => {
     currentDate.setMonth(currentDate.getMonth() + 1);
-    renderCalendar();
+    renderDailyCalendar();
 };
 
-renderCalendar(); // Initial render
+renderDailyCalendar(); // Initial render

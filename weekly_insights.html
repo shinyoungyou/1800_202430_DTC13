@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css"
+        />
+        <script src="https://cdn.tailwindcss.com"></script>
+        <title>Study Body</title>
+        <!-------------------------------------------------------->
+        <!-- Firebase 8 Library related CSS, JS, JQuery go here -->
+        <!-------------------------------------------------------->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/ui/4.8.1/firebase-ui-auth.js"></script>
+        <link
+            type="text/css"
+            rel="stylesheet"
+            href="https://www.gstatic.com/firebasejs/ui/4.8.1/firebase-ui-auth.css"
+        />
+        <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+
+        <!-- Other libraries go here -->
+        <!-- Link to styles of your own -->
+        <link rel="stylesheet" href="./styles/style.css" />
+
+        <style>
+            .home-navbar > a:first-child > * {
+                color: #7b7b7b;
+            }
+            .my-groups-navbar i {
+                padding-bottom: 0.5rem;
+                padding-left: 0.1rem;
+            }
+        </style>
+        <script src="./scripts/weekly_insights.js" defer></script>
+    </head>
+    <body class="relative bg-[#f2f2f7]">
+        <div class="relative h-screen cover-container text-center">
+            <nav class="text-left pl-5 pt-12">
+                <a href="mygroups.html">
+                    <i class="text-xl bi bi-chevron-left"></i>
+                </a>
+            </nav>
+            <h4 class="text-center pb-5 text-lg">Insights</h4>
+            <main class="pb-32 p-5 pt-0 flex flex-col gap-y-4">
+                <nav class="flex gap-x-4">
+                    <a class="rounded-full px-4 py-2 text-sm bg-[#e5e5e9] border border-[#d1d1d6] text-[#5b5b5d]" href="daily_insights.html">Day</a>
+                    <a class="rounded-full px-4 py-2 text-sm bg-[#212121] border border-[#212121] text-[#fff]" href="weekly_insights.html">Week</a>
+                    <a class="rounded-full px-4 py-2 text-sm bg-[#e5e5e9] border border-[#d1d1d6] text-[#5b5b5d]" href="monthly_insights.html">Month</a>
+                </nav>
+                <section class="rounded-lg bg-[#fff] w-full p-2">
+                    <h3 class="text-sm flex items-center gap-x-6">
+                        <a href="#" id="prevQuarter"><i class="bi bi-caret-left-fill"></i></a>
+                        <span class="text-xl" id="quarterYear">2024 Q4</span>
+                        <a href="#" id="nextQuarter"><i class="bi bi-caret-right-fill"></i></a>
+                    </h3>
+
+                    <table>
+                        <tbody id="weekly-calendar">
+                            <!-- JavaScript will populate this -->
+                        </tbody>
+                    </table>
+                </section>
+                <section class="rounded-lg bg-[#fff] w-full p-2 pt-6">
+                    <h3 class="text-lg">Mon, Oct 21 - Sun, Oct 27</h3>
+                    <article class="flex flex-wrap justify-between py-8 gap-y-6">
+                        <aside class="w-2/5 flex flex-col gap-y-2">
+                            <p class="text-lg">Total Time</p>
+                            <time class="text-2xl">32:31:50</time>
+                        </aside>
+                        <aside class="w-2/5 flex flex-col gap-y-2">
+                            <p class="text-lg">Daily Average</p>
+                            <time class="text-2xl">04:38:50</time>
+                        </aside>
+                    </article>
+                </section>
+            </main>
+            <footer>
+                <nav id="navbarPlaceholder"></nav>
+            </footer>
+        </div>
+        <!---------------------------------------------->
+        <!-- Your own JavaScript functions go here    -->
+        <!---------------------------------------------->
+        <script src="./scripts/firebaseAPI_DTC13.js"></script>
+        <script src="./scripts/skeleton.js"></script>
+        <script src="./scripts/main.js"></script>
+        <!-- Link to scripts of your own -->
+        <!-- <script src="./scripts/script.js"></script> -->
+    </body>
+</html>

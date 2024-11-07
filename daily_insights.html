@@ -40,7 +40,7 @@
         <script src="./scripts/daily_insights.js" defer></script>
     </head>
     <body class="relative bg-[#f2f2f7]">
-        <div class="relative h-screen cover-container">
+        <div class="relative h-screen cover-container text-center">
             <nav class="text-left pl-5 pt-12">
                 <a href="mygroups.html">
                     <i class="text-xl bi bi-chevron-left"></i>
@@ -72,10 +72,31 @@
                                 <th>Sun</th>
                             </tr>
                         </thead>
-                        <tbody id="calendar">
+                        <tbody id="daily-calendar">
                             <!-- JavaScript will populate this -->
                         </tbody>
                     </table>
+                </section>
+                <section class="rounded-lg bg-[#fff] w-full p-2 pt-6">
+                    <h3 class="text-lg">Fri, 9/27</h3>
+                    <article class="flex flex-wrap justify-between py-8 gap-y-6">
+                        <aside class="w-2/5 flex flex-col gap-y-2">
+                            <p class="text-lg">Total</p>
+                            <time class="text-2xl">01:28:02</time>
+                        </aside>
+                        <aside class="w-2/5 flex flex-col gap-y-2">
+                            <p class="text-lg">Max Focus</p>
+                            <time class="text-2xl">01:24:03</time>
+                        </aside>
+                        <aside class="w-2/5 flex flex-col gap-y-2">
+                            <p class="text-lg">Started</p>
+                            <time class="text-2xl">03:28 PM</time>
+                        </aside>
+                        <aside class="w-2/5 flex flex-col gap-y-2">
+                            <p class="text-lg">Finished</p>
+                            <time class="text-2xl">08:27 PM</time>
+                        </aside>
+                    </article>
                 </section>
             </main>
             <footer>
