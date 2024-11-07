@@ -34,35 +34,30 @@ function writeSubjects() {
         todos: ""
     });
 }
-document.addEventListener('DOMContentLoaded', (event) => {
-    writeSubjects();
-});
+writeSubjects()
 
-// writeSubjects()
+function displayCardsDynamically(collection) {
+    let cardTemplate = document.getElementById("subjectCardTemplate");
 
-// function displayCardsDynamically(collection) {
-//     let cardTemplate = document.getElementById("subjectCardTemplate");
+    db.collection(collection).get().then(allSubjects => {
+        allSubjects.forEach(doc => {
+            var name = doc.data().name;
+            var total_subject_time = doc.data().total_subject_time;
+            var color = doc.data().color;
 
-//     db.collection(collection).get().then(allSubjects => {
-//         allSubjects.forEach(doc => {
-//             var name = doc.data().name;
-//             var total_subject_time = doc.data().total_subject_time;
-//             var color = doc.data().color;
+            let newcard = cardTemplate.content.cloneNode(true);
+            newcard.querySelector("#subjectName").innerHTML = subjectName;
+            newcard.querySelector("#totalSubjetTime").innerHTML = new Date(
+                time
+            ).toLocaleString();
+            
+            // Append the new card to the card container
+            document.getElementById("cardContainer").appendChild(newcard);
+        });
+    }).catch(error => {
+        console.error("Error displaying subjects:", error);
+    });
+}
 
-//             let newcard = cardTemplate.content.cloneNode(true);
-
-//             // Update the card with the data
-//             newcard.querySelector('.subject-name').innerText = name;
-//             newcard.querySelector('.subject-time').innerText = total_subject_time;
-//             newcard.querySelector('.subject-color').style.backgroundColor = color;
-
-//             // Append the new card to the card container
-//             document.getElementById("cardContainer").appendChild(newcard);
-//         });
-//     }).catch(error => {
-//         console.error("Error displaying subjects:", error);
-//     });
-// }
-
-// // Call the function to display cards dynamically
-// displayCardsDynamically("subjects");
+// Call the function to display cards dynamically
+displayCardsDynamically("subjects");
