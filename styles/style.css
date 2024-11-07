@@ -177,12 +177,19 @@ h2.cover-heading {
 
 /* Background colors based on hours */
 .calendar-cell {
-  padding-left: 2vw;
-  padding-right: 2vw;
-  padding-top: 1vw;
-  padding-bottom: 1vw;
-  text-align: center;
+  /* padding-left: 2vw;
+  padding-right: 2vw; */
+  padding-top: 0.5vh;
+  padding-bottom: 0.5vh;
+  font-size: 14px;
+  width: 13vw;
   color: #212121;
+}
+@media (min-width: 768px) {
+  .calendar-cell {
+  padding-top: 1vh;
+  padding-bottom: 1vh;
+}
 }
 .calendar-cell[data-hours="0"] { background-color: #fafafa; }
 .calendar-cell[data-hours="4"] { background-color: #eee; }
