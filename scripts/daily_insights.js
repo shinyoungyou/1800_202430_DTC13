@@ -1,13 +1,19 @@
 const calendar = document.getElementById("daily-calendar"); // Target the tbody of the calendar table
 const monthYear = document.getElementById("monthYear");
-const studyData = {
-    "2024-11-01": 1.5,
-    "2024-11-02": 2.3,
-    "2024-11-03": 0.8,
-    // Add all dates with their respective hours here
-};
+// const studyData = {
+//     "2024-11-01": 1.5,
+//     "2024-11-02": 2.3,
+//     "2024-11-03": 0.8,
+//     // Add all dates with their respective hours here
+// };
 
 let currentDate = new Date();
+let studyData = {}; // Object to hold Firestore data
+
+function timeStringToDecimal(timeString) {
+    const [hours, minutes, seconds] = timeString.split(":").map(Number);
+    return hours + minutes / 60 + seconds / 3600;
+}
 
 function renderDailyCalendar() {
     calendar.innerHTML = ""; // Clear the previous calendar content
@@ -43,31 +49,42 @@ function renderDailyCalendar() {
             row = document.createElement("tr");
         }
 
-        const date = `${year}-${String(month + 1).padStart(2, "0")}-${String(
+        let date = `${year}-${String(month + 1).padStart(2, "0")}-${String(
             day
         ).padStart(2, "0")}`;
-
-        let dataHours = null
-        if (studyData[date] > 0 || studyData[date] < 4) {
-            dataHours = 0;
-        } else if (studyData[date] >= 4 || studyData[date] < 7) {
-            dataHours = 4;
-        } else if (studyData[date] >= 7 || studyData[date] < 10) {
-            dataHours = 7;
-        } else if (studyData[date] >= 10){
-            dataHours = 10;
-        } 
-
-        let hoursDecimal = studyData[date] || 0;
-        let hours = Math.floor(hoursDecimal);
-        let minutes = Math.round((hoursDecimal - hours) * 60);
+        let dayData = studyData[date];
 
         let cell = document.createElement("td");
         cell.classList.add("calendar-cell");
-        cell.dataset.hours = dataHours; 
-        cell.innerHTML = `
-            <p>${day}</p>
-            <p>${hours}:${String(minutes).padStart(2, "0")}</p>`;
+
+        if (dayData) {
+            let totalDayTimeDecimal = timeStringToDecimal(dayData.total_day_time);
+            console.log(totalDayTimeDecimal);
+
+            let dataHours = null;
+            if (totalDayTimeDecimal > 0 && totalDayTimeDecimal < 4) {
+                dataHours = 0;
+            } else if (totalDayTimeDecimal >= 4 && totalDayTimeDecimal < 7) {
+                dataHours = 4;
+            } else if (totalDayTimeDecimal >= 7 && totalDayTimeDecimal < 10) {
+                dataHours = 7;
+            } else if (totalDayTimeDecimal >= 10) {
+                dataHours = 10;
+            }
+
+            // let hoursDecimal = studyData[date] || 0;
+            // let hours = Math.floor(hoursDecimal);
+            // let minutes = Math.round((hoursDecimal - hours) * 60);
+
+            cell.dataset.hours = dataHours;
+            cell.innerHTML = `
+                            <p>${day}</p>
+                            <p>${dayData.total_day_time.slice(0, 5)}</p>`;
+        } else {
+            cell.innerHTML = `
+                            <p>${day}</p>
+                            <p class='text-transparent'>00:00</p>`;
+        }
         row.appendChild(cell);
     }
 
@@ -95,185 +112,215 @@ document.getElementById("nextMonth").onclick = () => {
 
 renderDailyCalendar(); // Initial render
 
+//------------------------------------------------------------------------------
+// Input parameter is a string representing the collection we are reading from
+//------------------------------------------------------------------------------
+function displayCalendarDynamically(collection) {
+    db.collection(collection).get()   //the collection called "days"
+        .then(allDays=> {
+            studyData = {}; // Clear previous data
+
+            allDays.forEach((doc) => {
+                //iterate thru each doc
+                var date = doc.data().date.toDate(); // get value of the "date" key
+                var formattedDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+                var total_day_time = doc.data().total_day_time; // get value of the "total_day_time" key
+                var max_focus = doc.data().max_focus; // get value of the "max_focus" key
+                var started = doc.data().started ? doc.data().started.toDate() : ""; // get value of the "started" key
+                var finished =doc.data().finished ? doc.data().finished.toDate() : "";// get value of the "finished" key
+                var docID = doc.id;
+
+                // Add data to studyData object
+                studyData[formattedDate] = {total_day_time, max_focus, started, finished};
+
+                //update calendar
+            });
+            console.log("studyData", studyData);
+        })
+}
+
+displayCalendarDynamically("days");  //input param is the name of the collection  
+
+
 
 function writeDays() {
     //define a variable for the collection you want to create in Firestore to populate data
     var daysRef = db.collection("days");
 
-    daysRef.add({
-        date: firebase.firestore.Timestamp.fromDate(
-            new Date("September 1, 2024")),
-        total_day_time: "00:00:00",
-        max_focus: "",
-        started: "",
-        finished: ""
-    });
-    daysRef.add({
-        date: firebase.firestore.Timestamp.fromDate(
-            new Date("September 2, 2024")
-        ),
-        total_day_time: "00:00:00",
-        max_focus: "",
-        started: "",
-        finished: "",
-    });
-    daysRef.add({
-        date: firebase.firestore.Timestamp.fromDate(
-            new Date("September 3, 2024")
-        ),
-        total_day_time: "00:00:00",
-        max_focus: "",
-        started: "",
-        finished: "",
-    });
-    daysRef.add({
-        date: firebase.firestore.Timestamp.fromDate(
-            new Date("September 4, 2024")
-        ),
-        total_day_time: "00:00:00",
-        max_focus: "",
-        started: "",
-        finished: "",
-    });
-    daysRef.add({
-        date: firebase.firestore.Timestamp.fromDate(
-            new Date("September 5, 2024")
-        ),
-        total_day_time: "00:00:00",
-        max_focus: "",
-        started: "",
-        finished: "",
-    });
-    daysRef.add({
-        date: firebase.firestore.Timestamp.fromDate(
-            new Date("September 6, 2024")
-        ),
-        total_day_time: "00:37:43",
-        max_focus: "00:25:57",
-        started: firebase.firestore.Timestamp.fromDate(
-            new Date("September 6, 2024 04:23:00")
-        ),
-        finished: firebase.firestore.Timestamp.fromDate(
-            new Date("September 6, 2024 05:07:00")
-        ),
-    });
-    daysRef.add({
-        date: firebase.firestore.Timestamp.fromDate(
-            new Date("September 7, 2024")
-        ),
-        total_day_time: "03:50:17",
-        max_focus: "00:58:18",
-        started: firebase.firestore.Timestamp.fromDate(
-            new Date("September 7, 2024 07:14:00")
-        ),
-        finished: firebase.firestore.Timestamp.fromDate(
-            new Date("September 7, 2024 18:13:00")
-        ),
-    });
-    daysRef.add({
-        date: firebase.firestore.Timestamp.fromDate(
-            new Date("September 8, 2024")
-        ),
-        total_day_time: "07:13:59",
-        max_focus: "01:44:34",
-        started: firebase.firestore.Timestamp.fromDate(
-            new Date("September 8, 2024 08:21:00")
-        ),
-        finished: firebase.firestore.Timestamp.fromDate(
-            new Date("September 8, 2024 22:58:00")
-        ),
-    });
-    daysRef.add({
-        date: firebase.firestore.Timestamp.fromDate(
-            new Date("September 9, 2024")
-        ),
-        total_day_time: "06:42:10",
-        max_focus: "01:18:35",
-        started: firebase.firestore.Timestamp.fromDate(
-            new Date("September 9, 2024 08:08:00")
-        ),
-        finished: firebase.firestore.Timestamp.fromDate(
-            new Date("September 9, 2024 22:57:00")
-        ),
-    });
-    daysRef.add({
-        date: firebase.firestore.Timestamp.fromDate(
-            new Date("September 10, 2024")
-        ),
-        total_day_time: "03:26:44",
-        max_focus: "01:45:30",
-        started: firebase.firestore.Timestamp.fromDate(
-            new Date("September 10, 2024 05:51:00")
-        ),
-        finished: firebase.firestore.Timestamp.fromDate(
-            new Date("September 10, 2024 23:08:00")
-        ),
-    });
-    daysRef.add({
-        date: firebase.firestore.Timestamp.fromDate(
-            new Date("September 11, 2024")
-        ),
-        total_day_time: "05:05:13",
-        max_focus: "03:02:09",
-        started: firebase.firestore.Timestamp.fromDate(
-            new Date("September 11, 2024 05:53:00")
-        ),
-        finished: firebase.firestore.Timestamp.fromDate(
-            new Date("September 12, 2024 00:29:00")
-        ),
-    });
-    daysRef.add({
-        date: firebase.firestore.Timestamp.fromDate(
-            new Date("September 12, 2024")
-        ),
-        total_day_time: "00:52:25",
-        max_focus: "00:52:25",
-        started: firebase.firestore.Timestamp.fromDate(
-            new Date("September 12, 2024 00:28:00")
-        ),
-        finished: firebase.firestore.Timestamp.fromDate(
-            new Date("September 12, 2024 01:20:00")
-        ),
-    });
-    daysRef.add({
-        date: firebase.firestore.Timestamp.fromDate(
-            new Date("September 13, 2024")
-        ),
-        total_day_time: "05:03:48",
-        max_focus: "01:38:55",
-        started: firebase.firestore.Timestamp.fromDate(
-            new Date("September 13, 2024 09:14:00")
-        ),
-        finished: firebase.firestore.Timestamp.fromDate(
-            new Date("September 13, 2024 23:59:00")
-        ),
-    });
-    daysRef.add({
-        date: firebase.firestore.Timestamp.fromDate(
-            new Date("September 14, 2024")
-        ),
-        total_day_time: "08:42:35",
-        max_focus: "02:01:27",
-        started: firebase.firestore.Timestamp.fromDate(
-            new Date("September 14, 2024 09:03:00")
-        ),
-        finished: firebase.firestore.Timestamp.fromDate(
-            new Date("September 15, 2024 00:40:00")
-        ),
-    });
-    daysRef.add({
-        date: firebase.firestore.Timestamp.fromDate(
-            new Date("September 15, 2024")
-        ),
-        total_day_time: "08:39:31",
-        max_focus: "03:01:27",
-        started: firebase.firestore.Timestamp.fromDate(
-            new Date("September 15, 2024 08:42:00")
-        ),
-        finished: firebase.firestore.Timestamp.fromDate(
-            new Date("September 15, 2024 22:45:00")
-        ),
-    });
+    // daysRef.add({
+    //     date: firebase.firestore.Timestamp.fromDate(
+    //         new Date("September 1, 2024")),
+    //     total_day_time: "00:00:00",
+    //     max_focus: "",
+    //     started: "",
+    //     finished: ""
+    // });
+    // daysRef.add({
+    //     date: firebase.firestore.Timestamp.fromDate(
+    //         new Date("September 2, 2024")
+    //     ),
+    //     total_day_time: "00:00:00",
+    //     max_focus: "",
+    //     started: "",
+    //     finished: "",
+    // });
+    // daysRef.add({
+    //     date: firebase.firestore.Timestamp.fromDate(
+    //         new Date("September 3, 2024")
+    //     ),
+    //     total_day_time: "00:00:00",
+    //     max_focus: "",
+    //     started: "",
+    //     finished: "",
+    // });
+    // daysRef.add({
+    //     date: firebase.firestore.Timestamp.fromDate(
+    //         new Date("September 4, 2024")
+    //     ),
+    //     total_day_time: "00:00:00",
+    //     max_focus: "",
+    //     started: "",
+    //     finished: "",
+    // });
+    // daysRef.add({
+    //     date: firebase.firestore.Timestamp.fromDate(
+    //         new Date("September 5, 2024")
+    //     ),
+    //     total_day_time: "00:00:00",
+    //     max_focus: "",
+    //     started: "",
+    //     finished: "",
+    // });
+    // daysRef.add({
+    //     date: firebase.firestore.Timestamp.fromDate(
+    //         new Date("September 6, 2024")
+    //     ),
+    //     total_day_time: "00:37:43",
+    //     max_focus: "00:25:57",
+    //     started: firebase.firestore.Timestamp.fromDate(
+    //         new Date("September 6, 2024 04:23:00")
+    //     ),
+    //     finished: firebase.firestore.Timestamp.fromDate(
+    //         new Date("September 6, 2024 05:07:00")
+    //     ),
+    // });
+    // daysRef.add({
+    //     date: firebase.firestore.Timestamp.fromDate(
+    //         new Date("September 7, 2024")
+    //     ),
+    //     total_day_time: "03:50:17",
+    //     max_focus: "00:58:18",
+    //     started: firebase.firestore.Timestamp.fromDate(
+    //         new Date("September 7, 2024 07:14:00")
+    //     ),
+    //     finished: firebase.firestore.Timestamp.fromDate(
+    //         new Date("September 7, 2024 18:13:00")
+    //     ),
+    // });
+    // daysRef.add({
+    //     date: firebase.firestore.Timestamp.fromDate(
+    //         new Date("September 8, 2024")
+    //     ),
+    //     total_day_time: "07:13:59",
+    //     max_focus: "01:44:34",
+    //     started: firebase.firestore.Timestamp.fromDate(
+    //         new Date("September 8, 2024 08:21:00")
+    //     ),
+    //     finished: firebase.firestore.Timestamp.fromDate(
+    //         new Date("September 8, 2024 22:58:00")
+    //     ),
+    // });
+    // daysRef.add({
+    //     date: firebase.firestore.Timestamp.fromDate(
+    //         new Date("September 9, 2024")
+    //     ),
+    //     total_day_time: "06:42:10",
+    //     max_focus: "01:18:35",
+    //     started: firebase.firestore.Timestamp.fromDate(
+    //         new Date("September 9, 2024 08:08:00")
+    //     ),
+    //     finished: firebase.firestore.Timestamp.fromDate(
+    //         new Date("September 9, 2024 22:57:00")
+    //     ),
+    // });
+    // daysRef.add({
+    //     date: firebase.firestore.Timestamp.fromDate(
+    //         new Date("September 10, 2024")
+    //     ),
+    //     total_day_time: "03:26:44",
+    //     max_focus: "01:45:30",
+    //     started: firebase.firestore.Timestamp.fromDate(
+    //         new Date("September 10, 2024 05:51:00")
+    //     ),
+    //     finished: firebase.firestore.Timestamp.fromDate(
+    //         new Date("September 10, 2024 23:08:00")
+    //     ),
+    // });
+    // daysRef.add({
+    //     date: firebase.firestore.Timestamp.fromDate(
+    //         new Date("September 11, 2024")
+    //     ),
+    //     total_day_time: "05:05:13",
+    //     max_focus: "03:02:09",
+    //     started: firebase.firestore.Timestamp.fromDate(
+    //         new Date("September 11, 2024 05:53:00")
+    //     ),
+    //     finished: firebase.firestore.Timestamp.fromDate(
+    //         new Date("September 12, 2024 00:29:00")
+    //     ),
+    // });
+    // daysRef.add({
+    //     date: firebase.firestore.Timestamp.fromDate(
+    //         new Date("September 12, 2024")
+    //     ),
+    //     total_day_time: "00:52:25",
+    //     max_focus: "00:52:25",
+    //     started: firebase.firestore.Timestamp.fromDate(
+    //         new Date("September 12, 2024 00:28:00")
+    //     ),
+    //     finished: firebase.firestore.Timestamp.fromDate(
+    //         new Date("September 12, 2024 01:20:00")
+    //     ),
+    // });
+    // daysRef.add({
+    //     date: firebase.firestore.Timestamp.fromDate(
+    //         new Date("September 13, 2024")
+    //     ),
+    //     total_day_time: "05:03:48",
+    //     max_focus: "01:38:55",
+    //     started: firebase.firestore.Timestamp.fromDate(
+    //         new Date("September 13, 2024 09:14:00")
+    //     ),
+    //     finished: firebase.firestore.Timestamp.fromDate(
+    //         new Date("September 13, 2024 23:59:00")
+    //     ),
+    // });
+    // daysRef.add({
+    //     date: firebase.firestore.Timestamp.fromDate(
+    //         new Date("September 14, 2024")
+    //     ),
+    //     total_day_time: "08:42:35",
+    //     max_focus: "02:01:27",
+    //     started: firebase.firestore.Timestamp.fromDate(
+    //         new Date("September 14, 2024 09:03:00")
+    //     ),
+    //     finished: firebase.firestore.Timestamp.fromDate(
+    //         new Date("September 15, 2024 00:40:00")
+    //     ),
+    // });
+    // daysRef.add({
+    //     date: firebase.firestore.Timestamp.fromDate(
+    //         new Date("September 15, 2024")
+    //     ),
+    //     total_day_time: "08:39:31",
+    //     max_focus: "03:01:27",
+    //     started: firebase.firestore.Timestamp.fromDate(
+    //         new Date("September 15, 2024 08:42:00")
+    //     ),
+    //     finished: firebase.firestore.Timestamp.fromDate(
+    //         new Date("September 15, 2024 22:45:00")
+    //     ),
+    // });
     daysRef.add({
         date: firebase.firestore.Timestamp.fromDate(
             new Date("September 16, 2024")
