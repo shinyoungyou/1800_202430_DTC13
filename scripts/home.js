@@ -1,5 +1,5 @@
 function writeSubjects() {
-    //define a variable for the collection you want to create in Firestore to populate data
+    // Define a variable for the collection you want to create in Firestore to populate data
     var subjectsRef = db.collection("subjects");
 
     subjectsRef.add({
@@ -33,31 +33,31 @@ function writeSubjects() {
         timelines: "",
         todos: ""
     });
-
 }
 
-
-//  writeHikes() 
-//------------------------------------------------------------------------------
-// Input parameter is a string representing the collection we are reading from
-//------------------------------------------------------------------------------
 function displayCardsDynamically(collection) {
-    let cardTemplate = document.getElementById("subjectCardTemplate"); // Retrieve the HTML element with the ID "subjectCardTemplate" and store it in the cardTemplate variable. 
+    let cardTemplate = document.getElementById("subjectCardTemplate");
 
-    db.collection(collection).get()   //the collection called "hikes"
-        .then(allSubjects => {
-            //var i = 1;  //Optional: if you want to have a unique ID for each hike
-            allSubjects.forEach(doc => { //iterate thru each doc
-                var name = doc.data().name;       // get value of the "name" key
-                var total_subject_time = doc.data().total_subject_time;  // get value of the "details" key
-                var color = doc.data().color;    //get unique ID to each hike to be used for fetching right image
-                let newcard = cardTemplate.content.cloneNode(true); // Clone the HTML template to create a new card (newcard) that will be filled with Firestore data.
+    db.collection(collection).get().then(allSubjects => {
+        allSubjects.forEach(doc => {
+            var name = doc.data().name;
+            var total_subject_time = doc.data().total_subject_time;
+            var color = doc.data().color;
 
-                //i++;   //Optional: iterate variable to serve as unique ID
-            })
-        })
-        .catch(error => {
-            console.error("Error displaying subjects:", error);
-        })
+            let newcard = cardTemplate.content.cloneNode(true);
+
+            // Update the card with the data
+            newcard.querySelector('.subject-name').innerText = name;
+            newcard.querySelector('.subject-time').innerText = total_subject_time;
+            newcard.querySelector('.subject-color').style.backgroundColor = color;
+
+            // Append the new card to the card container
+            document.getElementById("cardContainer").appendChild(newcard);
+        });
+    }).catch(error => {
+        console.error("Error displaying subjects:", error);
+    });
 }
-displayCardsDynamically("subjects");  //input param is the name of the collection
+
+// Call the function to display cards dynamically
+displayCardsDynamically("subjects");
