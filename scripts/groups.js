@@ -1,3 +1,33 @@
+//------------------------------------------------------------------------------
+// Input parameter is a string representing the collection we are reading from
+//------------------------------------------------------------------------------
+function displayMyGroupsDynamically(collection) {
+    let groupTemplate = document.getElementById("groupListTemplate"); // Retrieve the HTML element with the ID "subjectCardTemplate" and store it in the cardTemplate variable.
+
+    db.collection(collection)
+        .get() //the collection called "hikes"
+        .then((allSubjects) => {
+            allSubjects.forEach((doc) => {
+                console.log(doc);
+                //iterate thru each doc
+                var subject_name = doc.data().name; // get value of the "name" key
+                var number_of_members = doc.data().number_of_members; // get value of the "details" key
+                var created_by = doc.data().created_by; // get value of the "details" key
+                var is_my_group = doc.data().is_my_group; // get value of the "details" key
+                let newList = groupTemplate.content.cloneNode(true); // Clone the HTML template to create a new card (newcard) that will be filled with Firestore data.
+
+                if (is_my_group) {
+                    newList.querySelector("#groupName").innerHTML = subject_name;
+                    let NumberOfMembersAndCreatedBy = `${number_of_members}/50 person • ${created_by}`;
+                    newList.querySelector("#groupNumberOfMembersAndCreatedBy").innerHTML = NumberOfMembersAndCreatedBy
+
+                    document.getElementById(collection + "-go-here").appendChild(newList);
+                }
+            });
+        })
+}
+displayMyGroupsDynamically("groups"); //input param is the name of the collection
+
 function writeGroups() {
     //define a variable for the collection you want to create in Firestore to populate data
     var groupsRef = db.collection("groups");
