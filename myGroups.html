@@ -71,7 +71,7 @@
             </nav>
             <h4 class="text-center pb-5">My Groups</h4>
             <main class="pb-32">
-                <div class="mygroups-main grid grid-cols-1 divide-y">
+                <div id="groups-go-here" class="mygroups-main grid grid-cols-1 divide-y">
                     <article
                         class="flex flex-col gap-y-1 px-7 py-3 card hover:bg-[#d1d1d6]"
                     >
@@ -121,6 +121,16 @@
                         </svg>
                     </button>
                 </a>
+
+                <template id="groupListTemplate">
+                     <article
+                        class="flex flex-col gap-y-1 px-7 py-3 card hover:bg-[#d1d1d6]"
+                    >
+                        <h2 id="groupName" class="text-[#222]">Group 1</h2>
+                        <p id="groupNumberOfMembersAndCreatedBy" class="text-[#666] text-xs">26/50 person • Maria</p>
+                    </article>
+                </template>
+
             </main>
             <footer>
                 <nav id="navbarPlaceholder"></nav>
@@ -131,7 +141,7 @@
         <!---------------------------------------------->
         <script src="./scripts/firebaseAPI_DTC13.js"></script>
         <script src="./scripts/skeleton.js"></script>
-        <script src="./scripts/main.js"></script>
+        <script src="./scripts/groups.js"></script>
         <!-- Link to scripts of your own -->
         <!-- <script src="./scripts/script.js"></script> -->
     </body>
