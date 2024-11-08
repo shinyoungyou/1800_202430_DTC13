@@ -2,7 +2,7 @@
 // Input parameter is a string representing the collection we are reading from
 //------------------------------------------------------------------------------
 function displayMyGroupsDynamically(collection) {
-    let groupTemplate = document.getElementById("groupListTemplate"); // Retrieve the HTML element with the ID "subjectCardTemplate" and store it in the cardTemplate variable.
+    let groupTemplate = document.getElementById("groupListTemplate"); // Retrieve the HTML element with the ID "groupTemplate" and store it in the cardTemplate variable.
 
     db.collection(collection)
         .get() //the collection called "hikes"
@@ -11,20 +11,20 @@ function displayMyGroupsDynamically(collection) {
                 console.log(doc);
                 //iterate thru each doc
                 var subject_name = doc.data().name; // get value of the "name" key
-                var number_of_members = doc.data().number_of_members; // get value of the "details" key
-                var created_by = doc.data().created_by; // get value of the "details" key
-                var is_my_group = doc.data().is_my_group; // get value of the "details" key
+                var number_of_members = doc.data().number_of_members; // get value of the "number_of_members" key
+                var created_by = doc.data().created_by; // get value of the "created_by" key
+                var is_my_group = doc.data().is_my_group; // get value of the "is_my_group" key
                 let newList = groupTemplate.content.cloneNode(true); // Clone the HTML template to create a new card (newcard) that will be filled with Firestore data.
 
                 if (is_my_group) {
                     newList.querySelector("#groupName").innerHTML = subject_name;
                     let NumberOfMembersAndCreatedBy = `${number_of_members}/50 person • ${created_by}`;
-                    newList.querySelector("#groupNumberOfMembersAndCreatedBy").innerHTML = NumberOfMembersAndCreatedBy
+                    newList.querySelector("#groupNumberOfMembersAndCreatedBy").innerHTML = NumberOfMembersAndCreatedBy;
 
                     document.getElementById(collection + "-go-here").appendChild(newList);
                 }
             });
-        })
+        });
 }
 displayMyGroupsDynamically("groups"); //input param is the name of the collection
 
