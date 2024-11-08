@@ -52,80 +52,19 @@
         </nav>
 
         <main role="main" class="home-main cover d-flex flex-column row-gap-3 overflow-auto">
-            <section class="">
-                <a href="log.html" class="py-3 nav-link d-flex justify-content-between">
-                    <span class="d-flex align-items-center column-gap-3">
-                        <i class="home-play-btn mb-0 bi bi-play-circle-fill"></i> COMP 1800
-                    </span>
-                    <span class="d-flex column-gap-3 align-items-center">
-                        <time>01:24:17</time>
-                        <button class="btn px-0"><i
-                                class="more-for-each-subject bi bi-three-dots-vertical"></i></button>
-                    </span>
-                </a>
-                <a href="#" class="py-3 nav-link d-flex justify-content-between">
-                    <span class="d-flex align-items-center column-gap-3">
-                        <i class="home-play-btn mb-0 bi bi-play-circle-fill"></i> COMP 1510
-                    </span>
-                    <span class="d-flex column-gap-3 align-items-center">
-                        <time>00:03:23</time>
-                        <button class="btn px-0"><i
-                                class="more-for-each-subject bi bi-three-dots-vertical"></i></button>
-                    </span>
-                </a>
-                <a href="#" class="py-3 nav-link d-flex justify-content-between">
-                    <span class="d-flex align-items-center column-gap-3">
-                        <i class="home-play-btn mb-0 bi bi-play-circle-fill"></i> COMP 1712
-                    </span>
-                    <span class="d-flex column-gap-3 align-items-center">
-                        <time>00:00:22</time>
-                        <button class="btn px-0"><i
-                                class="more-for-each-subject bi bi-three-dots-vertical"></i></button>
-                    </span>
-                </a>
-                <a href="#" class="py-3 nav-link d-flex justify-content-between">
-                    <span class="d-flex align-items-center column-gap-3">
-                        <i class="home-play-btn mb-0 bi bi-play-circle-fill"></i> COMP 1537
-                    </span>
-                    <span class="d-flex column-gap-3 align-items-center">
-                        <time>00:00:00</time>
-                        <button class="btn px-0"><i
-                                class="more-for-each-subject bi bi-three-dots-vertical"></i></button>
-                    </span>
-                </a>
-                <a href="#" class="py-3 nav-link d-flex justify-content-between">
-                    <span class="d-flex align-items-center column-gap-3">
-                        <i class="home-play-btn mb-0 bi bi-play-circle-fill"></i> COMM 1116
-                    </span>
-                    <span class="d-flex column-gap-3 align-items-center">
-                        <time>00:00:00</time>
-                        <button class="btn px-0"><i
-                                class="more-for-each-subject bi bi-three-dots-vertical"></i></button>
-                    </span>
-                </a>
-                <a href="#" class="py-3 nav-link d-flex justify-content-between">
-                    <span class="d-flex align-items-center column-gap-3">
-                        <i class="home-play-btn mb-0 bi bi-play-circle-fill"></i> COMP 1113
-                    </span>
-                    <span class="d-flex column-gap-3 align-items-center">
-                        <time>00:00:00</time>
-                        <button class="btn px-0"><i
-                                class="more-for-each-subject bi bi-three-dots-vertical"></i></button>
-                    </span>
-                </a>
-            </section>
+            <section id="subjects-go-here"></section>
             <section class="home-actions d-flex column-gap-2">
                 <a href="#" class="btn"><small>+ Subject</small></a>
                 <a href="#" class="btn"><small>+ To-do</small></a>
             </section>
 
-            <template id="subjectCardTemplate">
-                <a href="#" class="py-3 nav-link d-flex justify-content-between">
+            <template id="subjectListTemplate">
+                 <a href="log.html" class="py-3 nav-link d-flex justify-content-between">
                     <span id="subjectName" class="d-flex align-items-center column-gap-3">
-                        <i class="home-play-btn mb-0 bi bi-play-circle-fill"></i> COMP 1537
+                        <i id="subjectColor" class="home-play-btn mb-0 bi bi-play-circle-fill"></i> 
                     </span>
                     <span class="d-flex column-gap-3 align-items-center">
-                        <time id="totalSubjetTime">00:00:00</time>
+                        <time id="totalSubjectTime">01:24:17</time>
                         <button class="btn px-0"><i
                                 class="more-for-each-subject bi bi-three-dots-vertical"></i></button>
                     </span>
@@ -144,8 +83,7 @@
     <!---------------------------------------------->
     <script src="./scripts/firebaseAPI_DTC13.js"></script>
     <script src="./scripts/skeleton.js"></script>
-    <script src="./scripts/main.js"></script>
-    <srcipt src="/scripts/home.js"></srcipt>
+    <script src="/scripts/home.js"></script>
     <!-- Link to scripts of your own -->
     <!-- <script src="./scripts/script.js"></script> -->
 </body>

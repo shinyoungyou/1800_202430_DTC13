@@ -1,28 +1,29 @@
 //------------------------------------------------------------------------------
 // Input parameter is a string representing the collection we are reading from
 //------------------------------------------------------------------------------
-function displayCardsDynamically(collection) {
-    let cardTemplate = document.getElementById("subjectCardTemplate"); // Retrieve the HTML element with the ID "subjectCardTemplate" and store it in the cardTemplate variable.
+function displaySubjectsDynamically(collection) {
+    let subjectTemplate = document.getElementById("subjectListTemplate"); // Retrieve the HTML element with the ID "subjectCardTemplate" and store it in the cardTemplate variable.
 
     db.collection(collection)
         .get() //the collection called "hikes"
         .then((allSubjects) => {
-            //var i = 1;  //Optional: if you want to have a unique ID for each hike
             allSubjects.forEach((doc) => {
+                console.log(doc);
                 //iterate thru each doc
-                var name = doc.data().name; // get value of the "name" key
+                var subject_name = doc.data().name; // get value of the "name" key
                 var total_subject_time = doc.data().total_subject_time; // get value of the "details" key
-                var color = doc.data().color; //get unique ID to each hike to be used for fetching right image
-                let newcard = cardTemplate.content.cloneNode(true); // Clone the HTML template to create a new card (newcard) that will be filled with Firestore data.
-
-                //i++;   //Optional: iterate variable to serve as unique ID
+                var subject_color = doc.data().color; //get unique ID to each hike to be used for fetching right image
+                let newList = subjectTemplate.content.cloneNode(true); // Clone the HTML template to create a new card (newcard) that will be filled with Firestore data.
+     
+                newList.querySelector("#subjectName").appendChild(document.createTextNode(subject_name));
+                newList.querySelector('#totalSubjectTime').innerHTML = total_subject_time;
+                newList.querySelector('#subjectColor').classList.add(subject_color);      
+                
+                document.getElementById(collection + "-go-here").appendChild(newList);
             });
         })
-        .catch((error) => {
-            console.error("Error displaying subjects:", error);
-        });
 }
-displayCardsDynamically("subjects"); //input param is the name of the collection
+displaySubjectsDynamically("subjects"); //input param is the name of the collection
 
 function writeSubjects() {
     //define a variable for the collection you want to create in Firestore to populate data
