@@ -88,22 +88,20 @@
 
     <template id="subjectListTemplate">
         <div class="subject-item d-flex justify-content-between align-items-center my-2 p-3 border rounded"
-            data-subject-id="">
+            data-subject-id="subjectID">
+            <!-- Left side: Play button, subject name, and time -->
             <div class="d-flex align-items-center column-gap-3">
-                <div>
-                    <i class="subject-color bi bi-circle-fill" style="font-size: 1.5rem;"></i>
-                </div>
-                <div>
-                    <span class="subject-name fw-bold"></span>
-                    <div class="d-flex align-items-center column-gap-2">
-                        <button class="btn btn-sm btn-outline-primary toggle-timer-btn" data-subject-id="">
-                            <i class="fas fa-play"></i>
-                        </button>
-                        <span class="subject-timer">00:00:00</span>
-                    </div>
-                </div>
+                <!-- Play button -->
+                <a href="log.html?subjectId=subjectID" class="btn btn-sm btn-outline-primary toggle-timer-btn">
+                    <i class="fas fa-play color-fill subject-color" style="font-size: 1.5rem;"></i>
+                </a>
+                <!-- Subject name -->
+                <span class="subject-name fw-bold">Subject Name</span>
+                <!-- Timer -->
+                <span class="subject-timer">00:00:00</span>
             </div>
-            <!-- More button (three vertical dots) for Edit and Delete -->
+
+            <!-- Right side: More options (edit and delete) -->
             <div class="dropdown">
                 <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"
                     aria-expanded="false">
