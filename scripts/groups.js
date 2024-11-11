@@ -3,9 +3,11 @@
 //------------------------------------------------------------------------------
 function displayMyGroupsDynamically(collection) {
     let groupTemplate = document.getElementById("groupListTemplate"); // Retrieve the HTML element with the ID "groupTemplate" and store it in the cardTemplate variable.
+    let newGroupTemplate = document.getElementById("newGroupListTemplate"); // Retrieve the HTML element with the ID "groupTemplate" and store it in the cardTemplate variable.
+
 
     db.collection(collection)
-        .get() //the collection called "hikes"
+        .get() //the collection called "Groups"
         .then((allSubjects) => {
             allSubjects.forEach((doc) => {
                 console.log(doc);
@@ -14,14 +16,24 @@ function displayMyGroupsDynamically(collection) {
                 var number_of_members = doc.data().number_of_members; // get value of the "number_of_members" key
                 var created_by = doc.data().created_by; // get value of the "created_by" key
                 var is_my_group = doc.data().is_my_group; // get value of the "is_my_group" key
-                let newList = groupTemplate.content.cloneNode(true); // Clone the HTML template to create a new card (newcard) that will be filled with Firestore data.
 
                 if (is_my_group) {
+                    let newList = groupTemplate.content.cloneNode(true); // Clone the HTML template to create a new card (newcard) that will be filled with Firestore data.
+
                     newList.querySelector("#groupName").innerHTML = subject_name;
                     let NumberOfMembersAndCreatedBy = `${number_of_members}/50 person • ${created_by}`;
                     newList.querySelector("#groupNumberOfMembersAndCreatedBy").innerHTML = NumberOfMembersAndCreatedBy;
 
                     document.getElementById(collection + "-go-here").appendChild(newList);
+                } else {
+                    // show this dagta on new groupos
+                    let newGroupList = newGroupTemplate.content.cloneNode(true); // Clone the HTML template to create a new card (newcard) that will be filled with Firestore data.
+
+                    newList.querySelector("#groupName").innerHTML = subject_name;
+                    let NumberOfMembersAndCreatedBy = `${number_of_members}/50 person • ${created_by}`;
+                    newList.querySelector("#groupNumberOfMembersAndCreatedBy").innerHTML = NumberOfMembersAndCreatedBy;
+
+                    document.getElementById(collection + "-go-here").appendChild(newGroupList);
                 }
             });
         });
