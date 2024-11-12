@@ -1,105 +1,117 @@
-// Function to display the current time in the header
-function displayTime() {
-    const timeElement = document.getElementById("timeDisplay");
-    setInterval(function () {
-        const currentTime = new Date();
-        timeElement.textContent = currentTime.toLocaleTimeString();
-    }, 1000); // Update every second
-}
-
-
-// Initialize Firebase
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-
-// Function to load and display subjects
-function loadSubjects() {
-    const subjectsContainer = document.getElementById("subjects-go-here");
-    db.collection("subjects").get().then((snapshot) => {
-        snapshot.forEach((doc) => {
-            const subject = doc.data();
-            addSubjectToPage(subject, doc.id);
+//------------------------------------------------------------------------------
+// Input parameter is a string representing the collection we are reading from
+//------------------------------------------------------------------------------
+function displayCardsDynamically(collection) {
+    let cardTemplate = document.getElementById("subjectCardTemplate"); // Retrieve the HTML element with the ID "subjectCardTemplate" and store it in the cardTemplate variable.
+    db.collection(collection)
+        .get() //the collection called "hikes"
+        .then((allSubjects) => {
+            //var i = 1;  //Optional: if you want to have a unique ID for each hike
+            allSubjects.forEach((doc) => {
+                //iterate thru each doc
+                var name = doc.data().name; // get value of the "name" key
+                var total_subject_time = doc.data().total_subject_time; // get value of the "details" key
+                var color = doc.data().color; //get unique ID to each hike to be used for fetching right image
+                let newcard = cardTemplate.content.cloneNode(true); // Clone the HTML template to create a new card (newcard) that will be filled with Firestore data.
+                //i++;   //Optional: iterate variable to serve as unique ID
+            });
+        })
+        .catch((error) => {
+            console.error("Error displaying subjects:", error);
         });
+}
+displayCardsDynamically("subjects"); //input param is the name of the collection
+function writeSubjects() {
+    // Define a variable for the collection you want to create in Firestore to populate data
+    //define a variable for the collection you want to create in Firestore to populate data
+    var subjectsRef = db.collection("subjects");
+
+    subjectsRef.add({
+        name: "COMP1800",
+        total_subject_time: "01:30:46",
+        color: " ",
+        timelines: "",
+        todos: ""
+        total_subject_time: "02:06:25",
+        color: "yellow",
+        date: firebase.firestore.Timestamp.fromDate(
+            new Date("September 27, 2024")
+        ),
+    });
+    subjectsRef.add({
+        name: "COMP1510",
+        total_subject_time: "00:00:00",
+        color: "blue",
+        date: firebase.firestore.Timestamp.fromDate(
+            new Date("September 27, 2024")
+        ),
+    });
+    subjectsRef.add({
+        name: "COMP1712",
+        total_subject_time: "01:30:46",
+        color: " ",
+        timelines: "",
+        todos: ""
+        color: "purple",
+        date: firebase.firestore.Timestamp.fromDate(
+            new Date("September 27, 2024")
+        ),
+    });
+    subjectsRef.add({
+        name: "COMP1537",
+        total_subject_time: "01:30:46",
+        color: " ",
+        timelines: "",
+        todos: ""
+        total_subject_time: "00:00:00",
+        color: "red",
+        date: firebase.firestore.Timestamp.fromDate(
+            new Date("September 27, 2024")
+        ),
+    });
+    subjectsRef.add({
+        name: "COMP1116",
+        total_subject_time: "01:30:46",
+        color: " ",
+        timelines: "",
+        todos: ""
+        name: "COMM1116",
+        total_subject_time: "00:00:00",
+        color: "pink",
+        date: firebase.firestore.Timestamp.fromDate(
+            new Date("September 27, 2024")
+        ),
     });
 }
+writeSubjects()
+function displayCardsDynamically(collection) {
+    let cardTemplate = document.getElementById("subjectCardTemplate");
+    db.collection(collection).get().then(allSubjects => {
+        allSubjects.forEach(doc => {
+            var name = doc.data().name;
+            var total_subject_time = doc.data().total_subject_time;
+            var color = doc.data().color;
+            let newcard = cardTemplate.content.cloneNode(true);
+            newcard.querySelector("#subjectName").innerHTML = subjectName;
+            newcard.querySelector("#totalSubjetTime").innerHTML = new Date(
+                time
+            ).toLocaleString();
 
-// Function to add a subject to the page
-function addSubjectToPage(subject, subjectId) {
-    const template = document.getElementById("subjectListTemplate").content.cloneNode(true);
-    const subjectColor = template.querySelector(".subject-color");
-    const subjectName = template.querySelector(".subject-name");
-    const moreMenu = template.querySelector(".dropdown-menu");
-
-    subjectColor.style.backgroundColor = subject.color;
-    subjectName.textContent = subject.name;
-
-    // Set edit functionality
-    const editBtn = moreMenu.querySelector(".dropdown-item-edit");
-    editBtn.addEventListener("click", () => editSubject(subjectId));
-
-    // Set delete functionality
-    const deleteBtn = moreMenu.querySelector(".dropdown-item-delete");
-    deleteBtn.addEventListener("click", () => deleteSubject(subjectId));
-
-    // Append to the subjects container
-    document.getElementById("subjects-go-here").appendChild(template);
-}
-
-// Function to handle editing a subject
-function editSubject(subjectId) {
-    const newSubjectName = prompt("Enter new subject name:");
-    const newSubjectColor = prompt("Enter new subject color (hex code):");
-
-    if (newSubjectName && newSubjectColor) {
-        db.collection("subjects").doc(subjectId).update({
-            name: newSubjectName,
-            color: newSubjectColor
-        }).then(() => {
-            alert("Subject updated!");
-            loadSubjects(); // Reload subjects after update
-        }).catch((error) => {
-            alert("Error updating subject: " + error);
+            // Append the new card to the card container
+            document.getElementById("cardContainer").appendChild(newcard);
+        });
+    }).catch(error => {
+        console.error("Error displaying subjects:", error);
+        subjectsRef.add({
+            name: "COMP1113",
+            total_subject_time: "00:00:00",
+            color: "mint",
+            date: firebase.firestore.Timestamp.fromDate(
+                new Date("September 27, 2024")
+            ),
         });
     }
-}
 
-// Function to delete a subject
-function deleteSubject(subjectId) {
-    db.collection("subjects").doc(subjectId).delete().then(() => {
-        alert("Subject deleted!");
-        loadSubjects(); // Reload subjects after deletion
-    }).catch((error) => {
-        alert("Error deleting subject: " + error);
-    });
-}
-
-// Function to handle adding a subject
-function addNewSubject() {
-    const subjectName = document.getElementById("subjectNameInput").value;
-    const subjectColor = document.getElementById("subjectColorInput").value;
-
-    if (subjectName && subjectColor) {
-        db.collection("subjects").add({
-            name: subjectName,
-            color: subjectColor
-        }).then(() => {
-            alert("Subject added!");
-            loadSubjects(); // Reload subjects after adding
-            document.getElementById("subjectNameInput").value = ''; // Clear input fields
-            document.getElementById("subjectColorInput").value = '#000000';
-        }).catch((error) => {
-            alert("Error adding subject: " + error);
-        });
-    } else {
-        alert("Please fill in both fields.");
-    }
-}
-
-// Event listener for the "Done" button to add a subject
-document.getElementById("addSubjectBtn").addEventListener("click", addNewSubject);
-
-// Call the displayTime function to update the time on page load
-window.onload = function () {
-    displayTime();
-    loadSubjects();
-};
+// Call the function to display cards dynamically
+displayCardsDynamically("subjects");
+//  writeSubjects()
