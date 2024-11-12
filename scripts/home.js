@@ -22,7 +22,7 @@ function displayCardsDynamically(collection) {
 }
 displayCardsDynamically("subjects"); //input param is the name of the collection
 function writeSubjects() {
-    
+
     //define a variable for the collection you want to create in Firestore to populate data
     var subjectsRef = db.collection("subjects");
 
