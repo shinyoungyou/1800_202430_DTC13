@@ -205,6 +205,53 @@ function incrementTime(subjectId) {
     });
 }
 
+// document.addEventListener('DOMContentLoaded', function () {
+//     displaySubjectsDynamically();
+//     document.getElementById("addSubjectBtn").addEventListener("click", saveSubject);
+//     document.getElementById("confirmDeleteBtn").addEventListener("click", deleteSubject);
+// });
+
+function checkAndShowCompletionModal() {
+    const message = localStorage.getItem('completionMessage');
+    if (message) {
+        const modal = document.createElement('div');
+        modal.innerHTML = `
+            <div class="modal fade show" id="completionModal" tabindex="-1" aria-labelledby="completionModalLabel" aria-hidden="true" style="display: block;">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="completionModalLabel">Study Session Completed</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>${message}</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+
+        const modalInstance = new bootstrap.Modal(document.getElementById('completionModal'));
+        modalInstance.show();
+
+        document.querySelector('#completionModal .btn-close, #completionModal .btn-primary').addEventListener('click', function () {
+            modalInstance.hide();
+            document.body.removeChild(modal);
+            localStorage.removeItem('completionMessage');
+        });
+    }
+}
+
+// Add this to your window.onload function
+window.onload = function () {
+    displaySubjectsDynamically();
+    checkAndShowCompletionModal();
+};
+
 document.addEventListener('DOMContentLoaded', function () {
     displaySubjectsDynamically();
     document.getElementById("addSubjectBtn").addEventListener("click", saveSubject);
