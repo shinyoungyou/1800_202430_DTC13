@@ -1,11 +1,5 @@
 const calendar = document.getElementById("daily-calendar"); // Target the tbody of the calendar table
 const monthYear = document.getElementById("monthYear");
-// const studyData = {
-//     "2024-11-01": 1.5,
-//     "2024-11-02": 2.3,
-//     "2024-11-03": 0.8,
-//     // Add all dates with their respective hours here
-// };
 
 let currentDate = new Date();
 let studyData = {}; // Object to hold Firestore data
@@ -58,7 +52,9 @@ function renderDailyCalendar() {
         cell.classList.add("calendar-cell");
 
         if (dayData) {
-            let totalDayTimeDecimal = timeStringToDecimal(dayData.total_day_time);
+            let totalDayTimeDecimal = timeStringToDecimal(
+                dayData.total_day_time
+            );
             console.log(totalDayTimeDecimal);
 
             let dataHours = null;
@@ -116,32 +112,42 @@ renderDailyCalendar(); // Initial render
 // Input parameter is a string representing the collection we are reading from
 //------------------------------------------------------------------------------
 function displayCalendarDynamically(collection) {
-    db.collection(collection).get()   //the collection called "days"
-        .then(allDays=> {
+    db.collection(collection)
+        .get() //the collection called "days"
+        .then((allDays) => {
             studyData = {}; // Clear previous data
 
             allDays.forEach((doc) => {
                 //iterate thru each doc
                 var date = doc.data().date.toDate(); // get value of the "date" key
-                var formattedDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+                var formattedDate = `${date.getFullYear()}-${String(
+                    date.getMonth() + 1
+                ).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
                 var total_day_time = doc.data().total_day_time; // get value of the "total_day_time" key
                 var max_focus = doc.data().max_focus; // get value of the "max_focus" key
-                var started = doc.data().started ? doc.data().started.toDate() : ""; // get value of the "started" key
-                var finished =doc.data().finished ? doc.data().finished.toDate() : "";// get value of the "finished" key
+                var started = doc.data().started
+                    ? doc.data().started.toDate()
+                    : ""; // get value of the "started" key
+                var finished = doc.data().finished
+                    ? doc.data().finished.toDate()
+                    : ""; // get value of the "finished" key
                 var docID = doc.id;
 
                 // Add data to studyData object
-                studyData[formattedDate] = {total_day_time, max_focus, started, finished};
+                studyData[formattedDate] = {
+                    total_day_time,
+                    max_focus,
+                    started,
+                    finished,
+                };
 
                 //update calendar
             });
             console.log("studyData", studyData);
-        })
+        });
 }
 
-displayCalendarDynamically("days");  //input param is the name of the collection  
-
-
+displayCalendarDynamically("days"); //input param is the name of the collection
 
 function writeDays() {
     //define a variable for the collection you want to create in Firestore to populate data
