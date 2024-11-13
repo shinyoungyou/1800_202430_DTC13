@@ -202,6 +202,10 @@ h2.cover-heading {
   justify-content: space-evenly;
 } */
 
+.calendar-cell {
+  cursor: pointer;
+}
+
 @media (min-width: 330px) {
   .calendar-cell.week {
     font-size: 10px;
@@ -263,3 +267,8 @@ h2.cover-heading {
 .calendar-cell[data-hours="4"] { background-color: #eee; }
 .calendar-cell[data-hours="7"] { background-color: #e0e0e0; }
 .calendar-cell[data-hours="10"] { background-color: #bdbdbd; }
+
+.current-date {
+  border: 1px solid #646464;
+  padding: 2px;
+}
