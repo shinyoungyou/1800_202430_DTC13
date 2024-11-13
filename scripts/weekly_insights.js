@@ -1,10 +1,40 @@
 const calendar = document.getElementById("weekly-calendar");
 const quarterYear = document.getElementById("quarterYear");
-const studyData = {};
+let studyData = {};
 
 let currentDate = new Date();
 let currentYear = currentDate.getFullYear();
 let currentQuarter = Math.floor(currentDate.getMonth() / 3) + 1;
+
+// Helper function to get the start date of the current week (Monday)
+function getStartOfWeek(date) {
+    let day = date.getDay();
+    let diffToMonday = day === 0 ? -6 : 1 - day; // Adjust to Monday (or previous Monday if Sunday)
+    let startOfWeek = new Date(date);
+    startOfWeek.setDate(date.getDate() + diffToMonday);
+    return startOfWeek;
+}
+
+// Get and format the current week's range
+let currentWeekStartDate = getStartOfWeek(currentDate);
+
+function formatDate(startDate) {
+    return `${startDate.toLocaleDateString("en-US", { month: "2-digit", day: "2-digit" })}`
+}
+
+// Helper function to format the start and end dates of a week as a range
+function formatDateRange(startDate) {
+    let endDate = new Date(startDate);
+    endDate.setDate(startDate.getDate() + 6); // Set end date to 6 days after start date
+
+    return `${startDate.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })} - ${endDate.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })}`;
+}
+
+let formattedCurrentDate = formatDate(currentWeekStartDate);
+
+showDetails(studyData[formattedCurrentDate]);
+let previousSelectedCell = null;
+
 
 function timeStringToDecimal(timeString) {
     const [hours, minutes, seconds] = timeString.split(":").map(Number);
@@ -67,13 +97,10 @@ function renderWeeklyCalendar() {
         .then((querySnapshot) => {
             querySnapshot.forEach((doc) => {
                 const data = doc.data();
-                const weekStartStr = data.start_date
-                    .toDate()
-                    .toLocaleDateString("en-US", {
-                        month: "2-digit",
-                        day: "2-digit",
-                    });
+                let start_date = data.start_date.toDate();
+                let weekStartStr = formatDate(start_date);
                 studyData[weekStartStr] = {
+                    start_date: start_date,
                     total_week_time: data.total_week_time,
                     week_average: data.week_average,
                 };
@@ -83,20 +110,14 @@ function renderWeeklyCalendar() {
 
             // Loop through each week in the quarter
             for (let week = 0; week < 13; week++) {
-                const weekStartStr = `${String(
-                    weekStartDate.getMonth() + 1
-                ).padStart(2, "0")}/${String(weekStartDate.getDate()).padStart(
-                    2,
-                    "0"
-                )}`;
+                let weekStartStr = formatDate(weekStartDate);
 
                 let cell = document.createElement("td");
                 cell.classList = "calendar-cell week";
 
                 // Check if data exists for the current week in studyData
                 if (studyData[weekStartStr]) {
-                    const totalWeekTime =
-                        studyData[weekStartStr].total_week_time;
+                    const totalWeekTime = studyData[weekStartStr].total_week_time;
                     const weekAverage = studyData[weekStartStr].week_average;
 
                     let totalWeekTimeDecimal = timeStringToDecimal(
@@ -129,13 +150,28 @@ function renderWeeklyCalendar() {
                         <p>${weekStartStr} ~ </p>
                         <p>${totalWeekTime}</p>
                     `;
-                } else {
+                } 
+                else {
                     // Placeholder for weeks with no data
                     cell.innerHTML = `
                         <p>${weekStartStr} ~ </p>
                         <p class='text-transparent'>00:00:00</p>
                     `;
                 }
+
+                // Check if the date is today and apply the class if true
+                if (weekStartStr === formattedCurrentDate) {
+                    cell.classList.add("current-week");
+                    previousSelectedCell = cell;
+                }
+
+                cell.addEventListener("click", () => {
+                    if (previousSelectedCell)
+                        previousSelectedCell.classList.remove("current-week");
+                    cell.classList.add("current-week");
+                    previousSelectedCell = cell;
+                    showDetails(weekStartStr);
+                });
 
                 row.appendChild(cell);
 
@@ -182,6 +218,21 @@ document.getElementById("nextQuarter").onclick = () => {
 
 // Initial render
 renderWeeklyCalendar();
+
+// Show details for the selected week
+function showDetails(weekRangeStr) {
+    const weekData = studyData[weekRangeStr];
+    if (weekData) {
+        document.getElementById("weekTitle").textContent = formatDateRange(weekData.start_date);
+        document.getElementById("totalWeekTime").textContent = weekData.total_week_time;
+        document.getElementById("averageTime").textContent = weekData.week_average;
+    } 
+    else {
+        document.getElementById("weekTitle").textContent = "No data available";
+        document.getElementById("totalWeekTime").textContent = "00:00:00";
+        document.getElementById("averageTime").textContent = "00:00:00";
+    }
+}
 
 function writeWeeks() {
     //define a variable for the collection you want to create in Firestore to populate data

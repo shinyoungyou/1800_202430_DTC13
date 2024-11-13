@@ -59,7 +59,6 @@ function renderDailyCalendar() {
         let cell = document.createElement("td");
         cell.classList.add("calendar-cell");
 
-        cell.classList.remove("current-date");
         // Check if the date is today and apply the class if true
         if (date === formattedCurrentDate) {
             cell.classList.add("current-date");
@@ -148,8 +147,8 @@ function showDetails(dateStr) {
         document.getElementById("dayTitle").textContent = "No data available";
         document.getElementById("totalDayTime").textContent = "00:00:00";
         document.getElementById("totalMaxFocus").textContent = "00:00:00";
-        document.getElementById("startedTime").textContent = "--:--";
-        document.getElementById("endTime").textContent = "--:--";
+        document.getElementById("startedTime").textContent = "00:00 AM";
+        document.getElementById("endTime").textContent = "00:00 AM";
     }
 }
 
