@@ -6,8 +6,6 @@ let currentDate = new Date();
 let currentYear = currentDate.getFullYear();
 let formattedCurrentMonth = currentDate.getMonth(); // Only use this for the current year
 
-showDetails(studyData[formattedCurrentMonth]);
-
 let previousSelectedCell = null; // To store the last selected cell
 
 // Convert time string to decimal
@@ -54,12 +52,16 @@ function renderMonthlyCalendar() {
                 const monthIndex = firstDate.getMonth(); // 0 for Jan, 1 for Feb, etc.
 
                 studyData[monthIndex] = {
+                    firstDate: firstDate,
                     total_month_time: data.total_month_time,
                     month_average: data.month_average,
                 };
             });
 
-            let row = document.createElement("tr");
+            let row = document
+            .createElement("tr");
+        
+            showDetails(formattedCurrentMonth);
 
             // Loop through each month
             for (let month = 0; month < 12; month++) {
@@ -144,7 +146,7 @@ function renderMonthlyCalendar() {
 // Show details for the selected month
 function showDetails(month) {
     const monthData = studyData[month];
-    if (monthData) {
+    if (monthData != null) {
         document.getElementById("monthTitle").textContent = new Date(
             currentYear,
             month

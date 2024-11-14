@@ -1,6 +1,7 @@
 const calendar = document.getElementById("daily-calendar"); // Target the tbody of the calendar table
 const monthYear = document.getElementById("monthYear");
 
+// let currentDate = new Date("2024-09-13T00:00:00");
 let currentDate = new Date();
 let studyData = {}; // Object to hold Firestore data
 
@@ -9,7 +10,6 @@ function formatDate(date) {
 }
 
 let formattedCurrentDate = formatDate(currentDate);
-showDetails(studyData[formattedCurrentDate]);
 
 let previousSelectedCell = null; // To store the last selected cell
 
@@ -19,7 +19,9 @@ function timeStringToDecimal(timeString) {
     return hours + minutes / 60 + seconds / 3600;
 }
 
-function renderDailyCalendar() {
+displayCalendarDynamically("days"); //input param is the name of the collection
+
+function renderDailyCalendar(studyData) {
     calendar.innerHTML = ""; // Clear the previous calendar content
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
@@ -45,6 +47,8 @@ function renderDailyCalendar() {
         row.appendChild(emptyCell);
     }
 
+    showDetails(formattedCurrentDate);
+
     // Fill in cells with dates and study hours
     for (let day = 1; day <= daysInMonth; day++) {
         if (row.children.length === 7) {
@@ -53,7 +57,9 @@ function renderDailyCalendar() {
             row = document.createElement("tr");
         }
 
-        let date = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+        let date = `${year}-${String(month + 1).padStart(2, "0")}-${String(
+            day
+        ).padStart(2, "0")}`;
         let dayData = studyData[date];
 
         let cell = document.createElement("td");
@@ -70,6 +76,7 @@ function renderDailyCalendar() {
                 dayData.total_day_time
             );
 
+
             let dataHours = null;
             if (totalDayTimeDecimal > 0 && totalDayTimeDecimal < 4) {
                 dataHours = 0;
@@ -80,10 +87,6 @@ function renderDailyCalendar() {
             } else if (totalDayTimeDecimal >= 10) {
                 dataHours = 10;
             }
-
-            // let hoursDecimal = studyData[date] || 0;
-            // let hours = Math.floor(hoursDecimal);
-            // let minutes = Math.round((hoursDecimal - hours) * 60);
 
             cell.dataset.hours = dataHours;
             cell.innerHTML = `
@@ -101,7 +104,7 @@ function renderDailyCalendar() {
             }
             cell.classList.add("current-date");
             previousSelectedCell = cell;
-            showDetails(date)
+            showDetails(date);
         });
 
         row.appendChild(cell);
@@ -121,18 +124,17 @@ function renderDailyCalendar() {
 // Month navigation
 document.getElementById("prevMonth").onclick = () => {
     currentDate.setMonth(currentDate.getMonth() - 1);
-    renderDailyCalendar();
+    renderDailyCalendar(studyData);
 };
 
 document.getElementById("nextMonth").onclick = () => {
     currentDate.setMonth(currentDate.getMonth() + 1);
-    renderDailyCalendar();
+    renderDailyCalendar(studyData);
 };
-
-renderDailyCalendar(); // Initial render
 
 // Function to show details of the selected date
 function showDetails(dateStr) {
+    console.log(dateStr);
     const dayData = studyData[dateStr];
     if (dayData) {
         // Update the detail section elements
@@ -184,12 +186,12 @@ function displayCalendarDynamically(collection) {
                     finished,
                 };
 
-                //update calendar
+                renderDailyCalendar(studyData); // Initial render
             });
         });
 }
 
-displayCalendarDynamically("days"); //input param is the name of the collection
+
 
 function writeDays() {
     //define a variable for the collection you want to create in Firestore to populate data

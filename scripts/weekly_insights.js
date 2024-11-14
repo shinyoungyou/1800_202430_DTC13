@@ -2,6 +2,7 @@ const calendar = document.getElementById("weekly-calendar");
 const quarterYear = document.getElementById("quarterYear");
 let studyData = {};
 
+// let currentDate = new Date("2024-11-05T00:00:00");
 let currentDate = new Date();
 let currentYear = currentDate.getFullYear();
 let currentQuarter = Math.floor(currentDate.getMonth() / 3) + 1;
@@ -35,7 +36,6 @@ let formattedCurrentDate = (currentYear === new Date().getFullYear() && currentQ
     ? formatDate(currentWeekStartDate)
     : formatDate(getStartDateOfWeek(currentYear, (currentQuarter - 1) * 13 + 1));
 
-showDetails(studyData[formattedCurrentDate]);
 let previousSelectedCell = null;
 
 // Convert time string to decimal
@@ -106,6 +106,8 @@ function renderWeeklyCalendar() {
                     week_average: data.week_average,
                 };
             });
+
+            showDetails(formattedCurrentDate);
 
             let row = document.createElement("tr");
 
@@ -216,6 +218,7 @@ renderWeeklyCalendar();
 
 // Show details for the selected week
 function showDetails(weekRangeStr) {
+    console.log(weekRangeStr);
     const weekData = studyData[weekRangeStr];
     if (weekData) {
         document.getElementById("weekTitle").textContent = formatDateRange(weekData.start_date);
