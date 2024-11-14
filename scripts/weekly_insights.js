@@ -30,12 +30,15 @@ function formatDateRange(startDate) {
     return `${startDate.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })} - ${endDate.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })}`;
 }
 
-let formattedCurrentDate = formatDate(currentWeekStartDate);
+// Conditionally set the formatted current date for highlighting based on selected year and quarter
+let formattedCurrentDate = (currentYear === new Date().getFullYear() && currentQuarter === Math.floor(currentDate.getMonth() / 3) + 1)
+    ? formatDate(currentWeekStartDate)
+    : formatDate(getStartDateOfWeek(currentYear, (currentQuarter - 1) * 13 + 1));
 
 showDetails(studyData[formattedCurrentDate]);
 let previousSelectedCell = null;
 
-
+// Convert time string to decimal
 function timeStringToDecimal(timeString) {
     const [hours, minutes, seconds] = timeString.split(":").map(Number);
     return hours + minutes / 60 + seconds / 3600;
@@ -66,9 +69,7 @@ function renderWeeklyCalendar() {
     updateQuarterDisplay();
 
     // Reset studyData for the new quarter
-    for (const key in studyData) {
-        delete studyData[key];
-    }
+    studyData = {};
 
     let startWeek = (currentQuarter - 1) * 13 + 1; // Weeks 1-13 for Q1, 14-26 for Q2, etc.
     let year = currentYear;
@@ -141,17 +142,12 @@ function renderWeeklyCalendar() {
                         dataHours = 10;
                     }
 
-                    // let hoursDecimal = studyData[date] || 0;
-                    // let hours = Math.floor(hoursDecimal);
-                    // let minutes = Math.round((hoursDecimal - hours) * 60);
-
                     cell.dataset.hours = dataHours;
                     cell.innerHTML = `
                         <p>${weekStartStr} ~ </p>
                         <p>${totalWeekTime}</p>
                     `;
-                } 
-                else {
+                } else {
                     // Placeholder for weeks with no data
                     cell.innerHTML = `
                         <p>${weekStartStr} ~ </p>
@@ -159,7 +155,7 @@ function renderWeeklyCalendar() {
                     `;
                 }
 
-                // Check if the date is today and apply the class if true
+                // Highlight the correct week based on the selected year and quarter
                 if (weekStartStr === formattedCurrentDate) {
                     cell.classList.add("current-week");
                     previousSelectedCell = cell;
@@ -199,7 +195,6 @@ function renderWeeklyCalendar() {
 document.getElementById("prevQuarter").onclick = () => {
     currentQuarter -= 1;
     if (currentQuarter < 1) {
-        // If moving from Q1 to Q4 of the previous year
         currentQuarter = 4;
         currentYear -= 1;
     }
@@ -209,7 +204,6 @@ document.getElementById("prevQuarter").onclick = () => {
 document.getElementById("nextQuarter").onclick = () => {
     currentQuarter += 1;
     if (currentQuarter > 4) {
-        // If moving from Q4 to Q1 of the next year
         currentQuarter = 1;
         currentYear += 1;
     }
@@ -218,6 +212,7 @@ document.getElementById("nextQuarter").onclick = () => {
 
 // Initial render
 renderWeeklyCalendar();
+
 
 // Show details for the selected week
 function showDetails(weekRangeStr) {
