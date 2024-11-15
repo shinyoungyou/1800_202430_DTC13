@@ -263,3 +263,11 @@ h2.cover-heading {
   box-sizing: border-box;
   border: 1px solid #646464;
 }
+
+
+#addSubjectForm input[type=color] {
+  border-radius: 100%;
+  aspect-ratio: 1/1;
+  width: 40px;
+  height: 40px;
+}

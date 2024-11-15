@@ -1,28 +1,89 @@
 //------------------------------------------------------------------------------
 // Input parameter is a string representing the collection we are reading from
 //------------------------------------------------------------------------------
-function displayCardsDynamically(collection) {
-    let cardTemplate = document.getElementById("subjectCardTemplate"); // Retrieve the HTML element with the ID "subjectCardTemplate" and store it in the cardTemplate variable.
+function displaySubjectsDynamically(collection) {
+    let subjectTemplate = document.getElementById("subjectListTemplate"); // Retrieve the HTML element with the ID "subjectTemplate" and store it in the cardTemplate variable.
+
     db.collection(collection)
         .get() //the collection called "hikes"
         .then((allSubjects) => {
-            //var i = 1;  //Optional: if you want to have a unique ID for each hike
             allSubjects.forEach((doc) => {
+                console.log(doc);
                 //iterate thru each doc
-                var name = doc.data().name; // get value of the "name" key
-                var total_subject_time = doc.data().total_subject_time; // get value of the "details" key
-                var color = doc.data().color; //get unique ID to each hike to be used for fetching right image
-                let newcard = cardTemplate.content.cloneNode(true); // Clone the HTML template to create a new card (newcard) that will be filled with Firestore data.
-                //i++;   //Optional: iterate variable to serve as unique ID
+                var subject_name = doc.data().name; // get value of the "name" key
+                var total_subject_time = doc.data().total_subject_time; // get value of the "total_subject_time" key
+                var subject_color = doc.data().color; //get value of the "color" key
+                let newList = subjectTemplate.content.cloneNode(true);
+
+                newList
+                    .querySelector("#subjectName")
+                    .appendChild(document.createTextNode(subject_name));
+                newList.querySelector("#totalSubjectTime").innerHTML =
+                    total_subject_time;
+                newList.querySelector("#subjectColor").style.color =
+                    subject_color;
+                // newList.querySelector('#subjectColor').classList.add(`text-${subject_color}-500`);
+
+                document
+                    .getElementById(collection + "-go-here")
+                    .appendChild(newList);
             });
-        })
-        .catch((error) => {
-            console.error("Error displaying subjects:", error);
         });
 }
-displayCardsDynamically("subjects"); //input param is the name of the collection
-function writeSubjects() {
+displaySubjectsDynamically("subjects"); //input param is the name of the collection
 
+let addSubjectForm = document.getElementById("addSubjectForm");
+
+document.getElementById("addSubjectBtn").onclick = () => {
+    addSubjectForm.classList.remove("hidden"); // Show form
+};
+
+document.getElementById("cancel").onclick = () => {
+    addSubjectForm.classList.add("hidden"); // Show form
+};
+
+function addSubject() {
+    console.log("inside add subject");
+    let subject_name = document.getElementById("subject_name").value;
+    let subject_color = document.getElementById("subject_color").value;
+
+    console.log(
+        subject_name,
+        subject_color,
+    );
+
+    var user = firebase.auth().currentUser;
+    if (user) {
+        var currentUser = db.collection("users").doc(user.uid);
+        var userID = user.uid;
+
+        // Get the document for the current user.
+        db.collection("subjects")
+            .add({
+                name: subject_name,
+                color: subject_color,
+                total_subject_time: "00:00:00"
+            })
+            .then(() => {
+                window.location.href = "home.html"; // Redirect to the thanks page
+            });
+    } else {
+        console.log("No user is signed in");
+        window.location.href = "home.html";
+    }
+}
+
+let updateSubject = document.getElementById("updateSubject");
+
+function openSubjectModal() {
+    updateSubject.classList.remove("hidden"); // Show form
+}
+
+function closeSubjectModal() {
+    updateSubject.classList.add("hidden"); // Show form
+}
+
+function writeSubjects() {
     //define a variable for the collection you want to create in Firestore to populate data
     var subjectsRef = db.collection("subjects");
 
@@ -30,49 +91,32 @@ function writeSubjects() {
         name: "COMP1800",
         total_subject_time: "02:06:25",
         color: "yellow",
-        date: firebase.firestore.Timestamp.fromDate(
-            new Date("September 27, 2024")
-        ),
     });
     subjectsRef.add({
         name: "COMP1510",
         total_subject_time: "00:00:00",
         color: "blue",
-        date: firebase.firestore.Timestamp.fromDate(
-            new Date("September 27, 2024")
-        ),
     });
     subjectsRef.add({
         name: "COMP1712",
         total_subject_time: "01:30:46",
-        color:"purple",
-        date: firebase.firestore.Timestamp.fromDate(
-            new Date("September 27, 2024")
-        ),
+        color: "purple",
     });
     subjectsRef.add({
         name: "COMP1537",
         total_subject_time: "00:00:00",
         color: "red",
-        date: firebase.firestore.Timestamp.fromDate(
-            new Date("September 27, 2024")
-        ),
     });
     subjectsRef.add({
-        name: "COMP1116",
+        name: "COMM1116",
         total_subject_time: "00:00:00",
         color: "pink",
-        date: firebase.firestore.Timestamp.fromDate(
-            new Date("September 27, 2024")
-        ),
     });
     subjectsRef.add({
         name: "COMP1113",
         total_subject_time: "00:00:00",
-        color: "mint",
-        date: firebase.firestore.Timestamp.fromDate(
-            new Date("September 27, 2024")
-        ),
+        color: "chartreuse",
     });
 }
-// writeSubjects()
+
+//  writeSubjects()
