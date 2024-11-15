@@ -271,3 +271,10 @@ h2.cover-heading {
   width: 40px;
   height: 40px;
 }
+
+#editSubjectForm input[type=color] {
+  border-radius: 100%;
+  aspect-ratio: 1/1;
+  width: 40px;
+  height: 40px;
+}

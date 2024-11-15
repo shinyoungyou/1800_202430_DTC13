@@ -67,7 +67,7 @@
                     </a>
                     <span class="d-flex column-gap-3 align-items-center">
                         <time id="totalSubjectTime">01:24:17</time>
-                        <button onclick="openSubjectModal()" class="btn px-0"><i
+                        <button onclick="openSubjectModal(event)" class="btn px-0"><i
                                 class="more-for-each-subject bi bi-three-dots-vertical"></i></button>
                     </span>
                 </section>
@@ -96,10 +96,28 @@
 
                 <article class="w-[60vw] max-w-[25em] bg-[#fff] absolute top-1/3 translate-y-1/2 left-1/2 -translate-x-1/2 flex flex-col 
                                 h-[20vh] z-30 rounded-3xl justify-around text-sm text-[#1a1c1d] font-light shadow items-center p-4">
-                    <button class="w-[80%] text-left">Edit subejct</button>
-                    <button class="w-[80%] text-left">Delete subejct</button>
+                    <button onclick="openEditSubject()" class="w-[80%] text-left">Edit subejct</button>
+                    <button onclick="openDeleteSubject()" class="w-[80%] text-left">Delete subejct</button>
                 </article>
             </section>
+
+             <form id="editSubjectForm" class="bg-[#f2f2f7] hidden absolute top-10 left-0 w-full rounded-t-2xl 
+                                            h-[calc(100vh-2.5rem)] z-20 p-4 pb-8 transition-transform duration-300 ease-out">
+                <nav class="flex justify-between pb-2">
+                    <button href="#" id="editCancel" class="text-[#616161] text-sm nav-link">Cancel</button>
+                    <h3 class="text-[#202020] nav-link">Edit</h3>
+                    <button type="submit" onclick="editSubject(event)" href="#" class="text-[#616161] text-sm nav-link">Done</button>
+                </nav>
+                <article class="p-4 flex flex-col w-full gap-y-6">
+                    <aside class="h-[3rem] bg-[#fff] px-8 py-2 rounded-lg">
+                        <input id="edit_subject_name" class="w-full align-middle text-sm" type="text" placeholder="e.g. Math, Science, History...">
+                    </aside>
+                    <aside class="h-[3rem] bg-[#fff] p-4 rounded-lg flex justify-between items-center">
+                        <label class="text-left text-sm" for="subject_color">Subject Color</label>
+                        <input type="color" id="edit_subject_color" value="#000">
+                    </aside>
+                </article>
+            </form>
 
         </main>
 

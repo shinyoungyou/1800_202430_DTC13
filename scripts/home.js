@@ -9,6 +9,7 @@ function displaySubjectsDynamically(collection) {
         .then((allSubjects) => {
             allSubjects.forEach((doc) => {
                 console.log(doc);
+                var subject_id = doc.id;
                 //iterate thru each doc
                 var subject_name = doc.data().name; // get value of the "name" key
                 var total_subject_time = doc.data().total_subject_time; // get value of the "total_subject_time" key
@@ -22,6 +23,7 @@ function displaySubjectsDynamically(collection) {
                     total_subject_time;
                 newList.querySelector("#subjectColor").style.color =
                     subject_color;
+                newList.querySelector("button").id = subject_id;
                 // newList.querySelector('#subjectColor').classList.add(`text-${subject_color}-500`);
 
                 document
@@ -75,13 +77,72 @@ function addSubject() {
 
 let updateSubject = document.getElementById("updateSubject");
 
-function openSubjectModal() {
+let subject_id_to_update = null;
+function openSubjectModal(event) {
+    subject_id_to_update = event.currentTarget.id;
+    console.log(event.currentTarget.id);
     updateSubject.classList.remove("hidden"); // Show form
 }
 
 function closeSubjectModal() {
     updateSubject.classList.add("hidden"); // Show form
+    subject_id_to_update = null;
 }
+
+let editSubjectForm = document.getElementById("editSubjectForm");
+
+function openEditSubject() {
+    editSubjectForm.classList.remove("hidden"); // Show form
+    updateSubject.classList.add("hidden"); // Show form
+    // Reference to the Firestore document
+    let subjectRef = db.collection("subjects").doc(subject_id_to_update);
+
+    // Fetch the document data
+    subjectRef
+        .get()
+        .then((doc) => {
+            if (doc.exists) {
+                let subjectData = doc.data();
+                console.log(subjectData);
+
+                // Set the input values with the retrieved data
+                document.getElementById("edit_subject_name").value =
+                    subjectData.name;
+                document.getElementById("edit_subject_color").value =
+                    subjectData.color;
+            } else {
+                console.error("No such document!");
+            }
+        })
+}
+
+function editSubject(event) {
+    event.preventDefault();
+    let updatedName = document.getElementById("edit_subject_name").value;
+    let updatedColor = document.getElementById("edit_subject_color").value;
+
+    // Reference to the Firestore document
+    let subjectRef = db.collection("subjects").doc(subject_id_to_update);
+    console.log(subjectRef);
+    // Update the document with new data
+    subjectRef
+        .update({
+            name: updatedName,
+            color: updatedColor,
+        })
+        .then(() => {
+            console.log("asdf");
+            window.location.href = "home.html"; // Redirect to the thanks page
+            console.log("Subject successfully updated!");
+        })
+        .catch((error) => {
+            console.error("Error updating document: ", error);
+        });
+}
+
+document.getElementById("editCancel").onclick = () => {
+    editSubjectForm.classList.add("hidden"); // Show form
+};
 
 function writeSubjects() {
     //define a variable for the collection you want to create in Firestore to populate data
@@ -90,32 +151,32 @@ function writeSubjects() {
     subjectsRef.add({
         name: "COMP1800",
         total_subject_time: "02:06:25",
-        color: "yellow",
+        color: "#FFFF00",
     });
     subjectsRef.add({
         name: "COMP1510",
         total_subject_time: "00:00:00",
-        color: "blue",
+        color: "#0000FF",
     });
     subjectsRef.add({
         name: "COMP1712",
         total_subject_time: "01:30:46",
-        color: "purple",
+        color: "#800080",
     });
     subjectsRef.add({
         name: "COMP1537",
         total_subject_time: "00:00:00",
-        color: "red",
+        color: "#FF0000",
     });
     subjectsRef.add({
         name: "COMM1116",
         total_subject_time: "00:00:00",
-        color: "pink",
+        color: "#FFC0CB",
     });
     subjectsRef.add({
         name: "COMP1113",
         total_subject_time: "00:00:00",
-        color: "chartreuse",
+        color: "#7FFF00",
     });
 }
 
