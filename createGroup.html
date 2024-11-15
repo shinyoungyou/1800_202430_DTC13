@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css" />
     <script src="https://cdn.tailwindcss.com"></script>
     <title>StudyBuddy</title>
 </head>
@@ -13,13 +14,10 @@
                 <i class="text-xl bi bi-chevron-left"></i>
             </a>
         </nav>
-        <a href="newGroups.html">
-            <i class="text-xl bi bi-chevron-left"></i>
-        </a>
         <h4 class="text-center pb-5">Lets Create a Group!</h4>
         <main class="flex flex-box justify-center py-10">
             <div class="w-full max-w-xs">
-                <form class="pb-5">
+                <form class="pb-5" id="createNewGroup">
                     <div class="mb-4">
                         <label class="block text-gray-700 text-sm font-bold mb-2" for="groupName">
                             Group Name 
@@ -27,13 +25,20 @@
                         <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="username" type="text" placeholder="Group name">
                     </div>
                     <div class="flex flex-box justify-end">
-                        <button class="bg-zinc-300 rounded hover:bg-zinc-400 p-2">Create</button>
+                        <button class="bg-zinc-300 rounded hover:bg-zinc-400 p-2" onclick="showAlert()">Create</button>
                     </div>
                 </form>
             </div>
         </main>
     </div>
-
-    
+    <!---------------------------------------------->
+    <!-- Your own JavaScript functions go here    -->
+    <!---------------------------------------------->
+    <script src="./scripts/firebaseAPI_DTC13.js"></script>
+    <script src="./scripts/skeleton.js"></script>
+    <script src="./scripts/groups.js"></script>
+    <!-- Link to scripts of your own -->
+    <!-- <script src="./scripts/script.js"></script> -->
+        
 </body>
 </html>

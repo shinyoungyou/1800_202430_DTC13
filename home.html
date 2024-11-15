@@ -19,7 +19,6 @@
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
 
-
     <!-------------------------------------------------------->
     <!-- Firebase 8 Library related CSS, JS, JQuery go here -->
     <!-------------------------------------------------------->
@@ -30,12 +29,12 @@
     <script src="https://www.gstatic.com/firebasejs/ui/4.8.1/firebase-ui-auth.js"></script>
     <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/4.8.1/firebase-ui-auth.css" />
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
-
 
     <!-- Other libraries go here -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <!-- Link to styles of your own -->
     <link rel="stylesheet" href="./styles/style.css" />
+    <script src="/scripts/home.js" defer></script>
 </head>
 
 <body class="text-center d-flex justify-content-center">
@@ -43,26 +42,97 @@
     <!-- Your HTML Layout go here -->
     <!------------------------------>
     <!-- Stuff for body goes here -->
-    <div class="position-relative vh-100 cover-container">
+    <div class="position-relative relative vh-100 cover-container">
         <header class="home-header d-flex flex-column justify-content-center row-gap-3 text-white bg-black">
             <p>Fri, 9/27</p>
             <h1>01:28:02</h1>
         </header>
-        <nav class="home-tabs w-100 bg-white text-black d-flex justify-content-around border-bottom">
+        <nav class="hoome-tabs w-100 bg-white text-black d-flex justify-content-around border-bottom">
             <a href="home.html" class="py-3 nav-link border-dark border-bottom border-3">Timer</a>
             <a href="daily_insights.html" class="py-3 nav-link">Insights</a>
             <a href="planner.html" class="py-3 nav-link">Planner</a>
         </nav>
+
         <main role="main" class="home-main cover d-flex flex-column row-gap-3 overflow-auto">
             <section id="subjects-go-here"></section>
             <section class="home-actions d-flex column-gap-2">
-                <a href="#" class="btn" data-bs-toggle="modal" data-bs-target="#subjectModal"><small>+
-                        Subject</small></a>
-
-                <!-- <a href="#" class="btn"><small>+ Subject</small></a> -->
-                <a href="#" class="btn"><small>+ To-do</small></a>
+                <a id="addSubjectBtn" class="btn"><small>+ Subject</small></a>
+                <a class="btn"><small>+ To-do</small></a>
             </section>
+
+            <template id="subjectListTemplate">
+                 <section  class="py-3 nav-link d-flex justify-content-between">
+                    <a href="log.html" id="subjectName" class="d-flex align-items-center column-gap-3">
+                        <i id="subjectColor" class="home-play-btn mb-0 bi bi-play-circle-fill"></i> 
+                    </a>
+                    <span class="d-flex column-gap-3 align-items-center">
+                        <time id="totalSubjectTime">01:24:17</time>
+                        <button onclick="openSubjectModal(event)" class="btn px-0"><i
+                                class="more-for-each-subject bi bi-three-dots-vertical"></i></button>
+                    </span>
+                </section>
+            </template>
+
+            <form id="addSubjectForm" class="bg-[#f2f2f7] hidden absolute top-10 left-0 w-full rounded-t-2xl 
+                                            h-[calc(100vh-2.5rem)] z-20 p-4 pb-8 transition-transform duration-300 ease-out">
+                <nav class="flex justify-between pb-2">
+                    <button id="cancel" class="text-[#616161] text-sm nav-link">Cancel</button>
+                    <h3 class="text-[#202020] nav-link">Subject Name</h3>
+                    <button type="submit" onclick="addSubject(event)" class="text-[#616161] text-sm nav-link">Done</button>
+                </nav>
+                <article class="p-4 flex flex-col w-full gap-y-6">
+                    <aside class="h-[3rem] bg-[#fff] px-8 py-2 rounded-lg">
+                        <input id="subject_name" class="w-full align-middle text-sm" type="text" placeholder="e.g. Math, Science, History...">
+                    </aside>
+                    <aside class="h-[3rem] bg-[#fff] p-4 rounded-lg flex justify-between items-center">
+                        <label class="text-left text-sm" for="subject_color">Subject Color</label>
+                        <input type="color" id="subject_color" value="#000">
+                    </aside>
+                </article>
+            </form>
+
+            <section id="updateSubject" class="hidden">
+                <article onclick="closeSubjectModal()" class="absolute z-20 top-0 left-0 w-full h-full bg-[#000] bg-opacity-40"></article>
+
+                <article id="chooseOption" class="w-[60vw] max-w-[25em] bg-[#fff] absolute top-1/3 translate-y-1/2 left-1/2 -translate-x-1/2 flex flex-col 
+                                h-[20vh] z-30 rounded-3xl justify-around text-sm text-[#1a1c1d] font-light shadow items-center p-4">
+                    <button onclick="openEditSubject()" class="w-[80%] text-left">Edit subejct</button>
+                    <button onclick="openDeleteSubject()" class="w-[80%] text-left">Delete subejct</button>
+                </article>
+
+                <article id="confirmDeleteSubject" class="w-[60vw] max-w-[25em] bg-[#fff] absolute top-1/4 translate-y-1/2 left-1/2 -translate-x-1/2 flex-col 
+                                h-[25vh] z-30 rounded-3xl justify-around text-sm text-[#1a1c1d] font-light shadow items-center p-4 hidden">
+                    <h3 class="w-[80%] text-left text-base font-normal">Delete subject</h3>
+                    <p class="w-[80%] text-left font-light text-sm">
+                        Are you sure you want to delete the 'subject_name'? Note that previously logged studying entries will not be removed.
+                    </p>
+                    <aside class="w-[80%] text-right text-sm font-normal justify-end">
+                        <button onclick="cancelToDelete()" class="pr-8">Cancel</button>
+                        <button onclick="deleteSubject()">Ok</button>
+                    </aside>
+                </article>
+            </section>
+
+             <form id="editSubjectForm" class="bg-[#f2f2f7] hidden absolute top-10 left-0 w-full rounded-t-2xl 
+                                            h-[calc(100vh-2.5rem)] z-20 p-4 pb-8 transition-transform duration-300 ease-out">
+                <nav class="flex justify-between pb-2">
+                    <button id="editCancel" class="text-[#616161] text-sm nav-link">Cancel</button>
+                    <h3 class="text-[#202020] nav-link">Edit</h3>
+                    <button type="submit" onclick="editSubject(event)" class="text-[#616161] text-sm nav-link">Done</button>
+                </nav>
+                <article class="p-4 flex flex-col w-full gap-y-6">
+                    <aside class="h-[3rem] bg-[#fff] px-8 py-2 rounded-lg">
+                        <input id="edit_subject_name" class="w-full align-middle text-sm" type="text" placeholder="e.g. Math, Science, History...">
+                    </aside>
+                    <aside class="h-[3rem] bg-[#fff] p-4 rounded-lg flex justify-between items-center">
+                        <label class="text-left text-sm" for="subject_color">Subject Color</label>
+                        <input type="color" id="edit_subject_color" value="#000">
+                    </aside>
+                </article>
+            </form>
+
         </main>
+
         <footer>
             <nav id="navbarPlaceholder"></nav>
         </footer>
@@ -98,7 +168,7 @@
                 <!-- Subject name -->
                 <span class="subject-name fw-bold">Subject Name</span>
                 <!-- Timer -->
-                <span class="subject-timer" data-subject-id="SUBJECT_ID_HERE">00:00:00</span>
+                <span class="subject-timer">00:00:00</span>
             </div>
 
             <!-- Right side: More options (edit and delete) -->
@@ -133,21 +203,13 @@
         </div>
     </div>
 
-    <div id="completionModal" class="modal hidden">
-        <div class="modal-content">
-            <p id="completionMessage"></p>
-            <button id="modalCloseBtn">OK</button>
-        </div>
-    </div>
-
-
     <!---------------------------------------------->
     <!-- Your own JavaScript functions go here    -->
     <!---------------------------------------------->
     <script src="./scripts/firebaseAPI_DTC13.js"></script>
     <script src="./scripts/skeleton.js"></script>
     <!-- <script src="/scripts/home.js"></script> -->
-    <script src="/scripts/sub.js"></script>
+    <script src="/scripts/subject.js"></script>
 
     <!-- Link to scripts of your own -->
     <!-- <script src="./scripts/script.js"></script> -->

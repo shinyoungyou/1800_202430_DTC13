@@ -177,22 +177,104 @@ h2.cover-heading {
 
 /* Background colors based on hours */
 .calendar-cell {
-  /* padding-left: 2vw;
-  padding-right: 2vw; */
   padding-top: 0.5vh;
   padding-bottom: 0.5vh;
-  font-size: 14px;
+  font-size: 12px;
   width: 13vw;
   color: #212121;
+  cursor: pointer;
 }
+
+.calendar-cell > p:first-child {
+  padding-bottom: 6px;
+}
+
+@media (min-width: 460px) {
+ .calendar-cell {
+    font-size: 14px;
+  }
+}
+
+.calendar-cell.week {
+  font-size: 10px;
+  padding-top: 0.5vh;
+  padding-bottom: 0.5vh;
+  width: 20vw;
+  height: 8vh;
+}
+
+@media (min-width: 420px) {
+  .calendar-cell.week {
+    height: 7.5vh;
+  }
+}
+
+@media (min-width: 490px) {
+  .calendar-cell.week {
+    height: 14vw;
+  }
+}
+
+@media (min-width: 540px) {
+  .calendar-cell.week {
+    font-size: 14px;
+    height: 10vh;
+  }
+}
+
 @media (min-width: 768px) {
   .calendar-cell {
-  padding-top: 1vh;
-  padding-bottom: 1vh;
+    padding-top: 1vh;
+    padding-bottom: 1vh;
+  }
 }
+
+.calendar-cell.month {
+    font-size: 12px;
+    padding-top: 0.5vh;
+    padding-bottom: 0.5vh;
+    width: 23vw;
+    height: 8vh;
+    max-height: 130px;
+  }
+
+@media (min-width: 460px) {
+ .calendar-cell.month {
+    font-size: 14px;
+    height: 10vh;
+    max-height: 130px;
+  }
 }
+
+@media (min-width: 768px) {
+ .calendar-cell.month {
+    max-height: 130px;
+    height: 12vh;
+  }
+}
+
+
 .calendar-cell[data-hours="0"] { background-color: #fafafa; }
 .calendar-cell[data-hours="4"] { background-color: #eee; }
 .calendar-cell[data-hours="7"] { background-color: #e0e0e0; }
 .calendar-cell[data-hours="10"] { background-color: #bdbdbd; }
 
+.current-date, .current-week, .current-month {
+  box-sizing: border-box;
+  border: 1px solid #646464;
+}
+
+
+#addSubjectForm input[type=color] {
+  border-radius: 100%;
+  aspect-ratio: 1/1;
+  width: 40px;
+  height: 40px;
+}
+
+#editSubjectForm input[type=color] {
+  border-radius: 100%;
+  aspect-ratio: 1/1;
+  width: 40px;
+  height: 40px;
+}
