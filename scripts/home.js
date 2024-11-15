@@ -44,7 +44,8 @@ document.getElementById("cancel").onclick = () => {
     addSubjectForm.classList.add("hidden"); // Show form
 };
 
-function addSubject() {
+function addSubject(event) {
+    event.preventDefault();
     console.log("inside add subject");
     let subject_name = document.getElementById("subject_name").value;
     let subject_color = document.getElementById("subject_color").value;
