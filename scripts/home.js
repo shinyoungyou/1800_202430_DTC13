@@ -145,6 +145,43 @@ document.getElementById("editCancel").onclick = () => {
     editSubjectForm.classList.add("hidden"); // Show form
 };
 
+let confirmDeleteSubject = document.getElementById("confirmDeleteSubject");
+let chooseOption = document.getElementById("chooseOption");
+function openDeleteSubject() {
+    confirmDeleteSubject.classList.remove("hidden"); 
+    confirmDeleteSubject.classList.add("flex"); 
+    
+    chooseOption.classList.add("hidden"); 
+    chooseOption.classList.remove("flex"); 
+}
+
+function cancelToDelete() {
+    confirmDeleteSubject.classList.add("hidden");
+    confirmDeleteSubject.classList.remove("flex"); 
+    updateSubject.classList.add("hidden");
+
+    chooseOption.classList.remove("hidden");
+    chooseOption.classList.add("flex"); 
+}
+
+function deleteSubject() {
+    let subjectRef = db.collection("subjects").doc(subject_id_to_update);
+
+    // Delete the document
+    subjectRef
+        .delete()
+        .then(() => {
+            console.log("Subject successfully deleted!");
+            window.location.href = "home.html"; 
+        })
+        .catch((error) => {
+            console.error("Error deleting subject: ", error);
+        });
+    
+    // cancelToDelete();
+}
+
+
 function writeSubjects() {
     //define a variable for the collection you want to create in Firestore to populate data
     var subjectsRef = db.collection("subjects");
