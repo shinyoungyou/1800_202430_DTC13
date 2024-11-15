@@ -98,7 +98,7 @@
                 <!-- Subject name -->
                 <span class="subject-name fw-bold">Subject Name</span>
                 <!-- Timer -->
-                <span class="subject-timer">00:00:00</span>
+                <span class="subject-timer" data-subject-id="SUBJECT_ID_HERE">00:00:00</span>
             </div>
 
             <!-- Right side: More options (edit and delete) -->
@@ -133,13 +133,21 @@
         </div>
     </div>
 
+    <div id="completionModal" class="modal hidden">
+        <div class="modal-content">
+            <p id="completionMessage"></p>
+            <button id="modalCloseBtn">OK</button>
+        </div>
+    </div>
+
+
     <!---------------------------------------------->
     <!-- Your own JavaScript functions go here    -->
     <!---------------------------------------------->
     <script src="./scripts/firebaseAPI_DTC13.js"></script>
     <script src="./scripts/skeleton.js"></script>
     <!-- <script src="/scripts/home.js"></script> -->
-    <script src="/scripts/subject.js"></script>
+    <script src="/scripts/sub.js"></script>
 
     <!-- Link to scripts of your own -->
     <!-- <script src="./scripts/script.js"></script> -->
