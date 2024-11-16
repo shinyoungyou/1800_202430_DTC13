@@ -19,6 +19,7 @@ function displaySubjectsDynamically() {
             newList.querySelector(".toggle-timer-btn").setAttribute("data-subject-id", subjectId);
             newList.querySelector(".subject-timer").setAttribute("data-subject-id", subjectId);
 
+            // Add event listeners for edit and delete actions
             newList.querySelector(".dropdown-item-edit").addEventListener("click", () => {
                 openEditSubjectModal(subjectId, subjectData.name, subjectData.color);
             });
@@ -26,22 +27,34 @@ function displaySubjectsDynamically() {
                 openDeleteModal(subjectId);
             });
 
+            // Add event listener for timer toggle
             newList.querySelector(".toggle-timer-btn").addEventListener("click", function () {
                 toggleTimer(subjectId, this);
             });
 
             document.getElementById("subjects-go-here").appendChild(newList);
 
+            // Update timer display if totalTime exists
             if (subjectData.totalTime) {
-                updateTimerDisplay(subjectId, subjectData.totalTime);
+                newList.querySelector(".subject-timer").textContent = formatTime(subjectData.totalTime);
             }
 
+            // Listen for study session updates
             listenForStudySessionUpdates(subjectId);
         });
     }).catch((error) => {
         console.error("Error displaying subjects: ", error);
     });
 }
+
+// Helper function to format time
+function formatTime(totalSeconds) {
+    const hours = Math.floor(totalSeconds / 3600).toString().padStart(2, '0');
+    const minutes = Math.floor((totalSeconds % 3600) / 60).toString().padStart(2, '0');
+    const seconds = (totalSeconds % 60).toString().padStart(2, '0');
+    return `${hours}:${minutes}:${seconds}`;
+}
+
 
 function saveSubject() {
     const subjectName = document.getElementById("subjectNameInput").value;
@@ -207,38 +220,16 @@ function incrementTime(subjectId) {
     });
 }
 
+
 function checkAndShowCompletionModal() {
     const message = localStorage.getItem('completionMessage');
     if (message) {
-        const modal = document.createElement('div');
-        modal.innerHTML = `
-      <div class="modal fade show" id="completionModal" tabindex="-1" aria-labelledby="completionModalLabel" aria-hidden="true" style="display: block;">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="completionModalLabel">Study Session Completed</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-              <p>${message}</p>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    `;
-        document.body.appendChild(modal);
-        const modalInstance = new bootstrap.Modal(document.getElementById('completionModal'));
-        modalInstance.show();
-        document.querySelector('#completionModal .btn-close, #completionModal .btn-primary').addEventListener('click', function () {
-            modalInstance.hide();
-            document.body.removeChild(modal);
-            localStorage.removeItem('completionMessage');
-        });
+        showCompletionModal(message);
+        localStorage.removeItem('completionMessage');
     }
 }
+
+// Call this function when the home page loads
 
 window.onload = function () {
     // displaySubjectsDynamically();

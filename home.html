@@ -61,9 +61,9 @@
             </section>
 
             <template id="subjectListTemplate">
-                 <section  class="py-3 nav-link d-flex justify-content-between">
-                    <a href="log.html" id="subjectName" class="d-flex align-items-center column-gap-3">
-                        <i id="subjectColor" class="home-play-btn mb-0 bi bi-play-circle-fill"></i> 
+                <section class="py-3 nav-link d-flex justify-content-between">
+                    <a href="log2.html" id="subjectName" class="d-flex align-items-center column-gap-3">
+                        <i id="subjectColor" class="home-play-btn mb-0 bi bi-play-circle-fill"></i>
                     </a>
                     <span class="d-flex column-gap-3 align-items-center">
                         <time id="totalSubjectTime">01:24:17</time>
@@ -73,16 +73,19 @@
                 </section>
             </template>
 
-            <form id="addSubjectForm" class="bg-[#f2f2f7] hidden absolute top-10 left-0 w-full rounded-t-2xl 
+            <form id="addSubjectForm"
+                class="bg-[#f2f2f7] hidden absolute top-10 left-0 w-full rounded-t-2xl 
                                             h-[calc(100vh-2.5rem)] z-20 p-4 pb-8 transition-transform duration-300 ease-out">
                 <nav class="flex justify-between pb-2">
                     <button id="cancel" class="text-[#616161] text-sm nav-link">Cancel</button>
                     <h3 class="text-[#202020] nav-link">Subject Name</h3>
-                    <button type="submit" onclick="addSubject(event)" class="text-[#616161] text-sm nav-link">Done</button>
+                    <button type="submit" onclick="addSubject(event)"
+                        class="text-[#616161] text-sm nav-link">Done</button>
                 </nav>
                 <article class="p-4 flex flex-col w-full gap-y-6">
                     <aside class="h-[3rem] bg-[#fff] px-8 py-2 rounded-lg">
-                        <input id="subject_name" class="w-full align-middle text-sm" type="text" placeholder="e.g. Math, Science, History...">
+                        <input id="subject_name" class="w-full align-middle text-sm" type="text"
+                            placeholder="e.g. Math, Science, History...">
                     </aside>
                     <aside class="h-[3rem] bg-[#fff] p-4 rounded-lg flex justify-between items-center">
                         <label class="text-left text-sm" for="subject_color">Subject Color</label>
@@ -92,19 +95,23 @@
             </form>
 
             <section id="updateSubject" class="hidden">
-                <article onclick="closeSubjectModal()" class="absolute z-20 top-0 left-0 w-full h-full bg-[#000] bg-opacity-40"></article>
+                <article onclick="closeSubjectModal()"
+                    class="absolute z-20 top-0 left-0 w-full h-full bg-[#000] bg-opacity-40"></article>
 
-                <article id="chooseOption" class="w-[60vw] max-w-[25em] bg-[#fff] absolute top-1/3 translate-y-1/2 left-1/2 -translate-x-1/2 flex flex-col 
+                <article id="chooseOption"
+                    class="w-[60vw] max-w-[25em] bg-[#fff] absolute top-1/3 translate-y-1/2 left-1/2 -translate-x-1/2 flex flex-col 
                                 h-[20vh] z-30 rounded-3xl justify-around text-sm text-[#1a1c1d] font-light shadow items-center p-4">
                     <button onclick="openEditSubject()" class="w-[80%] text-left">Edit subejct</button>
                     <button onclick="openDeleteSubject()" class="w-[80%] text-left">Delete subejct</button>
                 </article>
 
-                <article id="confirmDeleteSubject" class="w-[60vw] max-w-[25em] bg-[#fff] absolute top-1/4 translate-y-1/2 left-1/2 -translate-x-1/2 flex-col 
+                <article id="confirmDeleteSubject"
+                    class="w-[60vw] max-w-[25em] bg-[#fff] absolute top-1/4 translate-y-1/2 left-1/2 -translate-x-1/2 flex-col 
                                 h-[25vh] z-30 rounded-3xl justify-around text-sm text-[#1a1c1d] font-light shadow items-center p-4 hidden">
                     <h3 class="w-[80%] text-left text-base font-normal">Delete subject</h3>
                     <p class="w-[80%] text-left font-light text-sm">
-                        Are you sure you want to delete the 'subject_name'? Note that previously logged studying entries will not be removed.
+                        Are you sure you want to delete the 'subject_name'? Note that previously logged studying entries
+                        will not be removed.
                     </p>
                     <aside class="w-[80%] text-right text-sm font-normal justify-end">
                         <button onclick="cancelToDelete()" class="pr-8">Cancel</button>
@@ -113,16 +120,19 @@
                 </article>
             </section>
 
-             <form id="editSubjectForm" class="bg-[#f2f2f7] hidden absolute top-10 left-0 w-full rounded-t-2xl 
+            <form id="editSubjectForm"
+                class="bg-[#f2f2f7] hidden absolute top-10 left-0 w-full rounded-t-2xl 
                                             h-[calc(100vh-2.5rem)] z-20 p-4 pb-8 transition-transform duration-300 ease-out">
                 <nav class="flex justify-between pb-2">
                     <button id="editCancel" class="text-[#616161] text-sm nav-link">Cancel</button>
                     <h3 class="text-[#202020] nav-link">Edit</h3>
-                    <button type="submit" onclick="editSubject(event)" class="text-[#616161] text-sm nav-link">Done</button>
+                    <button type="submit" onclick="editSubject(event)"
+                        class="text-[#616161] text-sm nav-link">Done</button>
                 </nav>
                 <article class="p-4 flex flex-col w-full gap-y-6">
                     <aside class="h-[3rem] bg-[#fff] px-8 py-2 rounded-lg">
-                        <input id="edit_subject_name" class="w-full align-middle text-sm" type="text" placeholder="e.g. Math, Science, History...">
+                        <input id="edit_subject_name" class="w-full align-middle text-sm" type="text"
+                            placeholder="e.g. Math, Science, History...">
                     </aside>
                     <aside class="h-[3rem] bg-[#fff] p-4 rounded-lg flex justify-between items-center">
                         <label class="text-left text-sm" for="subject_color">Subject Color</label>
@@ -208,8 +218,8 @@
     <!---------------------------------------------->
     <script src="./scripts/firebaseAPI_DTC13.js"></script>
     <script src="./scripts/skeleton.js"></script>
-    <!-- <script src="/scripts/home.js"></script> -->
-    <script src="/scripts/subject.js"></script>
+    <script src="/scripts/home.js"></script>
+    <!-- <script src="/scripts/subject.js"></script> -->
 
     <!-- Link to scripts of your own -->
     <!-- <script src="./scripts/script.js"></script> -->
