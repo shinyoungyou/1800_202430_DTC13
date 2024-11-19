@@ -75,7 +75,7 @@ function unjoinGroup(groupName, groupContainer) {
                 groupRef.update({
                     is_my_group: false  // Set is_my_group to false when the user unjoins the group
                 }).then(() => {
-                    console.log(`Successfully unjoined the group: ${groupName}`);
+                    console.log(`Successfully left the group: ${groupName}`);
 
                     // Remove the group from "My Groups" section
                     myGroupsContainer.removeChild(groupContainer);
@@ -85,10 +85,10 @@ function unjoinGroup(groupName, groupContainer) {
                     newGroup.dataset.isMyGroup = 'false'; // Update to 'false' because the user has unjoined
                     availableGroupsContainer.appendChild(newGroup);
 
-                    alert('You have unjoined the group successfully!');
+                    alert('You have left the group successfully!');
                 }).catch(error => {
-                    console.error("Error unjoining the group: ", error);
-                    alert("Error unjoining the group: " + error.message);
+                    console.error("Error leaving the group: ", error);
+                    alert("Error leaving the group: " + error.message);
                 });
             });
         })
@@ -96,3 +96,49 @@ function unjoinGroup(groupName, groupContainer) {
             console.error("Error fetching group: ", error);
         });
 }
+// Show Create Group Modal
+document.getElementById('createGroupButton').addEventListener('click', function () {
+    document.getElementById('createGroupModal').style.display = 'block';
+});
+
+// Close Create Group Modal
+function closeCreateGroupModal() {
+    document.getElementById('createGroupModal').style.display = 'none';
+}
+
+// Handle Create Group Form Submission
+document.getElementById('createGroupForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    const groupName = document.getElementById('groupNameInput').value;
+    const groupDescription = document.getElementById('groupDescriptionInput').value;
+
+    if (!groupName || !groupDescription) {
+        alert('Please fill in both fields.');
+        return;
+    }
+
+    // Create a new group in Firestore
+    const groupsRef = firebase.firestore().collection("groups");
+
+    groupsRef.add({
+        name: groupName,
+        description: groupDescription,
+        is_my_group: true,  // The creator is automatically in the group
+        number_of_members: 1,  // Start with one member (the creator)
+        created_by: firebase.auth().currentUser.uid,  // Get the current user as the creator
+        created_at: firebase.firestore.FieldValue.serverTimestamp()
+    })
+        .then(() => {
+            console.log(`Group created: ${groupName}`);
+            alert('Group successfully created!');
+            closeCreateGroupModal();  // Close the modal
+
+            // Optionally, you can refresh the group list or add the new group dynamically to the UI
+            location.reload();  // This is one option for reloading the page
+        })
+        .catch((error) => {
+            console.error("Error creating group: ", error);
+            alert('Error creating group: ' + error.message);
+        });
+});
