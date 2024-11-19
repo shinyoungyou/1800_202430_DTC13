@@ -5,7 +5,7 @@ function displaySubjectsDynamically(collection) {
     let subjectTemplate = document.getElementById("subjectListTemplate"); // Retrieve the HTML element with the ID "subjectTemplate" and store it in the cardTemplate variable.
 
     db.collection(collection)
-        .get() //the collection called "hikes"
+        .get() //the collectiondds called "hikes"
         .then((allSubjects) => {
             allSubjects.forEach((doc) => {
                 console.log(doc);

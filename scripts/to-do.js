@@ -1,5 +1,5 @@
-// Initialize Firebase Firestore
-const db = firebase.firestore();
+// // Initialize Firebase Firestore
+// const db = firebase.firestore();
 
 // Function to display todos for a specific subject
 function displayTodosForSubject(subjectId) {
@@ -66,6 +66,8 @@ document.getElementById("todoBtnModal").addEventListener("click", function () {
             subjectSelect.innerHTML += `<option value="${doc.id}">${subject.name}</option>`;
         });
     });
+
+    // document.getElementById("todoModal").classList.remove("hidden"); // Show form
 
     $('#todoModal').modal('show'); // Show the modal
 });
