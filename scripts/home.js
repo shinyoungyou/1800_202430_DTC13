@@ -25,7 +25,8 @@ function displaySubjectsDynamically(collection) {
                     subject_color;
                 newList.querySelector("button").id = subject_id;
                 // newList.querySelector('#subjectColor').classList.add(`text-${subject_color}-500`);
-
+                newList.querySelector("section").dataset.subjectId =
+                    subject_id;
                 document
                     .getElementById(collection + "-go-here")
                     .appendChild(newList);
@@ -148,20 +149,20 @@ document.getElementById("editCancel").onclick = () => {
 let confirmDeleteSubject = document.getElementById("confirmDeleteSubject");
 let chooseOption = document.getElementById("chooseOption");
 function openDeleteSubject() {
-    confirmDeleteSubject.classList.remove("hidden"); 
-    confirmDeleteSubject.classList.add("flex"); 
-    
-    chooseOption.classList.add("hidden"); 
-    chooseOption.classList.remove("flex"); 
+    confirmDeleteSubject.classList.remove("hidden");
+    confirmDeleteSubject.classList.add("flex");
+
+    chooseOption.classList.add("hidden");
+    chooseOption.classList.remove("flex");
 }
 
 function cancelToDelete() {
     confirmDeleteSubject.classList.add("hidden");
-    confirmDeleteSubject.classList.remove("flex"); 
+    confirmDeleteSubject.classList.remove("flex");
     updateSubject.classList.add("hidden");
 
     chooseOption.classList.remove("hidden");
-    chooseOption.classList.add("flex"); 
+    chooseOption.classList.add("flex");
 }
 
 function deleteSubject() {
@@ -172,12 +173,12 @@ function deleteSubject() {
         .delete()
         .then(() => {
             console.log("Subject successfully deleted!");
-            window.location.href = "home.html"; 
+            window.location.href = "home.html";
         })
         .catch((error) => {
             console.error("Error deleting subject: ", error);
         });
-    
+
     // cancelToDelete();
 }
 

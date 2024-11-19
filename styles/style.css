@@ -278,3 +278,8 @@ h2.cover-heading {
   width: 40px;
   height: 40px;
 }
+
+.todo-text.done {
+  text-decoration: line-through;
+  /* Line through completed todos */
+}
