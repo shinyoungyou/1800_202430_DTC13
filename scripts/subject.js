@@ -11,50 +11,35 @@ function displaySubjectsDynamically() {
             const subjectId = doc.id;
             const subjectData = doc.data();
             let newList = subjectTemplate.content.cloneNode(true);
-
             const subjectItem = newList.querySelector(".subject-item");
             subjectItem.setAttribute("data-subject-id", subjectId);
+
             newList.querySelector(".subject-name").textContent = subjectData.name;
             newList.querySelector(".subject-color").style.color = subjectData.color;
             newList.querySelector(".toggle-timer-btn").setAttribute("data-subject-id", subjectId);
             newList.querySelector(".subject-timer").setAttribute("data-subject-id", subjectId);
 
-            // Add event listeners for edit and delete actions
             newList.querySelector(".dropdown-item-edit").addEventListener("click", () => {
                 openEditSubjectModal(subjectId, subjectData.name, subjectData.color);
             });
             newList.querySelector(".dropdown-item-delete").addEventListener("click", () => {
                 openDeleteModal(subjectId);
             });
-
-            // Add event listener for timer toggle
             newList.querySelector(".toggle-timer-btn").addEventListener("click", function () {
                 toggleTimer(subjectId, this);
             });
 
             document.getElementById("subjects-go-here").appendChild(newList);
 
-            // Update timer display if totalTime exists
             if (subjectData.totalTime) {
-                newList.querySelector(".subject-timer").textContent = formatTime(subjectData.totalTime);
+                updateTimerDisplay(subjectId, subjectData.totalTime);
             }
-
-            // Listen for study session updates
             listenForStudySessionUpdates(subjectId);
         });
     }).catch((error) => {
         console.error("Error displaying subjects: ", error);
     });
 }
-
-// Helper function to format time
-function formatTime(totalSeconds) {
-    const hours = Math.floor(totalSeconds / 3600).toString().padStart(2, '0');
-    const minutes = Math.floor((totalSeconds % 3600) / 60).toString().padStart(2, '0');
-    const seconds = (totalSeconds % 60).toString().padStart(2, '0');
-    return `${hours}:${minutes}:${seconds}`;
-}
-
 
 function saveSubject() {
     const subjectName = document.getElementById("subjectNameInput").value;
@@ -220,24 +205,8 @@ function incrementTime(subjectId) {
     });
 }
 
-
-function checkAndShowCompletionModal() {
-    const message = localStorage.getItem('completionMessage');
-    if (message) {
-        showCompletionModal(message);
-        localStorage.removeItem('completionMessage');
-    }
-}
-
-// Call this function when the home page loads
-
-window.onload = function () {
-    // displaySubjectsDynamically();
-    // checkAndShowCompletionModal();
-};
-
 document.addEventListener('DOMContentLoaded', function () {
-    // displaySubjectsDynamically();
+    displaySubjectsDynamically();
     document.getElementById("addSubjectBtn").addEventListener("click", saveSubject);
     document.getElementById("confirmDeleteBtn").addEventListener("click", deleteSubject);
 });
