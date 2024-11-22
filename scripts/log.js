@@ -1,145 +1,101 @@
-let currentSubjectId = null;
-let globalTimer = null;
-let globalStartTime = null;
-let isTimerRunning = false;
-let totalElapsedSeconds = 0;
+// Get the subject_id from the URL
+let urlParams = new URLSearchParams(window.location.search);
+let subject_id_to_record = urlParams.get("subject_id");
 
-document.addEventListener('DOMContentLoaded', function () {
-    const toggleButton = document.getElementById('toggleButton');
-    const timeDisplay = document.getElementById('time');
-    const subjectNameDisplay = document.getElementById('subject-name');
-    const subjectTimerDisplay = document.getElementById('subject-timer');
+// Select DOM elements
+let timeDisplay = document.getElementById("time");
+let pauseButton = document.getElementById("pauseButton");
 
-    // Get subject ID from URL
-    const urlParams = new URLSearchParams(window.location.search);
-    currentSubjectId = urlParams.get('subjectId');
+if (subject_id_to_record) {
+    console.log(`Subject ID: ${subject_id_to_record}`);
+} else {
+    console.error("No subject ID found in the URL.");
+}
 
-    // Function to format time
-    function formatTime(totalSeconds) {
-        const hours = Math.floor(totalSeconds / 3600).toString().padStart(2, '0');
-        const minutes = Math.floor((totalSeconds % 3600) / 60).toString().padStart(2, '0');
-        const seconds = (totalSeconds % 60).toString().padStart(2, '0');
-        return `${hours}:${minutes}:${seconds}`;
-    }
+// Remaining logic remains the same
 
-    // Function to get current subject details
-    function getCurrentSubject() {
-        if (currentSubjectId) {
-            const subjectsRef = firebase.firestore().collection('subjects');
-            subjectsRef.doc(currentSubjectId).get().then(doc => {
-                if (doc.exists) {
-                    const subjectData = doc.data();
-                    subjectNameDisplay.textContent = subjectData.name;
+// Timer variables
+let timerInterval = null;
+let elapsedSeconds = 0;
 
-                    // Initialize total time if exists
-                    if (subjectData.totalTime) {
-                        totalElapsedSeconds = subjectData.totalTime;
-                        subjectTimerDisplay.textContent = formatTime(totalElapsedSeconds);
+// Format time as HH:MM:SS
+function formatTime(seconds) {
+    const hours = String(Math.floor(seconds / 3600)).padStart(2, "0");
+    const minutes = String(Math.floor((seconds % 3600) / 60)).padStart(2, "0");
+    const secs = String(seconds % 60).padStart(2, "0");
+    return `${hours}:${minutes}:${secs}`;
+}
+
+// Start the timer
+function startTimer() {
+    timerInterval = setInterval(() => {
+        elapsedSeconds++;
+        timeDisplay.textContent = formatTime(elapsedSeconds);
+    }, 1000);
+}
+
+// Stop the timer
+function stopTimer() {
+    clearInterval(timerInterval);
+    timerInterval = null;
+}
+
+// Save the elapsed time to Firestore
+function saveTimeToFirestore() {
+    return new Promise((resolve, reject) => {
+        const subjectRef = db.collection("subjects").doc(subject_id_to_record);
+
+        if (subject_id_to_record) {
+            subjectRef
+                .get()
+                .then((doc) => {
+                    if (doc.exists) {
+                        const currentTotalTime = doc.data().total_subject_time;
+                        const [hours, minutes, seconds] = currentTotalTime
+                            .split(":")
+                            .map(Number);
+                        const totalSeconds =
+                            hours * 3600 +
+                            minutes * 60 +
+                            seconds +
+                            elapsedSeconds;
+
+                        return subjectRef.update({
+                            total_subject_time: formatTime(totalSeconds),
+                        });
+                    } else {
+                        console.error("No such document!");
+                        reject("No such document!");
                     }
-                }
-            }).catch(error => {
-                console.error("Error getting subject:", error);
-            });
-        }
-    }
-
-    // Function to start the timer
-    function startTimer() {
-        if (!isTimerRunning) {
-            isTimerRunning = true;
-            globalStartTime = new Date();
-
-            // Update toggle button icon
-            toggleButton.querySelector('i').classList.replace('fa-play', 'fa-pause');
-
-            globalTimer = setInterval(() => {
-                const currentTime = new Date();
-                const elapsedSeconds = Math.floor((currentTime - globalStartTime) / 1000);
-
-                // Update total elapsed seconds
-                totalElapsedSeconds += elapsedSeconds;
-
-                // Update main timer display
-                timeDisplay.textContent = formatTime(totalElapsedSeconds);
-                subjectTimerDisplay.textContent = formatTime(totalElapsedSeconds);
-
-                // Update Firestore with new total time
-                if (currentSubjectId) {
-                    updateSubjectTimer();
-                }
-
-                // Reset start time for next interval
-                globalStartTime = currentTime;
-            }, 1000);
-        }
-    }
-
-    // Function to pause the timer
-    function pauseTimer() {
-        if (isTimerRunning) {
-            isTimerRunning = false;
-            clearInterval(globalTimer);
-
-            // Update toggle button icon
-            toggleButton.querySelector('i').classList.replace('fa-pause', 'fa-play');
-
-            // Show completion modal
-            const message = `You've studied for ${formatTime(totalElapsedSeconds)}`;
-            localStorage.setItem('completionMessage', message);
-            showCompletionModal(message);
-        }
-    }
-
-    function showCompletionModal(message) {
-        const modal = document.createElement('div');
-        modal.innerHTML = `
-        <div class="modal fade show" id="completionModal" tabindex="-1" aria-labelledby="completionModalLabel" aria-hidden="true" style="display: block;">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="completionModalLabel">Study Session Completed</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <p>${message}</p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" onclick="redirectToHome()">OK</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-        document.body.appendChild(modal);
-        const modalInstance = new bootstrap.Modal(document.getElementById('completionModal'));
-        modalInstance.show();
-    }
-
-    function redirectToHome() {
-        window.location.href = 'home.html';
-    }
-
-
-    // Function to update subject timer in Firestore
-    function updateSubjectTimer() {
-        const subjectsRef = firebase.firestore().collection('subjects');
-        subjectsRef.doc(currentSubjectId).update({
-            totalTime: totalElapsedSeconds,
-            lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
-        }).catch(error => {
-            console.error("Error updating subject timer: ", error);
-        });
-    }
-
-    // Toggle timer on button click
-    toggleButton.addEventListener('click', () => {
-        if (!isTimerRunning) {
-            startTimer();
+                })
+                .then(() => {
+                    console.log("Total subject time updated successfully.");
+                    resolve(); // Resolve after Firestore update
+                })
+                .catch((error) => {
+                    console.error("Error updating document:", error);
+                    reject(error); // Reject on error
+                });
         } else {
-            pauseTimer();
+            console.error("No subject ID provided.");
+            reject("No subject ID provided.");
         }
     });
+}
 
-    // Initialize current subject on page load
-    getCurrentSubject();
+// Add event listeners for stop and go back buttons
+pauseButton.addEventListener("click", async () => {
+    stopTimer();
+    await saveTimeToFirestore();
+    window.location.href = "home.html";
 });
+
+goBack.addEventListener("click", async () => {
+    stopTimer();
+    await saveTimeToFirestore();
+    window.location.href = "home.html";
+});
+
+// Initialize the display
+timeDisplay.textContent = formatTime(elapsedSeconds);
+startTimer();
