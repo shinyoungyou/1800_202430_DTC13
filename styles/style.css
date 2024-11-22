@@ -279,6 +279,10 @@ h2.cover-heading {
   height: 40px;
 }
 
+#time {
+  letter-spacing: 0.05em;
+}
+
 .todo-text.done {
   text-decoration: line-through;
   /* Line through completed todos */
