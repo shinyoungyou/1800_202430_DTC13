@@ -5,7 +5,7 @@ function displaySubjectsDynamically(collection) {
     let subjectTemplate = document.getElementById("subjectListTemplate"); // Retrieve the HTML element with the ID "subjectTemplate" and store it in the cardTemplate variable.
 
     db.collection(collection)
-        .get() //the collectiondds called "hikes"
+        .get() //the collection called "hikes"
         .then((allSubjects) => {
             allSubjects.forEach((doc) => {
                 console.log(doc);
@@ -19,14 +19,17 @@ function displaySubjectsDynamically(collection) {
                 newList
                     .querySelector("#subjectName")
                     .appendChild(document.createTextNode(subject_name));
+                newList.querySelector(
+                    "#subjectName"
+                ).href = `log.html?subject_id=${subject_id}`;
+
                 newList.querySelector("#totalSubjectTime").innerHTML =
                     total_subject_time;
                 newList.querySelector("#subjectColor").style.color =
                     subject_color;
                 newList.querySelector("button").id = subject_id;
                 // newList.querySelector('#subjectColor').classList.add(`text-${subject_color}-500`);
-                newList.querySelector("section").dataset.subjectId =
-                    subject_id;
+
                 document
                     .getElementById(collection + "-go-here")
                     .appendChild(newList);
@@ -51,10 +54,7 @@ function addSubject(event) {
     let subject_name = document.getElementById("subject_name").value;
     let subject_color = document.getElementById("subject_color").value;
 
-    console.log(
-        subject_name,
-        subject_color,
-    );
+    console.log(subject_name, subject_color);
 
     var user = firebase.auth().currentUser;
     if (user) {
@@ -66,7 +66,7 @@ function addSubject(event) {
             .add({
                 name: subject_name,
                 color: subject_color,
-                total_subject_time: "00:00:00"
+                total_subject_time: "00:00:00",
             })
             .then(() => {
                 window.location.href = "home.html"; // Redirect to the thanks page
@@ -100,22 +100,20 @@ function openEditSubject() {
     let subjectRef = db.collection("subjects").doc(subject_id_to_update);
 
     // Fetch the document data
-    subjectRef
-        .get()
-        .then((doc) => {
-            if (doc.exists) {
-                let subjectData = doc.data();
-                console.log(subjectData);
+    subjectRef.get().then((doc) => {
+        if (doc.exists) {
+            let subjectData = doc.data();
+            console.log(subjectData);
 
-                // Set the input values with the retrieved data
-                document.getElementById("edit_subject_name").value =
-                    subjectData.name;
-                document.getElementById("edit_subject_color").value =
-                    subjectData.color;
-            } else {
-                console.error("No such document!");
-            }
-        })
+            // Set the input values with the retrieved data
+            document.getElementById("edit_subject_name").value =
+                subjectData.name;
+            document.getElementById("edit_subject_color").value =
+                subjectData.color;
+        } else {
+            console.error("No such document!");
+        }
+    });
 }
 
 function editSubject(event) {
@@ -181,7 +179,6 @@ function deleteSubject() {
 
     // cancelToDelete();
 }
-
 
 function writeSubjects() {
     //define a variable for the collection you want to create in Firestore to populate data
