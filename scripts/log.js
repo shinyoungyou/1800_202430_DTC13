@@ -58,7 +58,10 @@ async function fetchDailyTotalTime() {
     try {
         // Query the days collection for today's date
         const daysRef = db.collection("days");
-        const dayQuery = await daysRef.where("date", "==", currentDate).get();
+        const dayQuery = await daysRef
+            .where("created_by", "==", userEmail)
+            .where("date", "==", currentDate)
+            .get();
 
         if (!dayQuery.empty) {
             const dayDoc = dayQuery.docs[0];
@@ -85,6 +88,22 @@ async function fetchDailyTotalTime() {
 
 // Save the elapsed time to Firestore
 async function saveStudyLog(subjectId, subjectName, elapsedSeconds) {
+    let userEmail = "";
+    
+    firebase.auth().onAuthStateChanged((user) => {
+        if (!user) {
+            console.error("No user is logged in.");
+            return;
+        }
+
+        userEmail = user.email; // Get the current user's email
+    })
+    if (!userEmail) {
+        console.error("No user is logged in.");
+        return;
+    }
+    console.log(userEmail);
+    
     const db = firebase.firestore();
 
     // Fetch subject color dynamically from the `subjects` collection
@@ -129,7 +148,11 @@ async function saveStudyLog(subjectId, subjectName, elapsedSeconds) {
 
     // Save to Day-Centric Structure
     const daysRef = db.collection("days");
-    const dayQuery = await daysRef.where("date", "==", currentDate).get();
+    const dayQuery = await daysRef
+        .where("created_by", "==", userEmail)
+        .where("date", "==", currentDate)
+        .get();
+        
     let dayDoc;
     if (!dayQuery.empty) {
         dayDoc = dayQuery.docs[0].ref;
@@ -138,6 +161,7 @@ async function saveStudyLog(subjectId, subjectName, elapsedSeconds) {
         dayDoc = await daysRef.add({
             date: currentDate,
             color: subjectColor,
+            created_by: userEmail,
             total_time: 0, // Initialize with 0 seconds
         });
     }
