@@ -44,6 +44,21 @@ function stopTimer() {
 async function saveStudyLog(subjectId, subjectName, elapsedSeconds) {
     const db = firebase.firestore();
 
+    // Fetch subject color dynamically from the `subjects` collection
+    let subjectColor;
+    try {
+        const subjectDoc = await db.collection("subjects").doc(subjectId).get();
+        if (subjectDoc.exists) {
+            subjectColor = subjectDoc.data().color;
+        } else {
+            console.error(`Subject with ID ${subjectId} does not exist.`);
+            return;
+        }
+    } catch (error) {
+        console.error("Error fetching subject color:", error);
+        return;
+    }
+
     const currentDate = new Date();
     currentDate.setHours(0, 0, 0, 0);
     const currentTimestamp = new Date();
@@ -63,6 +78,7 @@ async function saveStudyLog(subjectId, subjectName, elapsedSeconds) {
         // Create a new daily log if one doesn't exist
         dailyLogDoc = await dailyLogsRef.add({
             date: currentDate,
+            color: subjectColor,
             total_time: 0, // Initialize with 0 seconds
         });
     }
@@ -78,6 +94,7 @@ async function saveStudyLog(subjectId, subjectName, elapsedSeconds) {
         // Create a new day document if one doesn't exist
         dayDoc = await daysRef.add({
             date: currentDate,
+            color: subjectColor,
             total_time: 0, // Initialize with 0 seconds
         });
     }
@@ -92,6 +109,7 @@ async function saveStudyLog(subjectId, subjectName, elapsedSeconds) {
         // Create a new studied subject if one doesn't exist
         studiedSubjectDoc = await studiedSubjectsRef.add({
             name: subjectName,
+            color: subjectColor,
             total_time: 0, // Initialize with 0 seconds
         });
     }
