@@ -195,51 +195,69 @@ function showDetails(dateStr) {
 }
 
 function displayCalendarDynamically(collection) {
-    db.collection(collection)
-        .get()
-        .then((allDays) => {
-            studyData = {};
+    firebase.auth().onAuthStateChanged((user) => {
+        if (!user) {
+            console.error("No user is logged in.");
+            return;
+        }
 
-            const promises = allDays.docs.map((doc) => {
-                const dayData = doc.data();
-                const date = dayData.date.toDate();
-                const formattedDate = formatDate(date);
+        let userEmail = user.email; // Get the current user's email
 
-                const dayEntry = {
-                    date,
-                    total_day_time: dayData.total_time,
-                    timelines: [],
-                };
+            db.collection(collection)
+                .where("created_by", "==", userEmail)
+                .get()
+                .then((allDays) => {
+                    studyData = {};
 
-                return doc.ref
-                    .collection("studied_subjects")
-                    .get()
-                    .then((subjects) => {
-                        const subjectPromises = subjects.docs.map(
-                            (subjectDoc) =>
-                                subjectDoc.ref
-                                    .collection("timelines")
-                                    .get()
-                                    .then((timelines) => {
-                                        timelines.forEach((timelineDoc) => {
-                                            const timelineData =
-                                                timelineDoc.data();
-                                            dayEntry.timelines.push({
-                                                start: timelineData.start.toDate(),
-                                                end: timelineData.end.toDate(),
-                                            });
-                                        });
-                                    })
-                        );
+                    const promises = allDays.docs.map((doc) => {
+                        const dayData = doc.data();
+                        const date = dayData.date.toDate();
+                        const formattedDate = formatDate(date);
 
-                        return Promise.all(subjectPromises).then(() => {
-                            studyData[formattedDate] = dayEntry;
-                        });
+                        const dayEntry = {
+                            date,
+                            total_day_time: dayData.total_time,
+                            timelines: [],
+                        };
+
+                        return doc.ref
+                            .collection("studied_subjects")
+                            .get()
+                            .then((subjects) => {
+                                const subjectPromises = subjects.docs.map(
+                                    (subjectDoc) =>
+                                        subjectDoc.ref
+                                            .collection("timelines")
+                                            .get()
+                                            .then((timelines) => {
+                                                timelines.forEach(
+                                                    (timelineDoc) => {
+                                                        const timelineData =
+                                                            timelineDoc.data();
+                                                        dayEntry.timelines.push(
+                                                            {
+                                                                start: timelineData.start.toDate(),
+                                                                end: timelineData.end.toDate(),
+                                                            }
+                                                        );
+                                                    }
+                                                );
+                                            })
+                                );
+
+                                return Promise.all(subjectPromises).then(() => {
+                                    studyData[formattedDate] = dayEntry;
+                                });
+                            });
                     });
-            });
 
-            Promise.all(promises).then(() => renderDailyCalendar(studyData));
-        });
+                    Promise.all(promises).then(() =>
+                        renderDailyCalendar(studyData)
+                    );
+                });
+    });
+
+
 }
 
 function writeDays() {
