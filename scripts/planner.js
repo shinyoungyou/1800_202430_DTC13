@@ -15,6 +15,20 @@ function formatTime2(seconds) {
     return `${hrs}:${mins}:${secs}`;
 }
 
+function formatDateToShortString(date) {
+    const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    const months = [
+        "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"
+    ];
+
+    const dayOfWeek = daysOfWeek[date.getDay()];
+    const month = months[date.getMonth()];
+    const day = String(date.getDate()).padStart(2, "0");
+    const year = date.getFullYear();
+
+    return `${dayOfWeek}, ${month}/${day}/${year}`;
+}
+
 // Populate the hours column (00:00 to 23:00)
 function populateHourNumbers() {
     const hoursColumn = document.querySelector(".hours-column");
@@ -144,12 +158,14 @@ function firestoreTimestampToDate(timestamp) {
     );
 }
 
-
 // Main function to display today's subjects and timelines
 async function displayTodaySubjectsDynamically() {
     const currentDate = new Date();
     const startOfDay = new Date(currentDate.setHours(0, 0, 0, 0)); // Midnight of today
     const endOfDay = new Date(currentDate.setHours(23, 59, 59, 999)); // End of today
+
+    let todayOnPlanner = document.getElementById("todayOnPlanner");
+    todayOnPlanner.textContent = formatDateToShortString(currentDate);
 
     try {
         // Query the days collection for today's date
