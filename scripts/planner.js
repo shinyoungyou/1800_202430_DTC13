@@ -6,6 +6,94 @@ function formatTime(seconds) {
     return `${hrs}H ${mins}M ${secs}S`;
 }
 
+// Helper function to format time in 02:43:56 format
+function formatTime2(seconds) {
+    const hrs = String(Math.floor(seconds / 3600)).padStart(2, "0");
+    const mins = String(Math.floor((seconds % 3600) / 60)).padStart(2, "0");
+    const secs = String(seconds % 60).padStart(2, "0");
+    return `${hrs}:${mins}:${secs}`;
+}
+
+// Populate the hours column (00:00 to 23:00)
+function populateHourNumbers() {
+    const hoursColumn = document.querySelector(".hours-column");
+    hoursColumn.innerHTML = ""; // Clear existing content
+
+    for (let i = 0; i < 24; i++) {
+        const hourDiv = document.createElement("div");
+        hourDiv.textContent = i < 10 ? `0${i}` : `${i}`; // e.g., 01:00, 02:00
+        hoursColumn.appendChild(hourDiv);
+    }
+}
+
+// Populate the grid with empty cells (24 rows × 6 columns)
+function populateGrid() {
+    const grid = document.querySelector(".grid");
+    grid.innerHTML = ""; // Clear existing grid content
+
+    // Loop through 24 hours (rows)
+    for (let row = 0; row < 24; row++) {
+        // Loop through 6 intervals (columns) for each hour
+        for (let col = 0; col < 6; col++) {
+            const cell = document.createElement("div");
+            cell.classList.add("hour");
+
+            // Optionally, add a unique ID for easier manipulation
+            cell.id = `row-${row}-col-${col}`;
+
+            grid.appendChild(cell);
+        }
+    }
+}
+
+// Fill the grid dynamically based on timeline data
+function fillGrid(startTime, endTime) {
+    console.log(startTime);
+    const grid = document.querySelector(".grid");
+
+    // Calculate start and end indices
+    const startHour = startTime.getHours();
+    const startMinutes = startTime.getMinutes();
+    const startRow = startHour;
+    const startCol = Math.floor(startMinutes / 10); // Column index (0-5)
+
+    const endHour = endTime.getHours();
+    const endMinutes = endTime.getMinutes();
+    const endRow = endHour;
+    const endCol = Math.floor(endMinutes / 10); // Column index (0-5)
+
+    // Ensure the grid is populated
+    for (let row = 0; row < 24; row++) {
+        for (let col = 0; col < 6; col++) {
+            const cellId = `row-${row}-col-${col}`;
+            let cell = document.getElementById(cellId);
+
+            // If the cell doesn't exist, create and append it
+            if (!cell) {
+                cell = document.createElement("div");
+                cell.classList.add("hour");
+                cell.id = cellId;
+                grid.appendChild(cell);
+            }
+
+            // Check if this cell falls within the start and end range
+            if (
+                (row > startRow || (row === startRow && col >= startCol)) &&
+                (row < endRow || (row === endRow && col <= endCol))
+            ) {
+                cell.classList.add("filled"); // Highlight the cell
+            }
+        }
+    }
+}
+
+function firestoreTimestampToDate(timestamp) {
+    return new Date(
+        timestamp.seconds * 1000 + Math.floor(timestamp.nanoseconds / 1000000)
+    );
+}
+
+
 // Main function to display today's subjects and timelines
 async function displayTodaySubjectsDynamically() {
     const currentDate = new Date();
@@ -26,7 +114,7 @@ async function displayTodaySubjectsDynamically() {
 
             // Update the total time in the header
             document.querySelector("h4 span:nth-child(2)").innerText =
-                formatTime(dayData.total_time);
+                formatTime2(dayData.total_time);
 
             // Get the studied_subjects subcollection
             const studiedSubjectsRef =
@@ -49,11 +137,10 @@ async function displayTodaySubjectsDynamically() {
 
                 clone.querySelector("#subjectName").innerText =
                     subjectData.name;
-                clone.querySelector("#totalSubjectTime").innerText = formatTime(
-                    subjectData.total_time
-                );
+                clone.querySelector("#totalSubjectTime").innerText =
+                    formatTime2(subjectData.total_time);
                 clone.querySelector("#subjectColor").style.color =
-                    subjectData.color; // Set a default color or dynamic if needed
+                    subjectData.color || "#FFD700"; // Default color if not specified
                 subjectsContainer.appendChild(clone);
 
                 // Get the timelines subcollection
@@ -62,27 +149,16 @@ async function displayTodaySubjectsDynamically() {
 
                 timelinesQuery.forEach((timelineDoc) => {
                     const timelineData = timelineDoc.data();
-                    const startTime = new Date(timelineData.start);
-                    const endTime = new Date(timelineData.end);
+                    console.log(timelineData.start);
+                    const startTime = firestoreTimestampToDate(
+                        timelineData.start
+                    );
+                    const endTime = firestoreTimestampToDate(
+                        timelineData.end
+                    );
 
-                    // Convert start and end times to grid representation
-                    const startHour = startTime.getHours();
-                    const startMinutes = startTime.getMinutes();
-                    const endHour = endTime.getHours();
-                    const endMinutes = endTime.getMinutes();
-
-                    // Render each timeline as yellow blocks
-                    for (let hour = startHour; hour <= endHour; hour++) {
-                        const hourBlock = document.createElement("div");
-                        hourBlock.classList.add("hour", "filled");
-                        if (hour === startHour && hour === endHour) {
-                            // Partial block for the start and end hour
-                            hourBlock.style.gridRow = `${
-                                (startMinutes / 60) * 100
-                            }% / ${(endMinutes / 60) * 100}%`;
-                        }
-                        gridContainer.appendChild(hourBlock);
-                    }
+                    // Fill the grid based on start and end times
+                    fillGrid(startTime, endTime);
                 });
             });
         } else {
@@ -93,5 +169,7 @@ async function displayTodaySubjectsDynamically() {
     }
 }
 
-// Call the main function
+// Call initialization functions
+populateHourNumbers();
+populateGrid();
 displayTodaySubjectsDynamically();

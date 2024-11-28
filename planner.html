@@ -57,24 +57,31 @@
                     <span>Wed, 11/27/2024</span>
                     <span>2H 43M</span>
                 </h4>
-                <section class="w-full flex justify-around">
+                <section class="w-full flex gap-x-2">
                     <article class="w-1/2">
                         <aside id="subjects-go-here"></aside>
                     </article>
-                    <article class="w-1/2">
-                        <div class="grid">
+                    <div class="w-1/2 timeline-container">
+                        <!-- Hour Numbers -->
+                        <div class="hours-column">
+                            <!-- Numbers will be dynamically populated or pre-defined -->
                         </div>
-                    </article>
+
+                        <!-- Timeline Grid -->
+                        <div class="grid">
+                            <!-- Hour blocks dynamically populated here -->
+                        </div>
+                    </div>
                 </section>
 
                 <template id="subjectListTemplate">
                     <aside class="flex justify-between">
-                            <span>
-                                <i id="subjectColor" class="bi bi-align-middle"></i>
-                                <span id="subjectName">comp1800</span>
-                            </span>
-                            <time id="totalSubjectTime">02:43:56</time>
-                        </aside>
+                        <span>
+                            <i id="subjectColor" class="bi bi-align-middle"></i>
+                            <span id="subjectName">comp1800</span>
+                        </span>
+                        <time id="totalSubjectTime">02:43:56</time>
+                    </aside>
                 </template>
             </main>
             <footer>
