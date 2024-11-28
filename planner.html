@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css"
+        />
+        <title>Study Body</title>
+        <!-------------------------------------------------------->
+        <!-- Firebase 8 Library related CSS, JS, JQuery go here -->
+        <!-------------------------------------------------------->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/ui/4.8.1/firebase-ui-auth.js"></script>
+        <link
+            type="text/css"
+            rel="stylesheet"
+            href="https://www.gstatic.com/firebasejs/ui/4.8.1/firebase-ui-auth.css"
+        />
+        <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+
+        <!-- Other libraries go here -->
+        <script src="https://cdn.tailwindcss.com"></script>
+        <!-- Link to styles of your own -->
+        <link rel="stylesheet" href="./styles/style.css" />
+
+        <style>
+            .home-navbar > a:first-child > * {
+                color: #7b7b7b;
+            }
+            .home-navbar > a:last-child > * {
+                color: #212121;
+            }
+            .my-groups-navbar i {
+                padding-bottom: 0.5rem;
+                padding-left: 0.1rem;
+            }
+        </style>
+        <script src="./scripts/planner.js" defer></script>
+    </head>
+    <body class="relative">
+        <div class="relative h-screen cover-container text-center">
+            <nav class="text-left pl-5 pt-12">
+                <a href="home.html">
+                    <i class="text-xl bi bi-chevron-left"></i>
+                </a>
+            </nav>
+
+            <main class="pb-32 p-5 pt-0 flex items-center flex-col gap-y-6">
+                <h4
+                    class="w-[80%] text-center flex justify-between pb-5 text-lg"
+                >
+                    <span>Wed, 11/27/2024</span>
+                    <span>2H 43M</span>
+                </h4>
+                <section class="w-full flex justify-around">
+                    <article class="w-1/2">
+                        <aside id="subjects-go-here"></aside>
+                    </article>
+                    <article class="w-1/2">
+                        <div class="grid">
+                        </div>
+                    </article>
+                </section>
+
+                <template id="subjectListTemplate">
+                    <aside class="flex justify-between">
+                            <span>
+                                <i id="subjectColor" class="bi bi-align-middle"></i>
+                                <span id="subjectName">comp1800</span>
+                            </span>
+                            <time id="totalSubjectTime">02:43:56</time>
+                        </aside>
+                </template>
+            </main>
+            <footer>
+                <nav id="navbarPlaceholder"></nav>
+            </footer>
+        </div>
+        <!---------------------------------------------->
+        <!-- Your own JavaScript functions go here    -->
+        <!---------------------------------------------->
+        <script src="./scripts/firebaseAPI_DTC13.js"></script>
+        <script src="./scripts/skeleton.js"></script>
+        <script src="./scripts/main.js"></script>
+        <script src="./scripts/more.js"></script>
+        <!-- Link to scripts of your own -->
+        <!-- <script src="./scripts/script.js"></script> -->
+    </body>
+</html>
