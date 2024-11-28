@@ -8,15 +8,19 @@ let timeDisplay = document.getElementById("time");
 let pauseButton = document.getElementById("pauseButton");
 let goBack = document.getElementById("goBack");
 
-if (subject_id_to_record) {
-    console.log(`Subject ID: ${subject_id_to_record}`);
-} else {
-    console.error("No subject ID found in the URL.");
-}
+let subjectNameUnderneath = document.getElementById("subjectNameUnderneath");
+subjectNameUnderneath.innerText = subject_name;
+let totalSubjectTimeUnderneath = document.getElementById(
+    "totalSubjectTimeUnderneath"
+);
+let totalDailyTimeUnderneath = document.getElementById(
+    "totalDailyTimeUnderneath"
+);
 
 // Timer variables
 let timerInterval = null;
 let elapsedSeconds = 0;
+let elapsedTodaySeconds = 0; // Track total daily elapsed time
 
 // Format time as HH:MM:SS
 function formatTime(seconds) {
@@ -31,6 +35,11 @@ function startTimer() {
     timerInterval = setInterval(() => {
         elapsedSeconds++;
         timeDisplay.textContent = formatTime(elapsedSeconds);
+        totalSubjectTimeUnderneath.textContent = formatTime(elapsedSeconds);
+
+        // Update the daily total dynamically
+        const updatedTodaySeconds = elapsedTodaySeconds + elapsedSeconds;
+        totalDailyTimeUnderneath.textContent = formatTime(updatedTodaySeconds);
     }, 1000);
 }
 
@@ -38,6 +47,40 @@ function startTimer() {
 function stopTimer() {
     clearInterval(timerInterval);
     timerInterval = null;
+}
+
+// Fetch and update daily total time
+async function fetchDailyTotalTime() {
+    const db = firebase.firestore();
+    const currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0); // Midnight of today
+
+    try {
+        // Query the days collection for today's date
+        const daysRef = db.collection("days");
+        const dayQuery = await daysRef.where("date", "==", currentDate).get();
+
+        if (!dayQuery.empty) {
+            const dayDoc = dayQuery.docs[0];
+            const dayData = dayDoc.data();
+
+            // Get the total_time field from today's document
+            elapsedTodaySeconds = dayData.total_time || 0;
+
+            // Update the initial daily time display
+            totalDailyTimeUnderneath.textContent =
+                formatTime(elapsedTodaySeconds);
+        } else {
+            console.log("No daily data found for today. Starting at 0.");
+            elapsedTodaySeconds = 0;
+            totalDailyTimeUnderneath.textContent =
+                formatTime(elapsedTodaySeconds);
+        }
+    } catch (error) {
+        console.error("Error fetching daily total time:", error);
+        elapsedTodaySeconds = 0; // Default to 0 in case of error
+        totalDailyTimeUnderneath.textContent = formatTime(elapsedTodaySeconds);
+    }
 }
 
 // Save the elapsed time to Firestore
@@ -156,7 +199,6 @@ async function saveStudyLog(subjectId, subjectName, elapsedSeconds) {
     }
 }
 
-
 // Add event listeners for stop and go back buttons
 pauseButton.addEventListener("click", async () => {
     stopTimer();
@@ -176,4 +218,10 @@ goBack.addEventListener("click", async () => {
 
 // Initialize the display
 timeDisplay.textContent = formatTime(elapsedSeconds);
+totalSubjectTimeUnderneath.textContent = formatTime(elapsedSeconds);
+
+// Fetch and display total daily time
+fetchDailyTotalTime();
+
+// Start the timer
 startTimer();
