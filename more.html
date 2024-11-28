@@ -53,33 +53,111 @@
             <main class="pb-32 p-5 pt-0 flex flex-col gap-y-6">
                 <section class="rounded-lg bg-[#fff] px-6 w-full p-2">
                     <h3 class="text-sm flex items-center justify-between pb-4">
-                        <span class="text-xl"><span id="name-goes-here"></span></span>
-                        <img class="w-[100px]" src="/images/avatar.png" alt="avatar">
+                        <span class="text-xl"
+                            ><span id="name-goes-here"></span
+                        ></span>
+                        <img
+                            class="w-[100px]"
+                            src="/images/avatar.png"
+                            alt="avatar"
+                        />
                     </h3>
-
                 </section>
                 <section class="rounded-lg bg-[#fff] w-full p-2">
-                    <h3 class="text-sm flex justify-between px-6 py-2">
-                        <span class="text-xl">Name</span><span class="text-xl text-gray-500" id="name2-goes-here"></span>
+                    <h3
+                        onclick="openUpdateModal('name')"
+                        class="cursor-pointer text-sm flex justify-between pl-6 pr-2 py-2"
+                    >
+                        <span class="text-xl">Name</span>
+                        <article class="text-xl text-gray-500 flex gap-x-2">
+                            <span id="name2-goes-here"></span>
+                            <span class="text-xl text-gray-500"
+                                ><i class="text-xl bi bi-chevron-right"></i
+                            ></span>
+                        </article>
                     </h3>
-                    <hr>
-                    <h3 class="text-sm flex justify-between px-6 py-2">
-                        <span class="text-xl">Email</span><span class="text-xl text-gray-500" id="email-goes-here"></span>
+                    <hr />
+                    <h3
+                        onclick="openUpdateModal('email')"
+                        class="cursor-pointer text-sm flex justify-between pl-6 pr-2 py-2"
+                    >
+                        <span class="text-xl">Email</span>
+                        <article class="text-xl text-gray-500 flex gap-x-2">
+                            <span id="email-goes-here"></span>
+                            <span class="text-xl text-gray-500"
+                                ><i class="text-xl bi bi-chevron-right"></i
+                            ></span>
+                        </article>
                     </h3>
-                    <hr>
-                    <h3 class="text-sm flex justify-between px-6 py-2">
-                        <span class="text-xl">School</span><span class="text-xl text-gray-500" id="school-goes-here"></span>
+                    <hr />
+                    <h3
+                        onclick="openUpdateModal('school')"
+                        class="cursor-pointer text-sm flex justify-between pl-6 pr-2 py-2"
+                    >
+                        <span class="text-xl">School</span>
+                        <article class="text-xl text-gray-500 flex gap-x-2">
+                            <span id="school-goes-here"></span>
+                            <span class="text-xl text-gray-500"
+                                ><i class="text-xl bi bi-chevron-right"></i
+                            ></span>
+                        </article>
                     </h3>
-                    <hr>
-                    <h3 class="text-sm flex justify-between px-6 py-2">
-                        <span class="text-xl">City</span><span class="text-xl text-gray-500" id="city-goes-here"></span>
+                    <hr />
+                    <h3
+                        onclick="openUpdateModal('city')"
+                        class="cursor-pointer text-sm flex justify-between pl-6 pr-2 py-2"
+                    >
+                        <span class="text-xl">City</span>
+                        <article class="text-xl text-gray-500 flex gap-x-2">
+                            <span id="city-goes-here"></span>
+                            <span class="text-xl text-gray-500"
+                                ><i class="text-xl bi bi-chevron-right"></i
+                            ></span>
+                        </article>
                     </h3>
                 </section>
-                <a href="index.html" class="rounded-lg bg-[#fff] w-full p-2">
+                <a
+                    href="index.html"
+                    class="hover:bg-[#d7d7d7] rounded-lg bg-[#fff] w-full p-2"
+                >
                     <h3 class="text-sm flex items-center px-6 py-2">
                         <span class="text-xl">Log out</span>
                     </h3>
                 </a>
+
+                <form
+                    id="updateForm"
+                    class="bg-[#f2f2f7] hidden absolute top-10 left-0 w-full rounded-t-2xl h-[calc(100vh-2.5rem)] z-20 p-4 pb-8 transition-transform duration-300 ease-out"
+                >
+                    <nav class="flex justify-between pb-2">
+                        <a
+                            id="cancelUpdate"
+                            class="text-[#616161] text-sm nav-link"
+                        >
+                            Cancel
+                        </a>
+                        <h3 id="updateTitle" class="text-[#202020] nav-link">
+                            Update Info
+                        </h3>
+                        <button
+                            type="submit"
+                            id="updateSubmit"
+                            class="text-[#616161] text-sm nav-link"
+                        >
+                            Done
+                        </button>
+                    </nav>
+                    <article class="p-4 flex flex-col w-full gap-y-6">
+                        <aside class="h-[3rem] bg-[#fff] px-8 py-2 rounded-lg">
+                            <input
+                                id="updateField"
+                                class="w-full align-middle text-sm"
+                                type="text"
+                                placeholder="Enter new value"
+                            />
+                        </aside>
+                    </article>
+                </form>
             </main>
             <footer>
                 <nav id="navbarPlaceholder"></nav>

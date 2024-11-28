@@ -49,3 +49,102 @@ function getNameFromAuth() {
 
 // Call the function
 getNameFromAuth();
+
+function openUpdateModal(field) {
+    const updateForm = document.getElementById("updateForm");
+    const updateField = document.getElementById("updateField");
+    const updateTitle = document.getElementById("updateTitle");
+
+    updateForm.classList.remove("hidden");
+    updateForm.dataset.field = field;
+
+    switch (field) {
+        case "name":
+            updateTitle.innerText = "Update Name";
+            updateField.placeholder = "Enter new name";
+            break;
+        case "email":
+            updateTitle.innerText = "Update Email";
+            updateField.placeholder = "Enter new email";
+            break;
+        case "school":
+            updateTitle.innerText = "Update School";
+            updateField.placeholder = "Enter new school";
+            break;
+        case "city":
+            updateTitle.innerText = "Update City";
+            updateField.placeholder = "Enter new city";
+            break;
+    }
+}
+
+document.getElementById("cancelUpdate").addEventListener("click", () => {
+    document.getElementById("updateForm").classList.add("hidden");
+});
+
+document.getElementById("updateForm").addEventListener("submit", (event) => {
+    event.preventDefault();
+    const field = document.getElementById("updateForm").dataset.field;
+    const newValue = document.getElementById("updateField").value;
+
+    if (!newValue.trim()) {
+        alert("Please enter a value.");
+        return;
+    }
+
+    const user = firebase.auth().currentUser;
+    const db = firebase.firestore();
+    const usersRef = db.collection("users");
+
+    if (!user) {
+        console.error("No user logged in");
+        return;
+    }
+
+    const userDoc = usersRef.doc(user.uid);
+
+    // Update Firestore and Auth
+    const updates = {};
+    updates[field] = newValue;
+
+    if (field === "email") {
+        // Update Firebase Auth email
+        user.updateEmail(newValue)
+            .then(() => userDoc.update(updates))
+            .then(() => {
+                alert("Email updated successfully!");
+                document.getElementById(`${field}-goes-here`).innerText =
+                    newValue;
+                document.getElementById("updateForm").classList.add("hidden");
+            })
+            .catch((error) => console.error("Error updating email:", error));
+    } else if (field === "name") {
+        // Update Firebase Auth displayName
+        user.updateProfile({ displayName: newValue })
+            .then(() => userDoc.update(updates))
+            .then(() => {
+                alert("Name updated successfully!");
+                document.getElementById("name-goes-here").innerText = newValue;
+                document.getElementById("name2-goes-here").innerText = newValue;
+                document.getElementById("updateForm").classList.add("hidden");
+            })
+            .catch((error) => console.error("Error updating name:", error));
+    } else {
+        // Update Firestore for school or city
+        userDoc
+            .update(updates)
+            .then(() => {
+                alert(
+                    `${
+                        field.charAt(0).toUpperCase() + field.slice(1)
+                    } updated successfully!`
+                );
+                document.getElementById(`${field}-goes-here`).innerText =
+                    newValue;
+                document.getElementById("updateForm").classList.add("hidden");
+            })
+            .catch((error) => console.error(`Error updating ${field}:`, error));
+    }
+
+    document.getElementById("updateField").value = ""
+});
