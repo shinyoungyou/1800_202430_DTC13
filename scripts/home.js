@@ -4,67 +4,81 @@
 function displaySubjectsDynamically(collection) {
     const subjectTemplate = document.getElementById("subjectListTemplate"); // Retrieve the HTML element with the ID "subjectTemplate".
 
-    db.collection(collection)
-        .get() // Fetch the collection called "subjects"
-        .then((allSubjects) => {
-            allSubjects.forEach((doc) => {
-                const subject_id = doc.id;
-                const subject_name = doc.data().name; // Get the "name" key
-                const subject_color = doc.data().color; // Get the "color" key
+    firebase.auth().onAuthStateChanged((user) => {
+        if (!user) {
+            console.error("No user is logged in.");
+            return;
+        }
 
-                // Get `total_time` for today from `daily_logs`
-                const today = new Date()
-                today.setHours(0, 0, 0, 0);
+        const userEmail = user.email; // Get the current user's email
 
-                console.log(today);
-                const dailyLogsRef = db
-                    .collection("subjects")
-                    .doc(subject_id)
-                    .collection("daily_logs")
-                    .where("date", "==", today);
+        db.collection(collection)
+            .where("created_by", "==", userEmail) // Fetch subjects created by the current user
+            .get() // Fetch the collection called "subjects"
+            .then((allSubjects) => {
+                allSubjects.forEach((doc) => {
+                    const subject_id = doc.id;
+                    const subject_name = doc.data().name; // Get the "name" key
+                    const subject_color = doc.data().color; // Get the "color" key
 
-                dailyLogsRef
-                    .get()
-                    .then((logSnapshot) => {
-                        let total_subject_time = 0; // Default to 0 if no logs exist
+                    // Get `total_time` for today from `daily_logs`
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
 
-                        if (!logSnapshot.empty) {
-                            logSnapshot.forEach((logDoc) => {
-                                console.log(logDoc);
-                                total_subject_time =
-                                    logDoc.data().total_time || 0;
-                            });
-                        }
+                    console.log(today);
+                    const dailyLogsRef = db
+                        .collection("subjects")
+                        .doc(subject_id)
+                        .collection("daily_logs")
+                        .where("date", "==", today);
 
-                        // Clone the subject template
-                        const newList = subjectTemplate.content.cloneNode(true);
+                    dailyLogsRef
+                        .get()
+                        .then((logSnapshot) => {
+                            let total_subject_time = 0; // Default to 0 if no logs exist
 
-                        // Populate subject details
-                        newList
-                            .querySelector("#subjectName")
-                            .appendChild(document.createTextNode(subject_name));
-                        newList.querySelector(
-                            "#subjectName"
-                        ).href = `log.html?subject_id=${subject_id}&subject_name=${subject_name}`;
-                        newList.querySelector("#totalSubjectTime").textContent =
-                            secondsToHHMMSS(total_subject_time);
-                        newList.querySelector("#subjectColor").style.color =
-                            subject_color;
-                        newList.querySelector("button").id = subject_id;
+                            if (!logSnapshot.empty) {
+                                logSnapshot.forEach((logDoc) => {
+                                    console.log(logDoc);
+                                    total_subject_time =
+                                        logDoc.data().total_time || 0;
+                                });
+                            }
 
-                        // Append the populated subject to the list
-                        document
-                            .getElementById(collection + "-go-here")
-                            .appendChild(newList);
-                    })
-                    .catch((error) => {
-                        console.error(
-                            `Error fetching daily logs for subject ${subject_id}:`,
-                            error
-                        );
-                    });
+                            // Clone the subject template
+                            const newList =
+                                subjectTemplate.content.cloneNode(true);
+
+                            // Populate subject details
+                            newList
+                                .querySelector("#subjectName")
+                                .appendChild(
+                                    document.createTextNode(subject_name)
+                                );
+                            newList.querySelector(
+                                "#subjectName"
+                            ).href = `log.html?subject_id=${subject_id}&subject_name=${subject_name}`;
+                            newList.querySelector(
+                                "#totalSubjectTime"
+                            ).textContent = secondsToHHMMSS(total_subject_time);
+                            newList.querySelector("#subjectColor").style.color =
+                                subject_color;
+                            newList.querySelector("button").id = subject_id;
+
+                            // Append the populated subject to the list
+                            document
+                                .getElementById(collection + "-go-here")
+                                .appendChild(newList);
+                        })
+                        .catch((error) => {
+                            console.error(
+                                `Error fetching daily logs for subject ${subject_id}:`,
+                                error
+                            );
+                        });
+                });
             });
-        });
+    });
 }
 displaySubjectsDynamically("subjects"); // Input param is the name of the collection
 
@@ -88,10 +102,13 @@ function addSubject(event) {
 
     const user = firebase.auth().currentUser;
     if (user) {
+        const userEmail = user.email;
+
         db.collection("subjects")
             .add({
                 name: subject_name,
                 color: subject_color,
+                created_by: userEmail,
             })
             .then(() => {
                 window.location.href = "home.html"; // Redirect to the home page
@@ -166,7 +183,7 @@ function updateCurrentDate() {
 // Function to fetch and display the total time studied for the current day
 function updateTotalTime() {
     const totalTimeElement = document.getElementById("total_time");
-    const today = new Date()
+    const today = new Date();
     today.setHours(0, 0, 0, 0);
     console.log(today);
 
@@ -248,6 +265,7 @@ function writeSubjects() {
                 name: subject.name,
                 color: subject.color,
                 total_time: 0, // We'll calculate the total time based on timelines
+                created_by: "syou17@my.bcit.ca",
             })
             .then((subjectRef) => {
                 dailyLogs.forEach((log) => {
