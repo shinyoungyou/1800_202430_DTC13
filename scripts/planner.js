@@ -1,5 +1,6 @@
 // Helper function to format time in HH:MM:SS
 function formatTime(seconds) {
+    console.log(seconds);
     const hrs = Math.floor(seconds / 3600);
     const mins = Math.floor((seconds % 3600) / 60);
     const secs = seconds % 60;
@@ -21,9 +22,45 @@ function populateHourNumbers() {
 
     for (let i = 0; i < 24; i++) {
         const hourDiv = document.createElement("div");
-        hourDiv.textContent = i < 10 ? `0${i}` : `${i}`; // e.g., 01:00, 02:00
+        hourDiv.textContent = i < 10 ? `${i}` : `${i}`; // e.g., 01:00, 02:00
         hoursColumn.appendChild(hourDiv);
     }
+}
+
+// Maintain a global map for cell backgrounds
+const cellBackgrounds = {};
+
+// Helper function to manage cell background globally
+function updateCellBackground(cell, fillPercentage, subjectColor) {
+    const cellId = cell.id;
+
+    // Initialize the cell background if not already set
+    if (!cellBackgrounds[cellId]) {
+        cellBackgrounds[cellId] = [];
+    }
+
+    // Add the new subject's fill percentage and color
+    cellBackgrounds[cellId].push({
+        percentage: fillPercentage,
+        color: subjectColor,
+    });
+
+    // Sort by percentage to ensure gradients are applied in order
+    cellBackgrounds[cellId].sort((a, b) => a.percentage - b.percentage);
+
+    // Construct the linear-gradient style
+    let gradient = cellBackgrounds[cellId]
+        .map(
+            (entry, index, array) =>
+                `${entry.color} ${
+                    index > 0 ? array[index - 1].percentage : 0
+                }%, ${entry.color} ${entry.percentage}%`
+        )
+        .join(", ");
+
+    // Apply the gradient to the cell
+    cell.style.background = `linear-gradient(to right, ${gradient})`;
+    cell.classList.add("filled");
 }
 
 // Populate the grid with empty cells (24 rows × 6 columns)
@@ -47,8 +84,8 @@ function populateGrid() {
 }
 
 // Fill the grid dynamically based on timeline data
-function fillGrid(startTime, endTime) {
-    console.log(startTime);
+function fillGrid(startTime, endTime, subjectColor) {
+    console.log("Start Time:", startTime, "End Time:", endTime, "Subject Color:", subjectColor);
     const grid = document.querySelector(".grid");
 
     // Calculate start and end indices
@@ -56,11 +93,13 @@ function fillGrid(startTime, endTime) {
     const startMinutes = startTime.getMinutes();
     const startRow = startHour;
     const startCol = Math.floor(startMinutes / 10); // Column index (0-5)
+    const startRemainder = startMinutes % 10; // Minutes within the starting interval
 
     const endHour = endTime.getHours();
     const endMinutes = endTime.getMinutes();
     const endRow = endHour;
     const endCol = Math.floor(endMinutes / 10); // Column index (0-5)
+    const endRemainder = endMinutes % 10; // Minutes within the ending interval
 
     // Ensure the grid is populated
     for (let row = 0; row < 24; row++) {
@@ -81,11 +120,23 @@ function fillGrid(startTime, endTime) {
                 (row > startRow || (row === startRow && col >= startCol)) &&
                 (row < endRow || (row === endRow && col <= endCol))
             ) {
-                cell.classList.add("filled"); // Highlight the cell
+                // Calculate fill percentage for partial blocks
+                let fillPercentage = 100; // Default to fully filled
+                if (row === startRow && col === startCol) {
+                    // Starting block: Fill proportionally based on start minutes
+                    fillPercentage = ((10 - startRemainder) / 10) * 100;
+                } else if (row === endRow && col === endCol) {
+                    // Ending block: Fill proportionally based on end minutes
+                    fillPercentage = (endRemainder / 10) * 100;
+                }
+
+                // Update the cell background globally
+                updateCellBackground(cell, fillPercentage, subjectColor);
             }
         }
     }
 }
+
 
 function firestoreTimestampToDate(timestamp) {
     return new Date(
@@ -114,7 +165,7 @@ async function displayTodaySubjectsDynamically() {
 
             // Update the total time in the header
             document.querySelector("h4 span:nth-child(2)").innerText =
-                formatTime2(dayData.total_time);
+                formatTime(dayData.total_time);
 
             // Get the studied_subjects subcollection
             const studiedSubjectsRef =
@@ -140,7 +191,7 @@ async function displayTodaySubjectsDynamically() {
                 clone.querySelector("#totalSubjectTime").innerText =
                     formatTime2(subjectData.total_time);
                 clone.querySelector("#subjectColor").style.color =
-                    subjectData.color || "#FFD700"; // Default color if not specified
+                    subjectData.color; // Default color if not specified
                 subjectsContainer.appendChild(clone);
 
                 // Get the timelines subcollection
@@ -158,7 +209,7 @@ async function displayTodaySubjectsDynamically() {
                     );
 
                     // Fill the grid based on start and end times
-                    fillGrid(startTime, endTime);
+                    fillGrid(startTime, endTime, subjectData.color);
                 });
             });
         } else {
