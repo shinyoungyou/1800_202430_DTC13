@@ -1,8 +1,6 @@
 function getNameFromAuth() {
     firebase.auth().onAuthStateChanged((user) => {
         if (user) {
-            console.log("User ID:", user.uid);
-            console.log("User Object:", user);
 
             const userName = user.displayName || "Anonymous"; // Handle null displayName
             const email = user.email;
@@ -28,7 +26,6 @@ function getNameFromAuth() {
                     if (!snapshot.empty) {
                         snapshot.forEach((doc) => {
                             const userData = doc.data();
-                            console.log("User Data:", userData);
 
                             const schoolElement = document.getElementById("school-goes-here");
                             const cityElement = document.getElementById("city-goes-here");

@@ -27,7 +27,7 @@ function secondsToHHMMSS(seconds) {
         .toString()
         .padStart(2, "0");
     const secs = (seconds % 60).toString().padStart(2, "0");
-    return `${hours}:${minutes}:${secs}`;
+    return `${hours}:${minutes}:${secs.slice(0, 2)}`;
 }
 
 function secondsToHHMM(seconds) {
