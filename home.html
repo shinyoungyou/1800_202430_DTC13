@@ -44,8 +44,8 @@
     <!-- Stuff for body goes here -->
     <div class="position-relative relative vh-100 cover-container">
         <header class="home-header d-flex flex-column justify-content-center row-gap-3 text-white bg-black">
-            <p>Fri, 9/27</p>
-            <h1>01:28:02</h1>
+            <p id="currentDate">Wed, 11/20</p>
+            <h1 id="total_time">03:38:02</h1>
         </header>
         <nav class="hoome-tabs w-100 bg-white text-black d-flex justify-content-around border-bottom">
             <a href="home.html" class="py-3 nav-link border-dark border-bottom border-3">Timer</a>
@@ -55,20 +55,15 @@
 
         <main role="main" class="home-main cover d-flex flex-column row-gap-3 overflow-auto">
             <section id="subjects-go-here"></section>
-            <section class="todo-section">
-                <h3>Todo List</h3>
-                <ul id="todoList" class="list-group"></ul>
-            </section>
             <section class="home-actions d-flex column-gap-2">
                 <a id="addSubjectBtn" class="btn"><small>+ Subject</small></a>
-                <!-- <a id="todoBtnModal" class="btn"><small>+ To-do</small></a> -->
-                <a id="todoBtnModal" class="btn" data-bs-toggle="modal" data-bs-target="#todoModal"><small>+
-                        To-do</small></a>
+                <a class="btn"><small>+ To-do</small></a>
             </section>
-            <!-- <template id="subjectListTemplate">
-                <section class="py-3 nav-link d-flex justify-content-between">
+
+            <template id="subjectListTemplate">
+                 <section  class="py-3 nav-link d-flex justify-content-between">
                     <a href="log.html" id="subjectName" class="d-flex align-items-center column-gap-3">
-                        <i id="subjectColor" class="home-play-btn mb-0 bi bi-play-circle-fill"></i>
+                        <i id="subjectColor" class="home-play-btn mb-0 bi bi-play-circle-fill"></i> 
                     </a>
                     <span class="d-flex column-gap-3 align-items-center">
                         <time id="totalSubjectTime">01:24:17</time>
@@ -76,36 +71,18 @@
                                 class="more-for-each-subject bi bi-three-dots-vertical"></i></button>
                     </span>
                 </section>
-            </template> -->
-            <template id="subjectListTemplate">
-                <section class="py-3 nav-link d-flex flex-column" data-subject-id="">
-                    <div class="d-flex justify-content-between">
-                        <a href="log.html" id="subjectName" class="d-flex align-items-center column-gap-3">
-                            <i id="subjectColor" class="home-play-btn mb-0 bi bi-play-circle-fill"></i>
-                        </a>
-                        <span class="d-flex column-gap-3 align-items-center">
-                            <time id="totalSubjectTime">01:24:17</time>
-                            <button onclick="openSubjectModal(event)" class="btn px-0"><i
-                                    class="more-for-each-subject bi bi-three-dots-vertical"></i></button>
-                        </span>
-                    </div>
-                    <div data-subject-id="subjectId">
-                        <ul class="todo-list mt-2"></ul>
-                    </div>
             </template>
-            <form id="addSubjectForm"
-                class="bg-[#f2f2f7] hidden absolute top-10 left-0 w-full rounded-t-2xl 
+
+            <form id="addSubjectForm" class="bg-[#f2f2f7] hidden absolute top-10 left-0 w-full rounded-t-2xl 
                                             h-[calc(100vh-2.5rem)] z-20 p-4 pb-8 transition-transform duration-300 ease-out">
                 <nav class="flex justify-between pb-2">
                     <button id="cancel" class="text-[#616161] text-sm nav-link">Cancel</button>
                     <h3 class="text-[#202020] nav-link">Subject Name</h3>
-                    <button type="submit" onclick="addSubject(event)"
-                        class="text-[#616161] text-sm nav-link">Done</button>
+                    <button type="submit" onclick="addSubject(event)" class="text-[#616161] text-sm nav-link">Done</button>
                 </nav>
                 <article class="p-4 flex flex-col w-full gap-y-6">
                     <aside class="h-[3rem] bg-[#fff] px-8 py-2 rounded-lg">
-                        <input id="subject_name" class="w-full align-middle text-sm" type="text"
-                            placeholder="e.g. Math, Science, History...">
+                        <input id="subject_name" class="w-full align-middle text-sm" type="text" placeholder="e.g. Math, Science, History...">
                     </aside>
                     <aside class="h-[3rem] bg-[#fff] p-4 rounded-lg flex justify-between items-center">
                         <label class="text-left text-sm" for="subject_color">Subject Color</label>
@@ -115,23 +92,19 @@
             </form>
 
             <section id="updateSubject" class="hidden">
-                <article onclick="closeSubjectModal()"
-                    class="absolute z-20 top-0 left-0 w-full h-full bg-[#000] bg-opacity-40"></article>
+                <article onclick="closeSubjectModal()" class="absolute z-20 top-0 left-0 w-full h-full bg-[#000] bg-opacity-40"></article>
 
-                <article id="chooseOption"
-                    class="w-[60vw] max-w-[25em] bg-[#fff] absolute top-1/3 translate-y-1/2 left-1/2 -translate-x-1/2 flex flex-col 
-                                h-[20vh] z-30 rounded-3xl justify-around text-sm text-[#1a1c1d] font-light shadow items-center p-4">
+                <article id="chooseOption" class="w-[70vw] md:w-[60vw] max-w-[25em] bg-[#fff] absolute top-1/3 translate-y-1/2 left-1/2 -translate-x-1/2 flex flex-col 
+                                h-[20vh] z-30 rounded-3xl justify-evenly text-sm text-[#1a1c1d] font-light shadow items-center p-2">
                     <button onclick="openEditSubject()" class="w-[80%] text-left">Edit subejct</button>
                     <button onclick="openDeleteSubject()" class="w-[80%] text-left">Delete subejct</button>
                 </article>
 
-                <article id="confirmDeleteSubject"
-                    class="w-[60vw] max-w-[25em] bg-[#fff] absolute top-1/4 translate-y-1/2 left-1/2 -translate-x-1/2 flex-col 
+                <article id="confirmDeleteSubject" class="w-[70vw] md:w-[60vw] max-w-[25em] bg-[#fff] absolute top-1/4 translate-y-1/2 left-1/2 -translate-x-1/2 flex-col 
                                 h-[25vh] z-30 rounded-3xl justify-around text-sm text-[#1a1c1d] font-light shadow items-center p-4 hidden">
-                    <h3 class="w-[80%] text-left text-base font-normal">Delete subject</h3>
-                    <p class="w-[80%] text-left font-light text-sm">
-                        Are you sure you want to delete the 'subject_name'? Note that previously logged studying entries
-                        will not be removed.
+                    <h3 class="w-[85%] text-left text-base font-normal">Delete subject</h3>
+                    <p class="w-[85%] text-left font-light text-sm">
+                        Are you sure you want to delete the 'subject_name'? Note that previously logged studying entries will not be removed.
                     </p>
                     <aside class="w-[80%] text-right text-sm font-normal justify-end">
                         <button onclick="cancelToDelete()" class="pr-8">Cancel</button>
@@ -140,19 +113,16 @@
                 </article>
             </section>
 
-            <form id="editSubjectForm"
-                class="bg-[#f2f2f7] hidden absolute top-10 left-0 w-full rounded-t-2xl 
+             <form id="editSubjectForm" class="bg-[#f2f2f7] hidden absolute top-10 left-0 w-full rounded-t-2xl 
                                             h-[calc(100vh-2.5rem)] z-20 p-4 pb-8 transition-transform duration-300 ease-out">
                 <nav class="flex justify-between pb-2">
                     <button id="editCancel" class="text-[#616161] text-sm nav-link">Cancel</button>
                     <h3 class="text-[#202020] nav-link">Edit</h3>
-                    <button type="submit" onclick="editSubject(event)"
-                        class="text-[#616161] text-sm nav-link">Done</button>
+                    <button type="submit" onclick="editSubject(event)" class="text-[#616161] text-sm nav-link">Done</button>
                 </nav>
                 <article class="p-4 flex flex-col w-full gap-y-6">
                     <aside class="h-[3rem] bg-[#fff] px-8 py-2 rounded-lg">
-                        <input id="edit_subject_name" class="w-full align-middle text-sm" type="text"
-                            placeholder="e.g. Math, Science, History...">
+                        <input id="edit_subject_name" class="w-full align-middle text-sm" type="text" placeholder="e.g. Math, Science, History...">
                     </aside>
                     <aside class="h-[3rem] bg-[#fff] p-4 rounded-lg flex justify-between items-center">
                         <label class="text-left text-sm" for="subject_color">Subject Color</label>
@@ -163,6 +133,9 @@
             <!-- Todo Modal -->
             <!-- <form id="todoModal" data-backdrop="false" class="bg-[#f2f2f7] hidden absolute top-10 left-0 w-full rounded-t-2xl h-[calc(100vh-2.5rem)] z-30 p-4
     pb-8 transition-transform duration-300 ease-out">
+             < Todo Modal -->
+            <form id="todoModal"
+                class="bg-[#f2f2f7] hidden absolute top-10 left-0 w-full rounded-t-2xl h-[calc(100vh-2.5rem)] z-20 p-4 pb-8 transition-transform duration-300 ease-out">
                 <nav class="flex justify-between pb-2">
                     <button id="closeTodoModal" class="text-[#616161] text-sm nav-link">Cancel</button>
                     <h3 class="text-[#202020] nav-link">Add New Todo</h3>
@@ -202,89 +175,20 @@
             </div>
 
 
-    </div>
-    </main>
-    <footer>
-        <nav id="navbarPlaceholder"></nav>
-    </footer>
-    </div>
-    <!-- Modal for Adding Subject  -->
-    <div class="modal fade" id="subjectModal" tabindex="-1" aria-labelledby="subjectModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="subjectModalLabel">Add Subject</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <input type="text" id="subjectNameInput" class="form-control" placeholder="Subject Name" required>
-                    <input type="color" id="subjectColorInput" class="form-control mt-2" value="#000000" required>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" id="addSubjectBtn" class="btn btn-primary">Done</button>
-                </div>
-            </div>
-        </div>
-    </div>
+        </main>
 
-    <template id="subjectListTemplate">
-        <div class="subject-item d-flex justify-content-between align-items-center my-2 p-3 border rounded"
-            data-subject-id="subjectID">
-            <!-- Left side: Play button, subject name, and time -->
-            <div class="d-flex align-items-center column-gap-3">
-                <!-- Play button -->
-                <a href="log.html?subjectId=subjectID" class="btn btn-sm btn-outline-primary toggle-timer-btn">
-                    <i class="fas fa-play color-fill subject-color" style="font-size: 1.5rem;"></i>
-                </a>
-                <!-- Subject name -->
-                <span class="subject-name fw-bold">Subject Name</span>
-                <!-- Timer -->
-                <span class="subject-timer">00:00:00</span>
-            </div>
-
-            <!-- Right side: More options (edit and delete) -->
-            <div class="dropdown">
-                <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"
-                    aria-expanded="false">
-                    <i class="fas fa-ellipsis-v"></i>
-                </button>
-                <ul class="dropdown-menu">
-                    <li><a class="dropdown-item dropdown-item-edit" href="#">Edit</a></li>
-                    <li><a class="dropdown-item dropdown-item-delete" href="#">Delete</a></li>
-                </ul>
-            </div>
-        </div>
-    </template>
-    <!-- Delete Modal -->
-    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Confirm Delete</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p>Are you sure you want to delete this subject?</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                </div>
-            </div>
-        </div>
+        <footer>
+            <nav id="navbarPlaceholder"></nav>
+        </footer>
     </div>
-
-
 
     <!---------------------------------------------->
     <!-- Your own JavaScript functions go here    -->
     <!---------------------------------------------->
     <script src="./scripts/firebaseAPI_DTC13.js"></script>
     <script src="./scripts/skeleton.js"></script>
-    <script src="/scripts/home.js"></script>
     <script src="/scripts/to-do.js"></script>
     <!-- <script src="/scripts/subject.js"></script> -->
-
     <!-- Link to scripts of your own -->
     <!-- <script src="./scripts/script.js"></script> -->
 </body>

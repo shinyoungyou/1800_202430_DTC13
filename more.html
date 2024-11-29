@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css"
+        />
+        <title>Study Body</title>
+        <!-------------------------------------------------------->
+        <!-- Firebase 8 Library related CSS, JS, JQuery go here -->
+        <!-------------------------------------------------------->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/ui/4.8.1/firebase-ui-auth.js"></script>
+        <link
+            type="text/css"
+            rel="stylesheet"
+            href="https://www.gstatic.com/firebasejs/ui/4.8.1/firebase-ui-auth.css"
+        />
+        <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+
+        <!-- Other libraries go here -->
+        <script src="https://cdn.tailwindcss.com"></script>
+        <!-- Link to styles of your own -->
+        <link rel="stylesheet" href="./styles/style.css" />
+
+        <style>
+            .home-navbar > a:first-child > * {
+                color: #7b7b7b;
+            }
+            .home-navbar > a:last-child > * {
+                color: #212121;
+            }
+            .my-groups-navbar i {
+                padding-bottom: 0.5rem;
+                padding-left: 0.1rem;
+            }
+        </style>
+        <!-- <script src="./scripts/daily_insights.js" defer></script> -->
+    </head>
+    <body class="relative bg-[#f2f2f7]">
+        <div class="relative h-screen cover-container text-center">
+            <nav class="text-left pl-5 pt-12">
+                <a href="home.html">
+                    <i class="text-xl bi bi-chevron-left"></i>
+                </a>
+            </nav>
+            <h4 class="text-center pb-5 text-lg">More</h4>
+            <main class="pb-32 p-5 pt-0 flex flex-col gap-y-6">
+                <section class="rounded-lg bg-[#fff] px-6 w-full p-2">
+                    <h3 class="text-sm flex items-center justify-between pb-4">
+                        <span class="text-xl"
+                            ><span id="name-goes-here"></span
+                        ></span>
+                        <img
+                            class="w-[100px]"
+                            src="/images/avatar.png"
+                            alt="avatar"
+                        />
+                    </h3>
+                </section>
+                <section class="rounded-lg bg-[#fff] w-full p-2">
+                    <h3
+                        onclick="openUpdateModal('name')"
+                        class="cursor-pointer text-sm flex justify-between pl-6 pr-2 py-2"
+                    >
+                        <span class="text-xl">Name</span>
+                        <article class="text-xl text-gray-500 flex gap-x-2">
+                            <span id="name2-goes-here"></span>
+                            <span class="text-xl text-gray-500"
+                                ><i class="text-xl bi bi-chevron-right"></i
+                            ></span>
+                        </article>
+                    </h3>
+                    <hr />
+                    <h3
+                        onclick="openUpdateModal('email')"
+                        class="cursor-pointer text-sm flex justify-between pl-6 pr-2 py-2"
+                    >
+                        <span class="text-xl">Email</span>
+                        <article class="text-xl text-gray-500 flex gap-x-2">
+                            <span id="email-goes-here"></span>
+                            <span class="text-xl text-gray-500"
+                                ><i class="text-xl bi bi-chevron-right"></i
+                            ></span>
+                        </article>
+                    </h3>
+                    <hr />
+                    <h3
+                        onclick="openUpdateModal('school')"
+                        class="cursor-pointer text-sm flex justify-between pl-6 pr-2 py-2"
+                    >
+                        <span class="text-xl">School</span>
+                        <article class="text-xl text-gray-500 flex gap-x-2">
+                            <span id="school-goes-here"></span>
+                            <span class="text-xl text-gray-500"
+                                ><i class="text-xl bi bi-chevron-right"></i
+                            ></span>
+                        </article>
+                    </h3>
+                    <hr />
+                    <h3
+                        onclick="openUpdateModal('city')"
+                        class="cursor-pointer text-sm flex justify-between pl-6 pr-2 py-2"
+                    >
+                        <span class="text-xl">City</span>
+                        <article class="text-xl text-gray-500 flex gap-x-2">
+                            <span id="city-goes-here"></span>
+                            <span class="text-xl text-gray-500"
+                                ><i class="text-xl bi bi-chevron-right"></i
+                            ></span>
+                        </article>
+                    </h3>
+                </section>
+                <a
+                    href="index.html"
+                    class="hover:bg-[#d7d7d7] rounded-lg bg-[#fff] w-full p-2"
+                >
+                    <h3 class="text-sm flex items-center px-6 py-2">
+                        <span class="text-xl">Log out</span>
+                    </h3>
+                </a>
+
+                <form
+                    id="updateForm"
+                    class="bg-[#f2f2f7] hidden absolute top-10 left-0 w-full rounded-t-2xl h-[calc(100vh-2.5rem)] z-20 p-4 pb-8 transition-transform duration-300 ease-out"
+                >
+                    <nav class="flex justify-between pb-2">
+                        <a
+                            id="cancelUpdate"
+                            class="text-[#616161] text-sm nav-link"
+                        >
+                            Cancel
+                        </a>
+                        <h3 id="updateTitle" class="text-[#202020] nav-link">
+                            Update Info
+                        </h3>
+                        <button
+                            type="submit"
+                            id="updateSubmit"
+                            class="text-[#616161] text-sm nav-link"
+                        >
+                            Done
+                        </button>
+                    </nav>
+                    <article class="p-4 flex flex-col w-full gap-y-6">
+                        <aside class="h-[3rem] bg-[#fff] px-8 py-2 rounded-lg">
+                            <input
+                                id="updateField"
+                                class="w-full align-middle text-sm"
+                                type="text"
+                                placeholder="Enter new value"
+                            />
+                        </aside>
+                    </article>
+                </form>
+            </main>
+            <footer>
+                <nav id="navbarPlaceholder"></nav>
+            </footer>
+        </div>
+        <!---------------------------------------------->
+        <!-- Your own JavaScript functions go here    -->
+        <!---------------------------------------------->
+        <script src="./scripts/firebaseAPI_DTC13.js"></script>
+        <script src="./scripts/skeleton.js"></script>
+        <script src="./scripts/main.js"></script>
+        <script src="./scripts/more.js"></script>
+        <!-- Link to scripts of your own -->
+        <!-- <script src="./scripts/script.js"></script> -->
+    </body>
+</html>

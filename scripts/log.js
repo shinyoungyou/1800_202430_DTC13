@@ -1,145 +1,251 @@
-let currentSubjectId = null;
-let globalTimer = null;
-let globalStartTime = null;
-let isTimerRunning = false;
-let totalElapsedSeconds = 0;
+// Get the subject_id from the URL
+let urlParams = new URLSearchParams(window.location.search);
+let subject_id_to_record = urlParams.get("subject_id");
+let subject_name = urlParams.get("subject_name"); // Pass the subject name if needed for days > studied_subjects
 
-document.addEventListener('DOMContentLoaded', function () {
-    const toggleButton = document.getElementById('toggleButton');
-    const timeDisplay = document.getElementById('time');
-    const subjectNameDisplay = document.getElementById('subject-name');
-    const subjectTimerDisplay = document.getElementById('subject-timer');
+// Select DOM elements
+let timeDisplay = document.getElementById("time");
+let pauseButton = document.getElementById("pauseButton");
+let goBack = document.getElementById("goBack");
 
-    // Get subject ID from URL
-    const urlParams = new URLSearchParams(window.location.search);
-    currentSubjectId = urlParams.get('subjectId');
+let subjectNameUnderneath = document.getElementById("subjectNameUnderneath");
+subjectNameUnderneath.innerText = subject_name;
+let totalSubjectTimeUnderneath = document.getElementById(
+    "totalSubjectTimeUnderneath"
+);
+let totalDailyTimeUnderneath = document.getElementById(
+    "totalDailyTimeUnderneath"
+);
 
-    // Function to format time
-    function formatTime(totalSeconds) {
-        const hours = Math.floor(totalSeconds / 3600).toString().padStart(2, '0');
-        const minutes = Math.floor((totalSeconds % 3600) / 60).toString().padStart(2, '0');
-        const seconds = (totalSeconds % 60).toString().padStart(2, '0');
-        return `${hours}:${minutes}:${seconds}`;
-    }
+// Timer variables
+let timerInterval = null;
+let elapsedSeconds = 0;
+let elapsedTodaySeconds = 0; // Track total daily elapsed time
 
-    // Function to get current subject details
-    function getCurrentSubject() {
-        if (currentSubjectId) {
-            const subjectsRef = firebase.firestore().collection('subjects');
-            subjectsRef.doc(currentSubjectId).get().then(doc => {
-                if (doc.exists) {
-                    const subjectData = doc.data();
-                    subjectNameDisplay.textContent = subjectData.name;
+// Format time as HH:MM:SS
+function formatTime(seconds) {
+    const hours = String(Math.floor(seconds / 3600)).padStart(2, "0");
+    const minutes = String(Math.floor((seconds % 3600) / 60)).padStart(2, "0");
+    const secs = String(seconds % 60).padStart(2, "0");
+    return `${hours}:${minutes}:${secs}`;
+}
 
-                    // Initialize total time if exists
-                    if (subjectData.totalTime) {
-                        totalElapsedSeconds = subjectData.totalTime;
-                        subjectTimerDisplay.textContent = formatTime(totalElapsedSeconds);
-                    }
-                }
-            }).catch(error => {
-                console.error("Error getting subject:", error);
-            });
+// Start the timer
+function startTimer() {
+    timerInterval = setInterval(() => {
+        elapsedSeconds++;
+        timeDisplay.textContent = formatTime(elapsedSeconds);
+        totalSubjectTimeUnderneath.textContent = formatTime(elapsedSeconds);
+
+        // Update the daily total dynamically
+        const updatedTodaySeconds = elapsedTodaySeconds + elapsedSeconds;
+        totalDailyTimeUnderneath.textContent = formatTime(updatedTodaySeconds);
+    }, 1000);
+}
+
+// Stop the timer
+function stopTimer() {
+    clearInterval(timerInterval);
+    timerInterval = null;
+}
+
+// Fetch and update daily total time
+async function fetchDailyTotalTime() {
+    const db = firebase.firestore();
+    const currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0); // Midnight of today
+
+    try {
+        // Query the days collection for today's date
+        const daysRef = db.collection("days");
+        const dayQuery = await daysRef
+            .where("created_by", "==", userEmail)
+            .where("date", "==", currentDate)
+            .get();
+
+        if (!dayQuery.empty) {
+            const dayDoc = dayQuery.docs[0];
+            const dayData = dayDoc.data();
+
+            // Get the total_time field from today's document
+            elapsedTodaySeconds = dayData.total_time || 0;
+
+            // Update the initial daily time display
+            totalDailyTimeUnderneath.textContent =
+                formatTime(elapsedTodaySeconds);
+        } else {
+            console.log("No daily data found for today. Starting at 0.");
+            elapsedTodaySeconds = 0;
+            totalDailyTimeUnderneath.textContent =
+                formatTime(elapsedTodaySeconds);
         }
+    } catch (error) {
+        console.error("Error fetching daily total time:", error);
+        elapsedTodaySeconds = 0; // Default to 0 in case of error
+        totalDailyTimeUnderneath.textContent = formatTime(elapsedTodaySeconds);
     }
+}
 
-    // Function to start the timer
-    function startTimer() {
-        if (!isTimerRunning) {
-            isTimerRunning = true;
-            globalStartTime = new Date();
-
-            // Update toggle button icon
-            toggleButton.querySelector('i').classList.replace('fa-play', 'fa-pause');
-
-            globalTimer = setInterval(() => {
-                const currentTime = new Date();
-                const elapsedSeconds = Math.floor((currentTime - globalStartTime) / 1000);
-
-                // Update total elapsed seconds
-                totalElapsedSeconds += elapsedSeconds;
-
-                // Update main timer display
-                timeDisplay.textContent = formatTime(totalElapsedSeconds);
-                subjectTimerDisplay.textContent = formatTime(totalElapsedSeconds);
-
-                // Update Firestore with new total time
-                if (currentSubjectId) {
-                    updateSubjectTimer();
-                }
-
-                // Reset start time for next interval
-                globalStartTime = currentTime;
-            }, 1000);
+// Save the elapsed time to Firestore
+async function saveStudyLog(subjectId, subjectName, elapsedSeconds) {
+    let userEmail = "";
+    
+    firebase.auth().onAuthStateChanged((user) => {
+        if (!user) {
+            console.error("No user is logged in.");
+            return;
         }
+
+        userEmail = user.email; // Get the current user's email
+    })
+    if (!userEmail) {
+        console.error("No user is logged in.");
+        return;
     }
+    console.log(userEmail);
+    
+    const db = firebase.firestore();
 
-    // Function to pause the timer
-    function pauseTimer() {
-        if (isTimerRunning) {
-            isTimerRunning = false;
-            clearInterval(globalTimer);
-
-            // Update toggle button icon
-            toggleButton.querySelector('i').classList.replace('fa-pause', 'fa-play');
-
-            // Show completion modal
-            const message = `You've studied for ${formatTime(totalElapsedSeconds)}`;
-            localStorage.setItem('completionMessage', message);
-            showCompletionModal(message);
+    // Fetch subject color dynamically from the `subjects` collection
+    let subjectColor;
+    try {
+        const subjectDoc = await db.collection("subjects").doc(subjectId).get();
+        if (subjectDoc.exists) {
+            subjectColor = subjectDoc.data().color;
+        } else {
+            console.error(`Subject with ID ${subjectId} does not exist.`);
+            return;
         }
+    } catch (error) {
+        console.error("Error fetching subject color:", error);
+        return;
     }
 
-    function showCompletionModal(message) {
-        const modal = document.createElement('div');
-        modal.innerHTML = `
-        <div class="modal fade show" id="completionModal" tabindex="-1" aria-labelledby="completionModalLabel" aria-hidden="true" style="display: block;">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="completionModalLabel">Study Session Completed</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <p>${message}</p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" onclick="redirectToHome()">OK</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-        document.body.appendChild(modal);
-        const modalInstance = new bootstrap.Modal(document.getElementById('completionModal'));
-        modalInstance.show();
-    }
+    const currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0);
+    const currentTimestamp = new Date();
 
-    function redirectToHome() {
-        window.location.href = 'home.html';
-    }
+    // Save to Subject-Centric Structure
+    const subjectRef = db.collection("subjects").doc(subjectId);
+    const dailyLogsRef = subjectRef.collection("daily_logs");
 
-
-    // Function to update subject timer in Firestore
-    function updateSubjectTimer() {
-        const subjectsRef = firebase.firestore().collection('subjects');
-        subjectsRef.doc(currentSubjectId).update({
-            totalTime: totalElapsedSeconds,
-            lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
-        }).catch(error => {
-            console.error("Error updating subject timer: ", error);
+    // Query daily log by date
+    const dailyLogQuery = await dailyLogsRef
+        .where("date", "==", currentDate)
+        .get();
+    let dailyLogDoc;
+    if (!dailyLogQuery.empty) {
+        dailyLogDoc = dailyLogQuery.docs[0].ref;
+    } else {
+        // Create a new daily log if one doesn't exist
+        dailyLogDoc = await dailyLogsRef.add({
+            date: currentDate,
+            color: subjectColor,
+            total_time: 0, // Initialize with 0 seconds
         });
     }
+    const timelineRefSubject = dailyLogDoc.collection("timelines");
 
-    // Toggle timer on button click
-    toggleButton.addEventListener('click', () => {
-        if (!isTimerRunning) {
-            startTimer();
-        } else {
-            pauseTimer();
-        }
-    });
+    // Save to Day-Centric Structure
+    const daysRef = db.collection("days");
+    const dayQuery = await daysRef
+        .where("created_by", "==", userEmail)
+        .where("date", "==", currentDate)
+        .get();
+        
+    let dayDoc;
+    if (!dayQuery.empty) {
+        dayDoc = dayQuery.docs[0].ref;
+    } else {
+        // Create a new day document if one doesn't exist
+        dayDoc = await daysRef.add({
+            date: currentDate,
+            color: subjectColor,
+            created_by: userEmail,
+            total_time: 0, // Initialize with 0 seconds
+        });
+    }
+    const studiedSubjectsRef = dayDoc.collection("studied_subjects");
+    const studiedSubjectQuery = await studiedSubjectsRef
+        .where("name", "==", subjectName)
+        .get();
+    let studiedSubjectDoc;
+    if (!studiedSubjectQuery.empty) {
+        studiedSubjectDoc = studiedSubjectQuery.docs[0].ref;
+    } else {
+        // Create a new studied subject if one doesn't exist
+        studiedSubjectDoc = await studiedSubjectsRef.add({
+            name: subjectName,
+            color: subjectColor,
+            total_time: 0, // Initialize with 0 seconds
+        });
+    }
+    const timelineRefDay = studiedSubjectDoc.collection("timelines");
 
-    // Initialize current subject on page load
-    getCurrentSubject();
+    try {
+        // Save to subject > daily_logs > timelines
+        await timelineRefSubject.add({
+            start: new Date(currentTimestamp.getTime() - elapsedSeconds * 1000),
+            end: currentTimestamp,
+        });
+
+        // Update or set the total time for the day in subject > daily_logs
+        const subjectDailyDocData = (await dailyLogDoc.get()).data();
+        const currentTotal = subjectDailyDocData.total_time || 0;
+        const updatedTotal = currentTotal + elapsedSeconds; // Add elapsed time in seconds
+        await dailyLogDoc.update({
+            total_time: updatedTotal,
+        });
+
+        // Save to days > studied_subjects > timelines
+        await timelineRefDay.add({
+            start: new Date(currentTimestamp.getTime() - elapsedSeconds * 1000),
+            end: currentTimestamp,
+        });
+
+        // Update or set the total time for the subject in days > studied_subjects
+        const studiedSubjectDocData = (await studiedSubjectDoc.get()).data();
+        const currentSubjectTotal = studiedSubjectDocData.total_time || 0;
+        const updatedSubjectTotal = currentSubjectTotal + elapsedSeconds;
+        await studiedSubjectDoc.update({
+            total_time: updatedSubjectTotal,
+        });
+
+        // Update the total daily time in days
+        const dayDocData = (await dayDoc.get()).data();
+        const currentDayTotal = dayDocData.total_time || 0;
+        const updatedDayTotal = currentDayTotal + elapsedSeconds;
+        await dayDoc.update({
+            total_time: updatedDayTotal,
+        });
+    } catch (error) {
+        console.error("Error saving study log:", error);
+    }
+}
+
+// Add event listeners for stop and go back buttons
+pauseButton.addEventListener("click", async () => {
+    stopTimer();
+    if (subject_id_to_record && subject_name) {
+        await saveStudyLog(subject_id_to_record, subject_name, elapsedSeconds);
+    }
+    window.location.href = "home.html";
 });
+
+goBack.addEventListener("click", async () => {
+    stopTimer();
+    if (subject_id_to_record && subject_name) {
+        await saveStudyLog(subject_id_to_record, subject_name, elapsedSeconds);
+    }
+    window.location.href = "home.html";
+});
+
+// Initialize the display
+timeDisplay.textContent = formatTime(elapsedSeconds);
+totalSubjectTimeUnderneath.textContent = formatTime(elapsedSeconds);
+
+// Fetch and display total daily time
+fetchDailyTotalTime();
+
+// Start the timer
+startTimer();

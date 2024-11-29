@@ -58,9 +58,8 @@ function renderMonthlyCalendar() {
                 };
             });
 
-            let row = document
-            .createElement("tr");
-        
+            let row = document.createElement("tr");
+
             showDetails(formattedCurrentMonth);
 
             // Loop through each month
@@ -71,7 +70,7 @@ function renderMonthlyCalendar() {
                 // Check if data exists for the month
                 if (studyData[month]) {
                     const totalMonthTime = studyData[month].total_month_time;
-                    const monthAverage = studyData[month].month_average;
+                    // const monthAverage = studyData[month].month_average;
 
                     let totalMonthTimeDecimal =
                         timeStringToDecimal(totalMonthTime);
