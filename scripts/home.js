@@ -122,33 +122,106 @@ function addSubject(event) {
     }
 }
 
-// Function to delete a subject
-let confirmDeleteSubject = document.getElementById("confirmDeleteSubject");
-let subject_id_to_update = null;
+let updateSubject = document.getElementById("updateSubject");
 
+let subject_id_to_update = null;
 function openSubjectModal(event) {
     subject_id_to_update = event.currentTarget.id;
-    document.getElementById("updateSubject").classList.remove("hidden");
+    console.log(event.currentTarget.id);
+    updateSubject.classList.remove("hidden"); // Show form
 }
 
 function closeSubjectModal() {
-    document.getElementById("updateSubject").classList.add("hidden");
+    updateSubject.classList.add("hidden"); // Show form
     subject_id_to_update = null;
 }
 
+let editSubjectForm = document.getElementById("editSubjectForm");
+
+function openEditSubject() {
+    editSubjectForm.classList.remove("hidden"); // Show form
+    updateSubject.classList.add("hidden"); // Show form
+    // Reference to the Firestore document
+    let subjectRef = db.collection("subjects").doc(subject_id_to_update);
+
+    // Fetch the document data
+    subjectRef.get().then((doc) => {
+        if (doc.exists) {
+            let subjectData = doc.data();
+            console.log(subjectData);
+
+            // Set the input values with the retrieved data
+            document.getElementById("edit_subject_name").value =
+                subjectData.name;
+            document.getElementById("edit_subject_color").value =
+                subjectData.color;
+        } else {
+            console.error("No such document!");
+        }
+    });
+}
+
+function editSubject(event) {
+    event.preventDefault();
+    let updatedName = document.getElementById("edit_subject_name").value;
+    let updatedColor = document.getElementById("edit_subject_color").value;
+
+    // Reference to the Firestore document
+    let subjectRef = db.collection("subjects").doc(subject_id_to_update);
+    console.log(subjectRef);
+    // Update the document with new data
+    subjectRef
+        .update({
+            name: updatedName,
+            color: updatedColor,
+        })
+        .then(() => {
+            console.log("asdf");
+            window.location.href = "home.html"; // Redirect to the thanks page
+            console.log("Subject successfully updated!");
+        })
+        .catch((error) => {
+            console.error("Error updating document: ", error);
+        });
+}
+
+document.getElementById("editCancel").onclick = () => {
+    editSubjectForm.classList.add("hidden"); // Show form
+};
+
+// Function to delete a subject
+let confirmDeleteSubject = document.getElementById("confirmDeleteSubject");
+let chooseOption = document.getElementById("chooseOption");
+function openDeleteSubject() {
+    confirmDeleteSubject.classList.remove("hidden");
+    confirmDeleteSubject.classList.add("flex");
+
+    chooseOption.classList.add("hidden");
+    chooseOption.classList.remove("flex");
+}
+
+function cancelToDelete() {
+    confirmDeleteSubject.classList.add("hidden");
+    confirmDeleteSubject.classList.remove("flex");
+    updateSubject.classList.add("hidden");
+
+    chooseOption.classList.remove("hidden");
+    chooseOption.classList.add("flex");
+}
+
 function deleteSubject() {
-    if (subject_id_to_update) {
-        db.collection("subjects")
-            .doc(subject_id_to_update)
-            .delete()
-            .then(() => {
-                console.log("Subject successfully deleted!");
-                window.location.href = "home.html";
-            })
-            .catch((error) => {
-                console.error("Error deleting subject:", error);
-            });
-    }
+    let subjectRef = db.collection("subjects").doc(subject_id_to_update);
+
+    // Delete the document
+    subjectRef
+        .delete()
+        .then(() => {
+            console.log("Subject successfully deleted!");
+            window.location.href = "home.html";
+        })
+        .catch((error) => {
+            console.error("Error deleting subject: ", error);
+        });
 }
 
 // Utility function to format seconds as HH:MM:SS
@@ -182,35 +255,45 @@ function updateCurrentDate() {
 
 // Function to fetch and display the total time studied for the current day
 function updateTotalTime() {
-    const totalTimeElement = document.getElementById("total_time");
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    console.log(today);
+    firebase.auth().onAuthStateChanged((user) => {
+        if (!user) {
+            console.error("No user is logged in.");
+            return;
+        }
 
-    db.collection("days")
-        .where(
-            "date",
-            "==",
-            firebase.firestore.Timestamp.fromDate(new Date(today))
-        )
-        .get()
-        .then((querySnapshot) => {
-            if (!querySnapshot.empty) {
-                let totalTime = 0;
+        const userEmail = user.email; // Get the current user's email
 
-                querySnapshot.forEach((doc) => {
-                    totalTime += doc.data().total_time;
-                });
+        const totalTimeElement = document.getElementById("total_time");
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        console.log(today);
 
-                totalTimeElement.textContent = secondsToHHMMSS(totalTime);
-            } else {
-                totalTimeElement.textContent = "00:00:00";
-            }
-        })
-        .catch((error) => {
-            console.error("Error fetching total time for the day:", error);
-            totalTimeElement.textContent = "Error";
-        });
+        db.collection("days")
+            .where(
+                "date",
+                "==",
+                firebase.firestore.Timestamp.fromDate(new Date(today))
+            )
+            .where("created_by", "==", userEmail)
+            .get()
+            .then((querySnapshot) => {
+                if (!querySnapshot.empty) {
+                    let totalTime = 0;
+
+                    querySnapshot.forEach((doc) => {
+                        totalTime += doc.data().total_time;
+                    });
+
+                    totalTimeElement.textContent = secondsToHHMMSS(totalTime);
+                } else {
+                    totalTimeElement.textContent = "00:00:00";
+                }
+            })
+            .catch((error) => {
+                console.error("Error fetching total time for the day:", error);
+                totalTimeElement.textContent = "Error";
+            });
+    });
 }
 
 // Update date and total time on page load
