@@ -130,8 +130,11 @@
                     </aside>
                 </article>
             </form>
-             <!-- Todo Modal -->
-            <form id="todoModal"
+            <!-- Todo Modal -->
+            <!-- <form id="todoModal" data-backdrop="false" class="bg-[#f2f2f7] hidden absolute top-10 left-0 w-full rounded-t-2xl h-[calc(100vh-2.5rem)] z-30 p-4
+    pb-8 transition-transform duration-300 ease-out">
+             < Todo Modal -->
+            <!-- <form id="todoModal"
                 class="bg-[#f2f2f7] hidden absolute top-10 left-0 w-full rounded-t-2xl h-[calc(100vh-2.5rem)] z-20 p-4 pb-8 transition-transform duration-300 ease-out">
                 <nav class="flex justify-between pb-2">
                     <button id="closeTodoModal" class="text-[#616161] text-sm nav-link">Cancel</button>
@@ -142,18 +145,35 @@
                     <aside class="h-[3rem] bg-[#fff] px-8 py-2 rounded-lg">
                         <select id="subjectSelect" class="w-full align-middle text-sm">
                             <option value="">Select a subject</option>
-                            <!-- Options will be populated dynamically -->
-                        </select>
+                             Options will be populated dynamically --> 
+            <!-- </select>
                     </aside>
                     <aside class="h-[3rem] bg-[#fff] px-8 py-2 rounded-lg">
                         <input id="todoInput" class="w-full align-middle text-sm" type="text"
                             placeholder="Enter your todo item...">
                     </aside>
                 </article>
-            </form>
+            </form> -->
 
             <!-- Todo List Section -->
-            <ul id="todoList" class="list-group mt-3"></ul>
+            <!-- <ul id="todoList" class="list-group mt-3"></ul> -->
+            <button id="openModalBtn">Add New Todo</button>
+            <div id="todoModal" class="modal hidden">
+                <div class="modal-content">
+                    <!-- <h2>Add New Todo</h2> -->
+                    <select id="subjectSelect">
+                        <option value="">Select a subject</option>
+                        <!-- Options will be populated dynamically -->
+                    </select>
+                    <input id="todoInput" type="text" placeholder="Enter your todo item...">
+                    <div class="modal-actions">
+                        <button id="closeTodoBtn" class="text-[#616161] text-sm nav-link">Cancel</button>
+                        <button id="addTodoBtn" class="text-[#616161] text-sm nav-link">Add Todo</button>
+
+                    </div>
+                </div>
+            </div>
+
 
         </main>
 

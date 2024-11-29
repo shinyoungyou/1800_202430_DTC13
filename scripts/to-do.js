@@ -98,7 +98,6 @@ function deleteTodo(todoId) {
         });
 }
 
-// Event listener for closing the modal
-document.getElementById("closeTodoModal").addEventListener("click", function () {
+document.getElementById("closeTodoBtn").addEventListener("click", function () {
     $('#todoModal').modal('hide'); // Hide the modal using Bootstrap's method
 });
