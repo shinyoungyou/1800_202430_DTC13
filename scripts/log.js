@@ -224,7 +224,7 @@ async function saveStudyLog(subjectId, subjectName, elapsedSeconds) {
 
             // Update the total daily time in days
             const dayDocData = (await dayDoc.get()).data();
-            const currentDayTotal = (await dayDocData.total_time) || 0;
+            const currentDayTotal = (await dayDocData.total_time || 0);
             const updatedDayTotal = await currentDayTotal + elapsedSeconds;
             await dayDoc.update({
                 total_time: updatedDayTotal,
