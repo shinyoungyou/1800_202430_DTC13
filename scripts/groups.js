@@ -62,7 +62,7 @@ function handleMoreClick(event) {
     }
 }
 
-// Unjoin the group and update Firestore
+// leave the group and update Firestore
 function unjoinGroup(groupName, groupContainer) {
     const groupsRef = firebase.firestore().collection("groups");
 
