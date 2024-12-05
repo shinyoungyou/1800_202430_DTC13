@@ -199,41 +199,41 @@
             }
         }
 
-        // // leave the group and update Firestore
-        // function unjoinGroup(groupName, groupContainer) {
-        //     const groupsRef = firebase.firestore().collection("groups");
+        // leave the group and update Firestore
+        function unjoinGroup(groupName, groupContainer) {
+            const groupsRef = firebase.firestore().collection("groups");
 
-        //     // Find the group in Firestore
-        //     groupsRef.where('name', '==', groupName).get()
-        //         .then(querySnapshot => {
-        //             querySnapshot.forEach(doc => {
-        //                 const groupRef = groupsRef.doc(doc.id);
+            // Find the group in Firestore
+            groupsRef.where('name', '==', groupName).get()
+                .then(querySnapshot => {
+                    querySnapshot.forEach(doc => {
+                        const groupRef = groupsRef.doc(doc.id);
 
-        //                 groupRef.update({
-        //                     is_my_group: false
-        //                 }).then(() => {
-        //                     console.log(`Successfully leaved the group: ${groupName}`);
+                        groupRef.update({
+                            is_my_group: false
+                        }).then(() => {
+                            console.log(`Successfully leaved the group: ${groupName}`);
 
-        //                     // Remove the group from "My Groups" section
-        //                     const myGroupsContainer = document.getElementById('my-groups-go-here');
-        //                     myGroupsContainer.removeChild(groupContainer);
+                            // Remove the group from "My Groups" section
+                            const myGroupsContainer = document.getElementById('my-groups-go-here');
+                            myGroupsContainer.removeChild(groupContainer);
 
-        //                     // Move it to the "Available Groups" section
-        //                     const availableGroupsContainer = document.getElementById('available-groups-go-here');
-        //                     const newGroup = groupContainer.cloneNode(true);
-        //                     newGroup.dataset.isMyGroup = 'false'; // Set it as "available"
-        //                     availableGroupsContainer.appendChild(newGroup);
+                            // Move it to the "Available Groups" section
+                            const availableGroupsContainer = document.getElementById('available-groups-go-here');
+                            const newGroup = groupContainer.cloneNode(true);
+                            newGroup.dataset.isMyGroup = 'false'; // Set it as "available"
+                            availableGroupsContainer.appendChild(newGroup);
 
-        //                     alert('You have left the group successfully!');
-        //                 }).catch(error => {
-        //                     console.error("Error leaving the group: ", error);
-        //                 });
-        //             });
-        //         })
-        //         .catch(error => {
-        //             console.error("Error fetching group: ", error);
-        //         });
-        // }
+                            alert('You have left the group successfully!');
+                        }).catch(error => {
+                            console.error("Error leaving the group: ", error);
+                        });
+                    });
+                })
+                .catch(error => {
+                    console.error("Error fetching group: ", error);
+                });
+        }
     </script>
 </body>
 
