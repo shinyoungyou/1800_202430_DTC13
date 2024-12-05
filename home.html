@@ -45,7 +45,7 @@
     <div class="position-relative relative vh-100 cover-container">
         <header class="home-header d-flex flex-column justify-content-center row-gap-3 text-white bg-black">
             <p id="currentDate">Wed, 11/20</p>
-            <h1 id="total_time">03:38:02</h1>
+            <h1 id="total_time">00:00:00</h1>
         </header>
         <nav class="hoome-tabs w-100 bg-white text-black d-flex justify-content-around border-bottom">
             <a href="home.html" class="py-3 nav-link border-dark border-bottom border-3">Timer</a>
@@ -57,7 +57,6 @@
             <section id="subjects-go-here"></section>
             <section class="home-actions d-flex column-gap-2">
                 <a id="addSubjectBtn" class="btn"><small>+ Subject</small></a>
-                <a class="btn"><small>+ To-do</small></a>
             </section>
 
             <template id="subjectListTemplate">
@@ -130,51 +129,6 @@
                     </aside>
                 </article>
             </form>
-            <!-- Todo Modal -->
-            <!-- <form id="todoModal" data-backdrop="false" class="bg-[#f2f2f7] hidden absolute top-10 left-0 w-full rounded-t-2xl h-[calc(100vh-2.5rem)] z-30 p-4
-    pb-8 transition-transform duration-300 ease-out">
-             < Todo Modal -->
-            <!-- <form id="todoModal"
-                class="bg-[#f2f2f7] hidden absolute top-10 left-0 w-full rounded-t-2xl h-[calc(100vh-2.5rem)] z-20 p-4 pb-8 transition-transform duration-300 ease-out">
-                <nav class="flex justify-between pb-2">
-                    <button id="closeTodoModal" class="text-[#616161] text-sm nav-link">Cancel</button>
-                    <h3 class="text-[#202020] nav-link">Add New Todo</h3>
-                    <button type="button" id="addTodoBtn" class="text-[#616161] text-sm nav-link">Done</button>
-                </nav>
-                <article class="p-4 flex flex-col w-full gap-y-6">
-                    <aside class="h-[3rem] bg-[#fff] px-8 py-2 rounded-lg">
-                        <select id="subjectSelect" class="w-full align-middle text-sm">
-                            <option value="">Select a subject</option>
-                             Options will be populated dynamically --> 
-            <!-- </select>
-                    </aside>
-                    <aside class="h-[3rem] bg-[#fff] px-8 py-2 rounded-lg">
-                        <input id="todoInput" class="w-full align-middle text-sm" type="text"
-                            placeholder="Enter your todo item...">
-                    </aside>
-                </article>
-            </form> -->
-
-            <!-- Todo List Section -->
-            <!-- <ul id="todoList" class="list-group mt-3"></ul> -->
-            <button id="openModalBtn">Add New Todo</button>
-            <div id="todoModal" class="modal hidden">
-                <div class="modal-content">
-                    <!-- <h2>Add New Todo</h2> -->
-                    <select id="subjectSelect">
-                        <option value="">Select a subject</option>
-                        <!-- Options will be populated dynamically -->
-                    </select>
-                    <input id="todoInput" type="text" placeholder="Enter your todo item...">
-                    <div class="modal-actions">
-                        <button id="closeTodoBtn" class="text-[#616161] text-sm nav-link">Cancel</button>
-                        <button id="addTodoBtn" class="text-[#616161] text-sm nav-link">Add Todo</button>
-
-                    </div>
-                </div>
-            </div>
-
-
         </main>
 
         <footer>
@@ -187,7 +141,6 @@
     <!---------------------------------------------->
     <script src="./scripts/firebaseAPI_DTC13.js"></script>
     <script src="./scripts/skeleton.js"></script>
-    <script src="/scripts/to-do.js"></script>
     <!-- <script src="/scripts/subject.js"></script> -->
     <!-- Link to scripts of your own -->
     <!-- <script src="./scripts/script.js"></script> -->

@@ -17,9 +17,7 @@ function formatTime2(seconds) {
 
 function formatDateToShortString(date) {
     const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-    const months = [
-        "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"
-    ];
+    const months = ["01","02","03","04","05","06","07","08","09","10","11","12"];
 
     const dayOfWeek = daysOfWeek[date.getDay()];
     const month = months[date.getMonth()];
@@ -151,7 +149,6 @@ function fillGrid(startTime, endTime, subjectColor) {
     }
 }
 
-
 function firestoreTimestampToDate(timestamp) {
     return new Date(
         timestamp.seconds * 1000 + Math.floor(timestamp.nanoseconds / 1000000)
@@ -160,80 +157,91 @@ function firestoreTimestampToDate(timestamp) {
 
 // Main function to display today's subjects and timelines
 async function displayTodaySubjectsDynamically() {
-    const currentDate = new Date();
-    const startOfDay = new Date(currentDate.setHours(0, 0, 0, 0)); // Midnight of today
-    const endOfDay = new Date(currentDate.setHours(23, 59, 59, 999)); // End of today
+    firebase.auth().onAuthStateChanged(async (user) => {
+        const currentDate = new Date();
+        const startOfDay = new Date(currentDate.setHours(0, 0, 0, 0)); // Midnight of today
+        const endOfDay = new Date(currentDate.setHours(23, 59, 59, 999)); // End of today
 
-    let todayOnPlanner = document.getElementById("todayOnPlanner");
-    todayOnPlanner.textContent = formatDateToShortString(currentDate);
+        let todayOnPlanner = document.getElementById("todayOnPlanner");
+        todayOnPlanner.textContent = formatDateToShortString(currentDate);
 
-    try {
-        // Query the days collection for today's date
-        const daysRef = db.collection("days");
-        const dayQuery = await daysRef
-            .where("date", ">=", startOfDay)
-            .where("date", "<=", endOfDay)
-            .get();
+        try {
+            if (!user) {
+                console.error("No user is logged in.");
+                return;
+            }
 
-        if (!dayQuery.empty) {
-            const dayDoc = dayQuery.docs[0]; // Assume there's only one matching day document
-            const dayData = dayDoc.data();
+            const userEmail = await user.email; // Get the current user's email
+            // Query the days collection for today's date
+            const daysRef = await db.collection("days");
+            const dayQuery = await daysRef
+                .where("date", ">=", startOfDay)
+                .where("date", "<=", endOfDay)
+                .where("created_by", "==", userEmail)
+                .get();
 
-            // Update the total time in the header
-            document.querySelector("h4 span:nth-child(2)").innerText =
-                formatTime(dayData.total_time);
+            if (!dayQuery.empty) {
+                const dayDoc = dayQuery.docs[0]; // Assume there's only one matching day document
+                const dayData = dayDoc.data();
 
-            // Get the studied_subjects subcollection
-            const studiedSubjectsRef =
-                dayDoc.ref.collection("studied_subjects");
-            const studiedSubjectsQuery = await studiedSubjectsRef.get();
+                // Update the total time in the header
+                document.querySelector("h4 span:nth-child(2)").innerText =
+                    formatTime(dayData.total_time);
 
-            const subjectsContainer =
-                document.getElementById("subjects-go-here");
-            subjectsContainer.innerHTML = ""; // Clear previous content
+                // Get the studied_subjects subcollection
+                const studiedSubjectsRef =
+                    dayDoc.ref.collection("studied_subjects");
+                const studiedSubjectsQuery = await studiedSubjectsRef.get();
 
-            const gridContainer = document.querySelector(".grid");
-            gridContainer.innerHTML = ""; // Clear previous timelines
+                const subjectsContainer =
+                    document.getElementById("subjects-go-here");
+                subjectsContainer.innerHTML = ""; // Clear previous content
 
-            studiedSubjectsQuery.forEach(async (subjectDoc) => {
-                const subjectData = subjectDoc.data();
+                const gridContainer = document.querySelector(".grid");
+                gridContainer.innerHTML = ""; // Clear previous timelines
 
-                // Clone and populate the subject list template
-                const template = document.getElementById("subjectListTemplate");
-                const clone = template.content.cloneNode(true);
+                studiedSubjectsQuery.forEach(async (subjectDoc) => {
+                    const subjectData = subjectDoc.data();
 
-                clone.querySelector("#subjectName").innerText =
-                    subjectData.name;
-                clone.querySelector("#totalSubjectTime").innerText =
-                    formatTime2(subjectData.total_time);
-                clone.querySelector("#subjectColor").style.color =
-                    subjectData.color; // Default color if not specified
-                subjectsContainer.appendChild(clone);
-
-                // Get the timelines subcollection
-                const timelinesRef = subjectDoc.ref.collection("timelines");
-                const timelinesQuery = await timelinesRef.get();
-
-                timelinesQuery.forEach((timelineDoc) => {
-                    const timelineData = timelineDoc.data();
-                    console.log(timelineData.start);
-                    const startTime = firestoreTimestampToDate(
-                        timelineData.start
+                    // Clone and populate the subject list template
+                    const template = document.getElementById(
+                        "subjectListTemplate"
                     );
-                    const endTime = firestoreTimestampToDate(
-                        timelineData.end
-                    );
+                    const clone = template.content.cloneNode(true);
 
-                    // Fill the grid based on start and end times
-                    fillGrid(startTime, endTime, subjectData.color);
+                    clone.querySelector("#subjectName").innerText =
+                        subjectData.name;
+                    clone.querySelector("#totalSubjectTime").innerText =
+                        formatTime2(subjectData.total_time);
+                    clone.querySelector("#subjectColor").style.color =
+                        subjectData.color; // Default color if not specified
+                    subjectsContainer.appendChild(clone);
+
+                    // Get the timelines subcollection
+                    const timelinesRef = subjectDoc.ref.collection("timelines");
+                    const timelinesQuery = await timelinesRef.get();
+
+                    timelinesQuery.forEach((timelineDoc) => {
+                        const timelineData = timelineDoc.data();
+                        console.log(timelineData.start);
+                        const startTime = firestoreTimestampToDate(
+                            timelineData.start
+                        );
+                        const endTime = firestoreTimestampToDate(
+                            timelineData.end
+                        );
+
+                        // Fill the grid based on start and end times
+                        fillGrid(startTime, endTime, subjectData.color);
+                    });
                 });
-            });
-        } else {
-            console.log("No data found for today.");
+            } else {
+                console.log("No data found for today.");
+            }
+        } catch (error) {
+            console.error("Error fetching today's data:", error);
         }
-    } catch (error) {
-        console.error("Error fetching today's data:", error);
-    }
+    });
 }
 
 // Call initialization functions

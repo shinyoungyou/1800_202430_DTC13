@@ -1,7 +1,6 @@
 function getNameFromAuth() {
     firebase.auth().onAuthStateChanged((user) => {
         if (user) {
-
             const userName = user.displayName || "Anonymous"; // Handle null displayName
             const email = user.email;
 
@@ -27,11 +26,16 @@ function getNameFromAuth() {
                         snapshot.forEach((doc) => {
                             const userData = doc.data();
 
-                            const schoolElement = document.getElementById("school-goes-here");
-                            const cityElement = document.getElementById("city-goes-here");
+                            const schoolElement =
+                                document.getElementById("school-goes-here");
+                            const cityElement =
+                                document.getElementById("city-goes-here");
 
-                            if (schoolElement) schoolElement.innerText = userData.school || "N/A";
-                            if (cityElement) cityElement.innerText = userData.city || "N/A";
+                            if (schoolElement)
+                                schoolElement.innerText =
+                                    userData.school || "N/A";
+                            if (cityElement)
+                                cityElement.innerText = userData.city || "N/A";
                         });
                     } else {
                         console.log("No matching user document found.");
@@ -54,29 +58,71 @@ function openUpdateModal(field) {
 
     updateForm.classList.remove("hidden");
     updateForm.dataset.field = field;
+    firebase.auth().onAuthStateChanged((user) => {
+        if (!user) {
+            console.error("No user is logged in.");
+            return;
+        }
+        const userName = user.displayName || "Anonymous"; // Handle null displayName
+        const email = user.email;
 
-    switch (field) {
-        case "name":
-            updateTitle.innerText = "Update Name";
-            updateField.placeholder = "Enter new name";
-            break;
-        case "email":
-            updateTitle.innerText = "Update Email";
-            updateField.placeholder = "Enter new email";
-            break;
-        case "school":
-            updateTitle.innerText = "Update School";
-            updateField.placeholder = "Enter new school";
-            break;
-        case "city":
-            updateTitle.innerText = "Update City";
-            updateField.placeholder = "Enter new city";
-            break;
-    }
+        const db = firebase.firestore();
+        const usersRef = db.collection("users");
+
+        usersRef
+            .where("name", "==", userName)
+            .where("email", "==", email)
+            .get()
+            .then((snapshot) => {
+                if (!snapshot.empty) {
+                    snapshot.forEach((doc) => {
+                        const userData = doc.data();
+
+                        const schoolElement =
+                            document.getElementById("school-goes-here");
+                        const cityElement =
+                            document.getElementById("city-goes-here");
+
+                        if (schoolElement)
+                            schoolElement.innerText = userData.school || "N/A";
+                        if (cityElement)
+                            cityElement.innerText = userData.city || "N/A";
+
+                        switch (field) {
+                            case "name":
+                                updateTitle.innerText = "Update Name";
+                                updateField.value =
+                                    userName;
+                                break;
+                            case "email":
+                                updateTitle.innerText = "Update Email";
+                                updateField.value =
+                                    email;
+                                break;
+                            case "school":
+                                updateTitle.innerText = "Update School";
+                                updateField.value =
+                                    userData.school;
+                                break;
+                            case "city":
+                                updateTitle.innerText = "Update City";
+                                updateField.value =
+                                    userData.city;
+                                break;
+                        }
+                        console.log("asdfasdf");
+                    });
+                } else {
+                    console.log("No matching user document found.");
+                }
+            })
+            .catch((error) => console.error("Error fetching user:", error));
+    });
 }
 
 document.getElementById("cancelUpdate").addEventListener("click", () => {
     document.getElementById("updateForm").classList.add("hidden");
+    document.getElementById("updateField").value = "";
 });
 
 document.getElementById("updateForm").addEventListener("submit", (event) => {
@@ -143,5 +189,5 @@ document.getElementById("updateForm").addEventListener("submit", (event) => {
             .catch((error) => console.error(`Error updating ${field}:`, error));
     }
 
-    document.getElementById("updateField").value = ""
+    document.getElementById("updateField").value = "";
 });

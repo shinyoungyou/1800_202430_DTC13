@@ -59,7 +59,6 @@ function saveSubject() {
         } else {
             subjectsRef.add({
                 name: subjectName,
-                totalTime: 0,
                 color: subjectColor,
                 date: firebase.firestore.Timestamp.fromDate(new Date()),
                 isTimerRunning: false,

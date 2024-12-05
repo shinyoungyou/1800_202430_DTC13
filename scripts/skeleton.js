@@ -53,6 +53,7 @@ function setup() {
 
     const homeIcon = document.getElementById("home-icon");
     const groupIcon = document.getElementById("group-icon");
+    const settingIcon = document.getElementById("setting-icon");
 
     if (homeIcon && groupIcon) {
         // Detect the current page by URL
@@ -67,6 +68,13 @@ function setup() {
             homeIcon.classList.add("bi-house");
             groupIcon.classList.add("bi-people-fill");
             console.log("Icons set for mygroups.html");
+        } else if (window.location.href.includes(
+            "setting.html")) {
+            homeIcon.classList.add("bi-house");
+            groupIcon.classList.add("bi-people");
+            settingIcon.classList.remove("bi-gear");
+            settingIcon.classList.add("bi-gear-fill");
+            console.log("Icons set for setting.html");
         } else {
             homeIcon.classList.add("bi-house");
             groupIcon.classList.add("bi-people");
