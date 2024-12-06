@@ -21,7 +21,7 @@ State what a user needs to do when they come to your project.  How do others sta
 Here are the steps ...
 1. Command: git clone https://github.com/shinyoungyou/1800_202430_DTC13.git
 2. Find index.html page and click on "Go Live"
-3. User mock user account: email=maria@email.com, password=password
+3. Use mock user account: email=maria@email.com, password=password
 
 ## 5. Known Bugs and Limitations
 Here are some known bugs and limitations:
