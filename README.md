@@ -21,7 +21,7 @@ State what a user needs to do when they come to your project.  How do others sta
 Here are the steps ...
 1. Command: git clone https://github.com/shinyoungyou/1800_202430_DTC13.git
 2. Find index.html page and click on "Go Live"
-3. Mock user account - email: maria@email.com, password: password
+3. User mock user account: email=maria@email.com, password=password
 
 ## 5. Known Bugs and Limitations
 Here are some known bugs and limitations:
@@ -41,20 +41,42 @@ Content of the project folder:
 ```
  Top level of project folder: 
 ├── .gitignore               # Git ignore file
+├── README.md            
 ├── index.html               # landing HTML file, this is what users see when you come to url
-└── README.md
+├── main.html     
+├── home.html
+├── log.html
+├── daily_insights.html
+├── planner.html
+├── groups.html
+├── planner.html
+├── setting.html
+├── planner.html
+└── tailwind.config.js
 
 It has the following subfolders and files:
 ├── .git                     # Folder for git repo
 ├── images                   # Folder for images
-    /blah.jpg                # Acknowledge source
+    /avatar.png              # Avatar image for user profile
+    /background-logo.png     # Logo with background color
+    /logo.png                # Main logo
 ├── scripts                  # Folder for scripts
-    /blah.js                 # 
+    /authentication.js             
+    /daily_insights.js        
+    /groups.js          
+    /home.js           
+    /log.js      
+    /main.js   
+    /monthly_insights.js
+    /planner.js
+    /script.js
+    /setting.js
+    /skeleton.js
+    /subject.js
+    /weekly_insights.js
 ├── styles                   # Folder for styles
-    /blah.css                # 
-
-
-
-```
+    /style.css               # Central style sheets across the app
+├── text                     # Folder for resuable components
+    /nav_after_login.html    # Navbar after logged in
 
 
