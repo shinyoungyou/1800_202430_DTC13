@@ -62,14 +62,13 @@ function setup() {
             groupIcon.classList.add("bi-people");
             console.log("Icons set for home.html");
         } else if (
-            window.location.href.includes("mygroups.html") ||
+            window.location.href.includes("groups.html") ||
             window.location.href.includes("newGroups.html")
         ) {
             homeIcon.classList.add("bi-house");
             groupIcon.classList.add("bi-people-fill");
-            console.log("Icons set for mygroups.html");
-        } else if (window.location.href.includes(
-            "setting.html")) {
+            console.log("Icons set for groups.html");
+        } else if (window.location.href.includes("setting.html")) {
             homeIcon.classList.add("bi-house");
             groupIcon.classList.add("bi-people");
             settingIcon.classList.remove("bi-gear");
