@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>My BCIT Project</title>
-        <meta name="comp1800 template" content="My 1800 App" />
+        <title>StudyBuddy</title>
+        <meta name="TeamDTC13 Project" content="TeamDTC13 Project" />
 
         <!-- Required meta tags -->
         <meta charset="utf-8" />
@@ -16,7 +16,10 @@
             integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
             crossorigin="anonymous"
         />
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css"
+        />
         <!-- Boostrap Library JS CDN  go here -->
         <script
             src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
@@ -31,10 +34,14 @@
         <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
         <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
         <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-        <script src="https://www.gstatic.com/firebasejs/ui/4.8.1/firebase-ui-auth.js"></script> 
-        <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/4.8.1/firebase-ui-auth.css" />
+        <script src="https://www.gstatic.com/firebasejs/ui/4.8.1/firebase-ui-auth.js"></script>
+        <link
+            type="text/css"
+            rel="stylesheet"
+            href="https://www.gstatic.com/firebasejs/ui/4.8.1/firebase-ui-auth.css"
+        />
         <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
-    
+
         <!-- Other libraries go here -->
         <!-- Link to styles of your own -->
         <link rel="stylesheet" href="./styles/style.css" />
@@ -44,14 +51,16 @@
         <!-- Your HTML Layout go here -->
         <!------------------------------>
         <!-- Stuff for body goes here -->
-        <div class="cover-container d-flex p-3 vh-100 flex-column justify-content-between">
+        <div
+            class="cover-container d-flex p-3 vh-100 flex-column justify-content-between"
+        >
             <header>
                 <div class="d-none d-md-flex justify-content-between">
                     <h3 class="">Study Buddy</h3>
                     <nav class="nav nav-masthead justify-content-center">
                         <a class="nav-link active" href="#">Home</a>
                         <a class="nav-link" href="#">Group</a>
-                        <a class="nav-link" href="#">More</a>                   
+                        <a class="nav-link" href="#">More</a>
                     </nav>
                 </div>
             </header>
@@ -61,16 +70,23 @@
                     <img src="./images/logo.png" alt="Study Buddy LOGO" />
                 </h1>
                 <p class="lead">
-                    Study, don't do it alone, <br class="d-block d-md-none"/> do it on Study Buddy with others!
-                </p> 
-                <h2 class="cover-heading">Welcome back <span id="name-goes-here"></span></h2>
+                    Study, don't do it alone, <br class="d-block d-md-none" />
+                    do it on Study Buddy with others!
+                </p>
+                <h2 class="cover-heading">
+                    Welcome back <span id="name-goes-here"></span>
+                </h2>
                 <p class="btn-wrapper lead d-inline-flex flex-column gap-2">
                     <a href="home.html" class="btn btn-lg btn-aqua"
                         >Start studying</a
                     >
-                    or 
-                    <a class="btn btn-lg fw-normal btn-outline-light" href="index.html">
-                        <i class="bi bi-box-arrow-right"></i> <small>Log out</small>
+                    or
+                    <a
+                        class="btn btn-lg fw-normal btn-outline-light"
+                        href="index.html"
+                    >
+                        <i class="bi bi-box-arrow-right"></i>
+                        <small>Log out</small>
                     </a>
                 </p>
             </main>
