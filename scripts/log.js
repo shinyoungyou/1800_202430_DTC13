@@ -241,7 +241,7 @@ pauseButton.addEventListener("click", async () => {
     await saveStudyLog(subject_id_to_record, subject_name, elapsedSeconds);
     setInterval(() => {
         window.location.href = "home.html";
-    }, 2000);
+    }, 2500);
 });
 
 goBack.addEventListener("click", async () => {
@@ -249,7 +249,7 @@ goBack.addEventListener("click", async () => {
     await saveStudyLog(subject_id_to_record, subject_name, elapsedSeconds);
     setInterval(() => {
         window.location.href = "home.html";
-    }, 2000);
+    }, 2500);
 });
 
 // Initialize the display
