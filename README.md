@@ -15,26 +15,25 @@ List technologies (with version numbers), API's, icons, fonts, images, media or 
 * HTML, CSS, JavaScript
 * Bootstrap 5.0 (Frontend library)
 * Firebase 8.0 (BAAS - Backend as a Service)
-* ...
 
 ## 4. Complete setup/installion/usage
 State what a user needs to do when they come to your project.  How do others start using your code or application?
 Here are the steps ...
-* ...
-* ...
-* ...
+1. Command: git clone https://github.com/shinyoungyou/1800_202430_DTC13.git
+2. Find index.html page and click on "Go Live"
+3. Mock user account - email: maria@email.com, password: password
 
 ## 5. Known Bugs and Limitations
-Here are some known bugs:
-* ...
-* ...
-* ...
+Here are some known bugs and limitations:
+* Ranking system: To meet our project goal of staying motivated, we plan to work on the ranking system for the group feature during the winter break, as there is currently no functionality after students join a group.
+* Database redesign: The current database structure is too complicated, with a two-level depth in subcollections.
+* Code refactoring: Refactor specific files, such as log.js, to make our function do one thing. 
 
 ## 6. Features for Future
 What we'd like to build in the future:
-* ...
-* ...
-* ...
+* Notification system: Notify students when a new member joins their group.
+* hatting system: Let study group members to share updates on their studies and exchange tips.
+* Insights pie chart: Add a pie chart on the insights page to show which subject a student studied most on the day.
 	
 ## 7. Contents of Folder
 Content of the project folder:
