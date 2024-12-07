@@ -1,4 +1,5 @@
 # Project Title
+Study Buddy
 
 ## 1. Project Description
 StudyBuddy is a browser-based web application to help students to keep track of their study and manage their time by providing tools to record study time and personalized insights based on performance.
@@ -41,42 +42,40 @@ Content of the project folder:
 ```
  Top level of project folder: 
 ├── .gitignore               # Git ignore file
-├── README.md            
+├── README.md                # Documentation for the project  
 ├── index.html               # landing HTML file, this is what users see when you come to url
-├── main.html     
-├── home.html
-├── log.html
-├── daily_insights.html
-├── planner.html
-├── groups.html
-├── planner.html
-├── setting.html
-├── planner.html
-└── tailwind.config.js
+├── main.html                # Main page as a starting point 
+├── home.html                # Home page for managing tracking study progress
+├── log.html                 # Page for logging study sessions
+├── daily_insights.html      # Insights page displaying daily study satistics
+|── planner.html             # Page for managing study plans 
+├── groups.html              # Page for managing and joining study  groups
+├── planner.html             # Page for more details of user's daily study logs
+├── setting.html             # Settings page for user preferences  
+└── tailwind.config.js       # Configuration file for Tailwind CSS styling  
 
 It has the following subfolders and files:
 ├── .git                     # Folder for git repo
 ├── images                   # Folder for images
-    /avatar.png              # Avatar image for user profile
-    /background-logo.png     # Logo with background color
-    /logo.png                # Main logo
+├── /avatar.png              # Avatar image for user profile
+├── /background-logo.png     # Logo with background color
+├── /logo.png                # Main logo
 ├── scripts                  # Folder for scripts
-    /authentication.js             
-    /daily_insights.js        
-    /groups.js          
-    /home.js           
-    /log.js      
-    /main.js   
-    /monthly_insights.js
-    /planner.js
-    /script.js
-    /setting.js
-    /skeleton.js
-    /subject.js
-    /weekly_insights.js
+├── /authentication.js       # Handles user authentication        
+├── /daily_insights.js       # Logic for the daily insights page  
+├── /groups.js               # Manage group functionality  
+├── /home.js                 # Manage the homepage logic  
+├── /log.js                  # Manage study session logging  
+├── /main.js                 # Manage welcome banner
+├── /monthly_insights.js     # Logic for monthly insights  
+├── /planner.js              # Manages more deatils about daily study logs
+├── /script.js               # Shared scripts across the app  
+├── /setting.js              # Handles user settings functionality  
+├── /skeleton.js             # Skeleton loading components  
+├── /weekly_insights.js      # Logic for weekly insights  
 ├── styles                   # Folder for styles
-    /style.css               # Central style sheets across the app
+├── /style.css               # Main stylesheet for consistent design across the app  
 ├── text                     # Folder for resuable components
-    /nav_after_login.html    # Navbar after logged in
+└── /nav_after_login.html    # Navbar after logged in
 
 
