@@ -48,7 +48,6 @@ Content of the project folder:
 ├── home.html                # Home page for managing tracking study progress
 ├── log.html                 # Page for logging study sessions
 ├── daily_insights.html      # Insights page displaying daily study satistics
-|── planner.html             # Page for managing study plans 
 ├── groups.html              # Page for managing and joining study  groups
 ├── planner.html             # Page for more details of user's daily study logs
 ├── setting.html             # Settings page for user preferences  
@@ -62,17 +61,17 @@ It has the following subfolders and files:
 ├── /logo.png                # Main logo
 ├── scripts                  # Folder for scripts
 ├── /authentication.js       # Handles user authentication        
-├── /daily_insights.js       # Logic for the daily insights page  
+├── /daily_insights.js       # Logic for the daily insights calendar  
 ├── /groups.js               # Manage group functionality  
-├── /home.js                 # Manage the homepage logic  
+├── /home.js                 # Manage the subject to log today  
 ├── /log.js                  # Manage study session logging  
-├── /main.js                 # Manage welcome banner
-├── /monthly_insights.js     # Logic for monthly insights  
-├── /planner.js              # Manages more deatils about daily study logs
+├── /main.js                 # Dynamically display welcome banner 
+├── /monthly_insights.js     # Logic for monthly calendar  
+├── /planner.js              # Manage more deatils about daily study logs
 ├── /script.js               # Shared scripts across the app  
 ├── /setting.js              # Handles user settings functionality  
-├── /skeleton.js             # Skeleton loading components  
-├── /weekly_insights.js      # Logic for weekly insights  
+├── /skeleton.js             # Display navbar only when logged in
+├── /weekly_insights.js      # Logic for weekly calendar  
 ├── styles                   # Folder for styles
 ├── /style.css               # Main stylesheet for consistent design across the app  
 ├── text                     # Folder for resuable components
