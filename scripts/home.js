@@ -10,8 +10,6 @@ function displaySubjectsDynamically(collection) {
             return;
         }
 
-        const userEmail = user.email; // Get the current user's email
-
         db.collection(collection)
             .where("user_id", "==", user.uid) // Fetch subjects created by the current user
             .get() // Fetch the collection called "subjects"
@@ -184,3 +182,105 @@ function updateTotalTime() {
 // Update date and total time on page load
 updateCurrentDate();
 updateTotalTime();
+
+let updateSubject = document.getElementById("updateSubject");
+
+let subject_id_to_update = null;
+function openSubjectModal(event) {
+    subject_id_to_update = event.currentTarget.id;
+    console.log(event.currentTarget.id);
+    updateSubject.classList.remove("hidden"); // Show form
+}
+
+function closeSubjectModal() {
+    updateSubject.classList.add("hidden"); // Show form
+    subject_id_to_update = null;
+}
+
+let editSubjectForm = document.getElementById("editSubjectForm");
+
+function openEditSubject() {
+    editSubjectForm.classList.remove("hidden"); // Show form
+    updateSubject.classList.add("hidden"); // Show form
+    // Reference to the Firestore document
+    let subjectRef = db.collection("subjects").doc(subject_id_to_update);
+
+    // Fetch the document data
+    subjectRef.get().then((doc) => {
+        if (doc.exists) {
+            let subjectData = doc.data();
+            console.log(subjectData);
+
+            // Set the input values with the retrieved data
+            document.getElementById("edit_subject_name").value =
+                subjectData.name;
+            document.getElementById("edit_subject_color").value =
+                subjectData.color;
+        } else {
+            console.error("No such document!");
+        }
+    });
+}
+
+function editSubject(event) {
+    event.preventDefault();
+    let updatedName = document.getElementById("edit_subject_name").value;
+    let updatedColor = document.getElementById("edit_subject_color").value;
+
+    // Reference to the Firestore document
+    let subjectRef = db.collection("subjects").doc(subject_id_to_update);
+    console.log(subjectRef);
+    // Update the document with new data
+    subjectRef
+        .update({
+            name: updatedName,
+            color: updatedColor,
+        })
+        .then(() => {
+            console.log("asdf");
+            window.location.href = "home.html"; // Redirect to the thanks page
+            console.log("Subject successfully updated!");
+        })
+        .catch((error) => {
+            console.error("Error updating document: ", error);
+        });
+}
+
+document.getElementById("editCancel").onclick = () => {
+    editSubjectForm.classList.add("hidden"); // Show form
+};
+
+// Function to delete a subject
+let confirmDeleteSubject = document.getElementById("confirmDeleteSubject");
+let chooseOption = document.getElementById("chooseOption");
+function openDeleteSubject() {
+    confirmDeleteSubject.classList.remove("hidden");
+    confirmDeleteSubject.classList.add("flex");
+
+    chooseOption.classList.add("hidden");
+    chooseOption.classList.remove("flex");
+}
+
+function cancelToDelete() {
+    confirmDeleteSubject.classList.add("hidden");
+    confirmDeleteSubject.classList.remove("flex");
+    updateSubject.classList.add("hidden");
+
+    chooseOption.classList.remove("hidden");
+    chooseOption.classList.add("flex");
+}
+
+function deleteSubject() {
+    let subjectRef = db.collection("subjects").doc(subject_id_to_update);
+
+    // Delete the document
+    subjectRef
+        .delete()
+        .then(() => {
+            console.log("Subject successfully deleted!");
+            window.location.href = "home.html";
+        })
+        .catch((error) => {
+            console.error("Error deleting subject: ", error);
+        });
+}
