@@ -1,7 +1,7 @@
 // Get the subject_id from the URL
 let urlParams = new URLSearchParams(window.location.search);
 let subject_id_to_record = urlParams.get("subject_id");
-let subject_name = urlParams.get("subject_name"); // Pass the subject name if needed for days > studied_subjects
+let subject_name = urlParams.get("subject_name");
 
 // Select DOM elements
 let timeDisplay = document.getElementById("time");
@@ -54,38 +54,38 @@ async function fetchDailyTotalTime() {
     const db = firebase.firestore();
     const currentDate = new Date();
     currentDate.setHours(0, 0, 0, 0); // Midnight of today
+
     firebase.auth().onAuthStateChanged(async (user) => {
         if (!user) {
             console.error("No user is logged in.");
             return;
         }
 
-        userEmail = await user.email; // Get the current user's email
+        const userId = user.uid; // Get the current user's UID
 
-        console.log(userEmail);
-
-        // Query the days collection for today's date
+        // Query the logs collection for today's total time
         try {
-            const daysRef = db.collection("days");
-            const dayQuery = await daysRef
-                .where("created_by", "==", userEmail)
-                .where("date", "==", currentDate)
+            const logsQuery = await db
+                .collection("logs")
+                .where("user_id", "==", userId)
+                .where(
+                    "start",
+                    ">=",
+                    firebase.firestore.Timestamp.fromDate(currentDate)
+                )
                 .get();
-            if (!dayQuery.empty) {
-                const dayDoc = dayQuery.docs[0];
-                const dayData = dayDoc.data();
-                // Get the total_time field from today's document
-                elapsedTodaySeconds = dayData.total_time || 0;
 
-                // Update the initial daily time display
-                totalDailyTimeUnderneath.textContent =
-                    formatTime(elapsedTodaySeconds);
-            } else {
-                console.log("No daily data found for today. Starting at 0.");
-                elapsedTodaySeconds = 0;
-                totalDailyTimeUnderneath.textContent =
-                    formatTime(elapsedTodaySeconds);
-            }
+            elapsedTodaySeconds = 0;
+
+            logsQuery.forEach((logDoc) => {
+                const logData = logDoc.data();
+                const start = logData.start.toDate();
+                const end = logData.end.toDate();
+                elapsedTodaySeconds += (end - start) / 1000; // Convert duration to seconds
+            });
+
+            totalDailyTimeUnderneath.textContent =
+                formatTime(elapsedTodaySeconds);
         } catch (error) {
             console.error("Error fetching daily total time:", error);
             elapsedTodaySeconds = 0; // Default to 0 in case of error
@@ -96,138 +96,28 @@ async function fetchDailyTotalTime() {
 }
 
 // Save the elapsed time to Firestore
-async function saveStudyLog(subjectId, subjectName, elapsedSeconds) {
+async function saveStudyLog(subjectId, elapsedSeconds) {
     firebase.auth().onAuthStateChanged(async (user) => {
         if (!user) {
             console.error("No user is logged in.");
             return;
         }
 
-        userEmail = await user.email; // Get the current user's email
+        const userId = user.uid; // Get the current user's UID
+        const db = firebase.firestore();
 
-        console.log(userEmail);
-
-        const db = await firebase.firestore();
-
-        // Fetch subject color dynamically from the `subjects` collection
-        let subjectColor;
-        try {
-            const subjectDoc = await db
-                .collection("subjects")
-                .doc(subjectId)
-                .get();
-            if (subjectDoc.exists) {
-                subjectColor = subjectDoc.data().color;
-            } else {
-                console.error(`Subject with ID ${subjectId} does not exist.`);
-                return;
-            }
-        } catch (error) {
-            console.error("Error fetching subject color:", error);
-            return;
-        }
-
-        const currentDate = new Date();
-        currentDate.setHours(0, 0, 0, 0);
         const currentTimestamp = new Date();
-
-        // Save to Subject-Centric Structure
-        const subjectRef = db.collection("subjects").doc(subjectId);
-        const dailyLogsRef = subjectRef.collection("daily_logs");
-
-        // Query daily log by date
-        const dailyLogQuery = await dailyLogsRef
-            .where("date", "==", currentDate)
-            .get();
-        let dailyLogDoc;
-        if (!dailyLogQuery.empty) {
-            dailyLogDoc = dailyLogQuery.docs[0].ref;
-        } else {
-            // Create a new daily log if one doesn't exist
-            dailyLogDoc = await dailyLogsRef.add({
-                date: currentDate,
-                color: subjectColor,
-                total_time: 0, // Initialize with 0 seconds
-            });
-        }
-        const timelineRefSubject = dailyLogDoc.collection("timelines");
-
-        // Save to Day-Centric Structure
-        const daysRef = db.collection("days");
-        const dayQuery = await daysRef
-            .where("created_by", "==", userEmail)
-            .where("date", "==", currentDate)
-            .get();
-
-        let dayDoc;
-        if (!dayQuery.empty) {
-            dayDoc = dayQuery.docs[0].ref;
-        } else {
-            // Create a new day document if one doesn't exist
-            dayDoc = await daysRef.add({
-                date: currentDate,
-                created_by: userEmail,
-                total_time: 0, // Initialize with 0 seconds
-            });
-        }
-        const studiedSubjectsRef = dayDoc.collection("studied_subjects");
-        const studiedSubjectQuery = await studiedSubjectsRef
-            .where("name", "==", subjectName)
-            .get();
-        let studiedSubjectDoc;
-        if (!studiedSubjectQuery.empty) {
-            studiedSubjectDoc = studiedSubjectQuery.docs[0].ref;
-        } else {
-            // Create a new studied subject if one doesn't exist
-            studiedSubjectDoc = await studiedSubjectsRef.add({
-                name: subjectName,
-                color: subjectColor,
-                total_time: 0, // Initialize with 0 seconds
-            });
-        }
-        const timelineRefDay = studiedSubjectDoc.collection("timelines");
+        const startTime = new Date(
+            currentTimestamp.getTime() - elapsedSeconds * 1000
+        );
 
         try {
-            // Save to subject > daily_logs > timelines
-            await timelineRefSubject.add({
-                start: new Date(
-                    currentTimestamp.getTime() - elapsedSeconds * 1000
-                ),
-                end: currentTimestamp,
-            });
-
-            // Update or set the total time for the day in subject > daily_logs
-            const subjectDailyDocData = (await dailyLogDoc.get()).data();
-            const currentTotal = subjectDailyDocData.total_time || 0;
-            const updatedTotal = currentTotal + elapsedSeconds; // Add elapsed time in seconds
-            await dailyLogDoc.update({
-                total_time: updatedTotal,
-            });
-
-            // Save to days > studied_subjects > timelines
-            await timelineRefDay.add({
-                start: new Date(
-                    currentTimestamp.getTime() - elapsedSeconds * 1000
-                ),
-                end: currentTimestamp,
-            });
-
-            // Update or set the total time for the subject in days > studied_subjects
-            const studiedSubjectDocData = (
-                await studiedSubjectDoc.get()
-            ).data();
-            const currentSubjectTotal = await studiedSubjectDocData.total_time || 0;
-            const updatedSubjectTotal = await currentSubjectTotal + elapsedSeconds;
-            await studiedSubjectDoc.update({
-                total_time: updatedSubjectTotal,
-            });
-
-            // Update the total daily time in days
-            const dayDocData = (await dayDoc.get()).data();
-            const currentDayTotal = (await dayDocData.total_time || 0);
-            const updatedDayTotal = await currentDayTotal + elapsedSeconds;
-            await dayDoc.update({
-                total_time: updatedDayTotal,
+            // Save the log entry to the logs collection
+            await db.collection("logs").add({
+                start: firebase.firestore.Timestamp.fromDate(startTime),
+                end: firebase.firestore.Timestamp.fromDate(currentTimestamp),
+                subject_id: subjectId,
+                user_id: userId,
             });
         } catch (error) {
             console.error("Error saving study log:", error);
@@ -238,7 +128,7 @@ async function saveStudyLog(subjectId, subjectName, elapsedSeconds) {
 // Add event listeners for stop and go back buttons
 pauseButton.addEventListener("click", async () => {
     stopTimer();
-    await saveStudyLog(subject_id_to_record, subject_name, elapsedSeconds);
+    await saveStudyLog(subject_id_to_record, elapsedSeconds);
     setInterval(() => {
         window.location.href = "home.html";
     }, 2500);
@@ -246,7 +136,7 @@ pauseButton.addEventListener("click", async () => {
 
 goBack.addEventListener("click", async () => {
     stopTimer();
-    await saveStudyLog(subject_id_to_record, subject_name, elapsedSeconds);
+    await saveStudyLog(subject_id_to_record, elapsedSeconds);
     setInterval(() => {
         window.location.href = "home.html";
     }, 2500);

@@ -40,7 +40,7 @@ function secondsToHHMM(seconds) {
     return `${hours}:${minutes}`;
 }
 
-displayCalendarDynamically("days"); // Input param is the name of the collection
+displayCalendarDynamically("logs"); // Input param is the name of the collection
 
 function renderDailyCalendar(studyData) {
     calendar.innerHTML = ""; // Clear the previous calendar content
@@ -146,12 +146,7 @@ document.getElementById("nextMonth").onclick = () => {
 function showDetails(dateStr) {
     const dayData = studyData[dateStr];
     if (dayData) {
-        document.getElementById("dayTitle").textContent =
-            dayData.date.toLocaleDateString("en-US", {
-                weekday: "short",
-                month: "short",
-                day: "numeric",
-            });
+        document.getElementById("dayTitle").textContent = dateStr;
         document.getElementById("totalDayTime").textContent = secondsToHHMMSS(
             dayData.total_day_time
         );
@@ -201,174 +196,35 @@ function displayCalendarDynamically(collection) {
             return;
         }
 
-        let userEmail = user.email; // Get the current user's email
+        const userId = user.uid; // Get the current user's UID
 
-            db.collection(collection)
-                .where("created_by", "==", userEmail)
-                .get()
-                .then((allDays) => {
-                    studyData = {};
+        db.collection(collection)
+            .where("user_id", "==", userId)
+            .get()
+            .then((logs) => {
+                studyData = {};
 
-                    const promises = allDays.docs.map((doc) => {
-                        const dayData = doc.data();
-                        const date = dayData.date.toDate();
-                        const formattedDate = formatDate(date);
+                logs.forEach((logDoc) => {
+                    const logData = logDoc.data();
+                    const date = logData.start.toDate();
+                    const formattedDate = formatDate(date);
 
-                        const dayEntry = {
-                            date,
-                            total_day_time: dayData.total_time,
+                    if (!studyData[formattedDate]) {
+                        studyData[formattedDate] = {
+                            total_day_time: 0,
                             timelines: [],
                         };
+                    }
 
-                        return doc.ref
-                            .collection("studied_subjects")
-                            .get()
-                            .then((subjects) => {
-                                const subjectPromises = subjects.docs.map(
-                                    (subjectDoc) =>
-                                        subjectDoc.ref
-                                            .collection("timelines")
-                                            .get()
-                                            .then((timelines) => {
-                                                timelines.forEach(
-                                                    (timelineDoc) => {
-                                                        const timelineData =
-                                                            timelineDoc.data();
-                                                        dayEntry.timelines.push(
-                                                            {
-                                                                start: timelineData.start.toDate(),
-                                                                end: timelineData.end.toDate(),
-                                                            }
-                                                        );
-                                                    }
-                                                );
-                                            })
-                                );
+                    const start = logData.start.toDate();
+                    const end = logData.end.toDate();
+                    const duration = (end - start) / 1000; // Duration in seconds
 
-                                return Promise.all(subjectPromises).then(() => {
-                                    studyData[formattedDate] = dayEntry;
-                                });
-                            });
-                    });
-
-                    Promise.all(promises).then(() =>
-                        renderDailyCalendar(studyData)
-                    );
+                    studyData[formattedDate].total_day_time += duration;
+                    studyData[formattedDate].timelines.push({ start, end });
                 });
-    });
 
-
-}
-
-function writeDays() {
-    const daysRef = db.collection("days");
-
-    // Define realistic daily data
-    const mockDays = [
-        {
-            date: "2024-09-06",
-            studiedSubjects: [
-                {
-                    name: "COMP1800",
-                    total_time: 4200, // 1 hour 10 minutes
-                    timelines: [
-                        {
-                            start: "2024-09-06T08:45:00-07:00",
-                            end: "2024-09-06T09:35:00-07:00",
-                        },
-                        {
-                            start: "2024-09-06T10:00:00-07:00",
-                            end: "2024-09-06T10:30:00-07:00",
-                        },
-                    ],
-                },
-                {
-                    name: "COMP1510",
-                    total_time: 3600, // 1 hour
-                    timelines: [
-                        {
-                            start: "2024-09-06T11:00:00-07:00",
-                            end: "2024-09-06T11:40:00-07:00",
-                        },
-                        {
-                            start: "2024-09-06T14:15:00-07:00",
-                            end: "2024-09-06T14:45:00-07:00",
-                        },
-                    ],
-                },
-            ],
-        },
-        {
-            date: "2024-09-07",
-            studiedSubjects: [
-                {
-                    name: "COMP1712",
-                    total_time: 5400, // 1 hour 30 minutes
-                    timelines: [
-                        {
-                            start: "2024-09-07T07:00:00-07:00",
-                            end: "2024-09-07T07:45:00-07:00",
-                        },
-                        {
-                            start: "2024-09-07T10:00:00-07:00",
-                            end: "2024-09-07T10:45:00-07:00",
-                        },
-                    ],
-                },
-                {
-                    name: "COMP1537",
-                    total_time: 3600, // 1 hour
-                    timelines: [
-                        {
-                            start: "2024-09-07T12:00:00-07:00",
-                            end: "2024-09-07T12:40:00-07:00",
-                        },
-                        {
-                            start: "2024-09-07T16:00:00-07:00",
-                            end: "2024-09-07T16:20:00-07:00",
-                        },
-                    ],
-                },
-            ],
-        },
-    ];
-
-    mockDays.forEach((day) => {
-        const totalDayTime = day.studiedSubjects.reduce(
-            (acc, subject) => acc + subject.total_time,
-            0
-        );
-
-        daysRef
-            .add({
-                date: firebase.firestore.Timestamp.fromDate(
-                    new Date(`${day.date}T00:00:00`)
-                ),
-                total_time: totalDayTime,
-            })
-            .then((dayRef) => {
-                day.studiedSubjects.forEach((subject) => {
-                    dayRef
-                        .collection("studied_subjects")
-                        .add({
-                            name: subject.name,
-                            total_time: subject.total_time,
-                        })
-                        .then((subjectRef) => {
-                            subject.timelines.forEach((timeline) => {
-                                subjectRef.collection("timelines").add({
-                                    start: firebase.firestore.Timestamp.fromDate(
-                                        new Date(timeline.start)
-                                    ),
-                                    end: firebase.firestore.Timestamp.fromDate(
-                                        new Date(timeline.end)
-                                    ),
-                                });
-                            });
-                        });
-                });
+                renderDailyCalendar(studyData);
             });
     });
 }
-
-// writeDays();

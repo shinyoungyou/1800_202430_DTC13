@@ -1,6 +1,5 @@
 // Helper function to format time in HH:MM:SS
 function formatTime(seconds) {
-    console.log(seconds);
     const hrs = Math.floor(seconds / 3600);
     const mins = Math.floor((seconds % 3600) / 60);
     const secs = seconds % 60;
@@ -17,7 +16,20 @@ function formatTime2(seconds) {
 
 function formatDateToShortString(date) {
     const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-    const months = ["01","02","03","04","05","06","07","08","09","10","11","12"];
+    const months = [
+        "01",
+        "02",
+        "03",
+        "04",
+        "05",
+        "06",
+        "07",
+        "08",
+        "09",
+        "10",
+        "11",
+        "12",
+    ];
 
     const dayOfWeek = daysOfWeek[date.getDay()];
     const month = months[date.getMonth()];
@@ -97,7 +109,6 @@ function populateGrid() {
 
 // Fill the grid dynamically based on timeline data
 function fillGrid(startTime, endTime, subjectColor) {
-    console.log("Start Time:", startTime, "End Time:", endTime, "Subject Color:", subjectColor);
     const grid = document.querySelector(".grid");
 
     // Calculate start and end indices
@@ -171,73 +182,92 @@ async function displayTodaySubjectsDynamically() {
                 return;
             }
 
-            const userEmail = await user.email; // Get the current user's email
-            // Query the days collection for today's date
-            const daysRef = await db.collection("days");
-            const dayQuery = await daysRef
-                .where("date", ">=", startOfDay)
-                .where("date", "<=", endOfDay)
-                .where("created_by", "==", userEmail)
+            const userId = user.uid; // Get the current user's UID
+
+            // Query the logs collection for today's logs
+            const logsQuery = await db
+                .collection("logs")
+                .where("user_id", "==", userId)
+                .where(
+                    "start",
+                    ">=",
+                    firebase.firestore.Timestamp.fromDate(startOfDay)
+                )
+                .where(
+                    "start",
+                    "<=",
+                    firebase.firestore.Timestamp.fromDate(endOfDay)
+                )
                 .get();
 
-            if (!dayQuery.empty) {
-                const dayDoc = dayQuery.docs[0]; // Assume there's only one matching day document
-                const dayData = dayDoc.data();
 
-                // Update the total time in the header
-                document.querySelector("h4 span:nth-child(2)").innerText =
-                    formatTime(dayData.total_time);
+            const subjectsContainer =
+                document.getElementById("subjects-go-here");
+            subjectsContainer.innerHTML = ""; // Clear previous content
 
-                // Get the studied_subjects subcollection
-                const studiedSubjectsRef =
-                    dayDoc.ref.collection("studied_subjects");
-                const studiedSubjectsQuery = await studiedSubjectsRef.get();
+            const gridContainer = document.querySelector(".grid");
+            gridContainer.innerHTML = ""; // Clear previous timelines
 
-                const subjectsContainer =
-                    document.getElementById("subjects-go-here");
-                subjectsContainer.innerHTML = ""; // Clear previous content
+            const subjectTimes = {}; // Track total time per subject
 
-                const gridContainer = document.querySelector(".grid");
-                gridContainer.innerHTML = ""; // Clear previous timelines
+            logsQuery.forEach((logDoc) => {
+                const logData = logDoc.data();
+                const startTime = firestoreTimestampToDate(logData.start);
+                const endTime = firestoreTimestampToDate(logData.end);
+                const subjectId = logData.subject_id;
 
-                studiedSubjectsQuery.forEach(async (subjectDoc) => {
-                    const subjectData = subjectDoc.data();
+                const duration = (endTime - startTime) / 1000; // Duration in seconds
+                if (!subjectTimes[subjectId]) {
+                    subjectTimes[subjectId] = {
+                        totalTime: 0,
+                        color: "#000000",
+                    };
+                }
+                subjectTimes[subjectId].totalTime += duration;
 
-                    // Clone and populate the subject list template
-                    const template = document.getElementById(
-                        "subjectListTemplate"
-                    );
-                    const clone = template.content.cloneNode(true);
+                // Fetch subject color
+                db.collection("subjects")
+                    .doc(subjectId)
+                    .get()
+                    .then((subjectDoc) => {
+                        if (subjectDoc.exists) {
+                            subjectTimes[subjectId].color =
+                                subjectDoc.data().color;
 
-                    clone.querySelector("#subjectName").innerText =
-                        subjectData.name;
-                    clone.querySelector("#totalSubjectTime").innerText =
-                        formatTime2(subjectData.total_time);
-                    clone.querySelector("#subjectColor").style.color =
-                        subjectData.color; // Default color if not specified
-                    subjectsContainer.appendChild(clone);
-
-                    // Get the timelines subcollection
-                    const timelinesRef = subjectDoc.ref.collection("timelines");
-                    const timelinesQuery = await timelinesRef.get();
-
-                    timelinesQuery.forEach((timelineDoc) => {
-                        const timelineData = timelineDoc.data();
-                        console.log(timelineData.start);
-                        const startTime = firestoreTimestampToDate(
-                            timelineData.start
-                        );
-                        const endTime = firestoreTimestampToDate(
-                            timelineData.end
-                        );
-
-                        // Fill the grid based on start and end times
-                        fillGrid(startTime, endTime, subjectData.color);
+                            // Fill the grid based on start and end times
+                            fillGrid(
+                                startTime,
+                                endTime,
+                                subjectTimes[subjectId].color
+                            );
+                        }
                     });
-                });
-            } else {
-                console.log("No data found for today.");
-            }
+            });
+
+            // Populate the subjects list
+            Object.keys(subjectTimes).forEach((subjectId) => {
+                db.collection("subjects")
+                    .doc(subjectId)
+                    .get()
+                    .then((subjectDoc) => {
+                        if (subjectDoc.exists) {
+                            const subjectData = subjectDoc.data();
+
+                            const template = document.getElementById(
+                                "subjectListTemplate"
+                            );
+                            const clone = template.content.cloneNode(true);
+
+                            clone.querySelector("#subjectName").innerText =
+                                subjectData.name;
+                            clone.querySelector("#totalSubjectTime").innerText =
+                                formatTime2(subjectTimes[subjectId].totalTime);
+                            clone.querySelector("#subjectColor").style.color =
+                                subjectTimes[subjectId].color;
+                            subjectsContainer.appendChild(clone);
+                        }
+                    });
+            });
         } catch (error) {
             console.error("Error fetching today's data:", error);
         }
