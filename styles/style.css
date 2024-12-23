@@ -166,6 +166,20 @@ h2.cover-heading {
   color: #212121;
 } */
 
+
+#navbarPlaceholder {
+    max-width: 672px;
+    margin: 0 auto;
+    position: relative; /* Ensure relative positioning */
+}
+
+.home-navbar {
+    max-width: 672px; /* Limit the width of the navbar */
+    margin: 0 auto; /* Center align the navbar */
+    left: 0;
+    right: 0;
+}
+
 .mygroups-main {
     max-height: 80vh;
     padding-bottom: 13vh;
