@@ -160,13 +160,13 @@
 
                 <section id="updateSubject" class="hidden">
                     <article
-                        onclick="closeSubjectModal()"
-                        class="absolute z-20 top-0 left-0 w-full h-full bg-[#000] bg-opacity-40"
+                        onclick="resetDeleteUI()"
+                        class="z-40 absolute top-0 left-0 w-full h-full bg-[#000] bg-opacity-40"
                     ></article>
 
                     <article
                         id="chooseOption"
-                        class="w-[70vw] md:w-[60vw] max-w-[25em] bg-[#fff] absolute top-1/3 translate-y-1/2 left-1/2 -translate-x-1/2 flex flex-col h-[20vh] z-30 rounded-3xl justify-evenly text-sm text-[#1a1c1d] font-light shadow items-center p-2"
+                        class="z-50 w-[70vw] md:w-[60vw] max-w-[25em] bg-[#fff] absolute top-1/3 translate-y-1/2 left-1/2 -translate-x-1/2 flex flex-col h-[20vh] rounded-3xl justify-evenly text-sm text-[#1a1c1d] font-light shadow items-center p-2"
                     >
                         <button
                             onclick="openEditSubject()"
@@ -184,7 +184,7 @@
 
                     <article
                         id="confirmDeleteSubject"
-                        class="w-[70vw] md:w-[60vw] max-w-[25em] bg-[#fff] absolute top-1/4 translate-y-1/2 left-1/2 -translate-x-1/2 flex-col h-[25vh] z-30 rounded-3xl justify-around text-sm text-[#1a1c1d] font-light shadow items-center p-4 hidden"
+                        class="z-50 w-[70vw] md:w-[60vw] max-w-[25em] bg-[#fff] absolute top-1/4 translate-y-1/2 left-1/2 -translate-x-1/2 flex-col h-[25vh] rounded-3xl justify-around text-sm text-[#1a1c1d] font-light shadow items-center p-4 hidden"
                     >
                         <h3 class="w-[85%] text-left text-base font-normal">
                             Delete subject
@@ -248,7 +248,7 @@
                 </form>
             </main>
 
-            <section id="successMessage" class="fixed bottom-32 left-6">
+            <section id="successMessage" class="z-60 fixed bottom-32 left-6">
                 <div class="max-w-xs bg-white border border-gray-200 rounded-xl shadow-lg dark:bg-neutral-800 dark:border-neutral-700" role="alert" tabindex="-1" aria-labelledby="hs-toast-success-example-label">
                     <div class="flex p-4">
                       <div class="shrink-0">

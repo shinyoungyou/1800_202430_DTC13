@@ -1,5 +1,8 @@
+// Global variable to manage the subject list
+let subjectList = [];
+
 //------------------------------------------------------------------------------
-// Input parameter is a string representing the collection we are reading from
+// Function to dynamically display subjects
 //------------------------------------------------------------------------------
 function displaySubjectsDynamically(collection) {
     firebase.auth().onAuthStateChanged((user) => {
@@ -12,133 +15,68 @@ function displaySubjectsDynamically(collection) {
             .where("user_id", "==", user.uid) // Fetch subjects created by the current user
             .get() // Fetch the collection called "subjects"
             .then((allSubjects) => {
+                subjectList = []; // Clear the subject list
                 allSubjects.forEach((doc) => {
                     const subject_id = doc.id;
                     const subject_name = doc.data().name; // Get the "name" key
                     const subject_color = doc.data().color; // Get the "color" key
 
-                    // Get `total_time` for today from `logs`
-                    const today = new Date();
-                    today.setHours(0, 0, 0, 0);
-
-                    db.collection("logs")
-                        .where("user_id", "==", user.uid)
-                        .where("subject_id", "==", subject_id)
-                        .where(
-                            "start",
-                            ">=",
-                            firebase.firestore.Timestamp.fromDate(today)
-                        )
-                        .get()
-                        .then((logSnapshot) => {
-                            let total_subject_time = 0; // Default to 0 if no logs exist
-
-                            logSnapshot.forEach((logDoc) => {
-                                const logData = logDoc.data();
-                                const start = logData.start.toDate();
-                                const end = logData.end.toDate();
-                                total_subject_time += (end - start) / 1000; // Calculate total time in seconds
-                            });
-
-                            addSubjectToDOM(subject_id, subject_name, subject_color, total_subject_time)
-                        })
-                        .catch((error) => {
-                            console.error(
-                                `Error fetching logs for subject ${subject_id}:`,
-                                error
-                            );
-                        });
+                    // Add the subject to the global list
+                    subjectList.push({
+                        id: subject_id,
+                        name: subject_name,
+                        color: subject_color,
+                        total_time: 0,
+                    });
                 });
+
+                // Fetch total time for each subject
+                fetchTotalTimeForSubjects(user.uid);
             });
     });
 }
-displaySubjectsDynamically("subjects"); // Input param is the name of the collection
 
-// Event listener for the "Add Subject" button
-let addSubjectForm = document.getElementById("addSubjectForm");
+displaySubjectsDynamically("subjects");
 
-document.getElementById("addSubjectBtn").onclick = () => {
-    addSubjectForm.classList.remove("hidden"); // Show the form
-};
+function fetchTotalTimeForSubjects(userId) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
-document.getElementById("cancel").onclick = () => {
-    addSubjectForm.classList.add("hidden"); // Hide the form
-};
+    const promises = subjectList.map((subject) => {
+        return db
+            .collection("logs")
+            .where("user_id", "==", userId)
+            .where("subject_id", "==", subject.id)
+            .where("start", ">=", firebase.firestore.Timestamp.fromDate(today))
+            .get()
+            .then((logSnapshot) => {
+                let total_subject_time = 0; // Default to 0 if no logs exist
 
-successMessage.classList.remove("visible");
-let successMessageContent = document.querySelector(".successMessageText")
+                logSnapshot.forEach((logDoc) => {
+                    const logData = logDoc.data();
+                    const start = logData.start.toDate();
+                    const end = logData.end.toDate();
+                    total_subject_time += (end - start) / 1000; // Calculate total time in seconds
+                });
 
-function showSuccessMessage(content) {
-    successMessageContent.innerText = content;
-    successMessage.classList.add("visible");
-
-    successMessage.addEventListener("animationend", () => {
-        successMessage.classList.remove("visible");
-    }, { once: true });
-}
-
-function addSubjectToDOM(subject_id, subject_name, subject_color, total_subject_time) {
-    const subjectTemplate = document.getElementById("subjectListTemplate"); // Retrieve the HTML element with the ID "subjectTemplate".
-    const newList = subjectTemplate.content.cloneNode(true);
-
-    // Populate subject details
-    newList
-        .querySelector("#subjectName")
-        .appendChild(document.createTextNode(subject_name));
-    newList.querySelector(
-        "#subjectName"
-    ).href = `log.html?subject_id=${subject_id}&subject_name=${subject_name}`;
-    newList.querySelector("#totalSubjectTime").textContent =
-        secondsToHHMMSS(total_subject_time);
-    newList.querySelector("#subjectColor").style.color = subject_color;
-    newList.querySelector("button").id = subject_id;
-
-    // Append the populated subject to the list
-    document.getElementById("subjects-go-here").appendChild(newList);  
-}
-
-// Function to add a new subject
-function addSubject(event) {
-    event.preventDefault();
-
-    const subject_name = document.getElementById("subject_name").value;
-    const subject_color = document.getElementById("subject_color").value;
-
-    const user = firebase.auth().currentUser;
-    if (user) {
-        db.collection("subjects")
-            .add({
-                name: subject_name,
-                color: subject_color,
-                user_id: user.uid,
-            })
-            .then((docRef) => {
-                addSubjectToDOM(docRef.id, subject_name, subject_color, 0);
-                showSuccessMessage("Successfully added!");
-                document.getElementById("subject_name").value = "";
-                document.getElementById("subject_color").value = "#000";
-                addSubjectForm.classList.add("hidden");
-            })
-            .catch((error) => {
-                console.error("Error adding subject:", error);
+                subject.total_time = total_subject_time; // Update the total time in the global list
             });
-    } else {
-        console.log("No user is signed in");
-        window.location.href = "home.html";
-    }
+    });
+
+    Promise.all(promises).then(() => {
+        renderSubjectList();
+    });
 }
 
-// Utility function to format seconds as HH:MM:SS
-function secondsToHHMMSS(seconds) {
-    const hours = Math.floor(seconds / 3600)
-        .toString()
-        .padStart(2, "0");
-    const minutes = Math.floor((seconds % 3600) / 60)
-        .toString()
-        .padStart(2, "0");
-    const secs = (seconds % 60).toString().padStart(2, "0");
-    return `${hours}:${minutes}:${secs}`;
+function renderSubjectList() {
+    const subjectsContainer = document.getElementById("subjects-go-here");
+    subjectsContainer.innerHTML = ""; // Clear the container
+
+    subjectList.forEach((subject) => {
+        addSubjectToDOM(subject);
+    });
 }
+
 
 // Function to update the date dynamically
 function updateCurrentDate() {
@@ -194,13 +132,106 @@ function updateTotalTime() {
 updateCurrentDate();
 updateTotalTime();
 
-let updateSubject = document.getElementById("updateSubject");
+function addSubjectToDOM(subject) {
+    const subjectTemplate = document.getElementById("subjectListTemplate");
+    const newList = subjectTemplate.content.cloneNode(true);
 
+    // Populate subject details
+    newList
+        .querySelector("#subjectName")
+        .appendChild(document.createTextNode(subject.name));
+    newList.querySelector(
+        "#subjectName"
+    ).href = `log.html?subject_id=${subject.id}&subject_name=${subject.name}`;
+    newList.querySelector("#totalSubjectTime").textContent = secondsToHHMMSS(
+        subject.total_time
+    );
+    newList.querySelector("#subjectColor").style.color = subject.color;
+    newList.querySelector("button").id = subject.id;
+
+    document.getElementById("subjects-go-here").appendChild(newList);
+}
+
+// Event listener for the "Add Subject" button
+let addSubjectForm = document.getElementById("addSubjectForm");
+
+function showSuccessMessage(content) {
+    const successMessage = document.getElementById("successMessage");
+    const successMessageContent = document.querySelector(".successMessageText");
+    successMessageContent.innerText = content;
+    successMessage.classList.add("visible");
+
+    successMessage.addEventListener(
+        "animationend",
+        () => {
+            successMessage.classList.remove("visible");
+        },
+        { once: true }
+    );
+}
+
+document.getElementById("addSubjectBtn").onclick = () => {
+    addSubjectForm.classList.remove("hidden"); // Show the form
+};
+
+document.getElementById("cancel").onclick = () => {
+    addSubjectForm.classList.add("hidden"); // Hide the form
+};
+
+function addSubject(event) {
+    event.preventDefault();
+
+    const subject_name = document.getElementById("subject_name").value;
+    const subject_color = document.getElementById("subject_color").value;
+
+    const user = firebase.auth().currentUser;
+    if (user) {
+        db.collection("subjects")
+            .add({
+                name: subject_name,
+                color: subject_color,
+                user_id: user.uid,
+            })
+            .then((docRef) => {
+                const newSubject = {
+                    id: docRef.id,
+                    name: subject_name,
+                    color: subject_color,
+                    total_time: 0,
+                };
+                subjectList.push(newSubject); // Add to the global list
+                renderSubjectList();
+                showSuccessMessage("Successfully added!");
+                document.getElementById("subject_name").value = "";
+                document.getElementById("subject_color").value = "#000";
+                addSubjectForm.classList.add("hidden");
+            })
+            .catch((error) => {
+                console.error("Error adding subject:", error);
+            });
+    } else {
+        console.log("No user is signed in");
+        window.location.href = "home.html";
+    }
+}
+
+function secondsToHHMMSS(seconds) {
+    const hours = Math.floor(seconds / 3600)
+        .toString()
+        .padStart(2, "0");
+    const minutes = Math.floor((seconds % 3600) / 60)
+        .toString()
+        .padStart(2, "0");
+    const secs = (seconds % 60).toString().padStart(2, "0");
+    return `${hours}:${minutes}:${secs}`;
+}
+
+let updateSubject = document.getElementById("updateSubject");
 let subject_id_to_update = null;
+
 function openSubjectModal(event) {
     subject_id_to_update = event.currentTarget.id;
-    console.log(event.currentTarget.id);
-    updateSubject.classList.remove("hidden"); // Show form
+    updateSubject.classList.remove("hidden"); // Show the modal
 }
 
 function closeSubjectModal() {
@@ -235,25 +266,34 @@ function openEditSubject() {
 
 function editSubject(event) {
     event.preventDefault();
-    let updatedName = document.getElementById("edit_subject_name").value;
-    let updatedColor = document.getElementById("edit_subject_color").value;
 
-    // Reference to the Firestore document
-    let subjectRef = db.collection("subjects").doc(subject_id_to_update);
-    console.log(subjectRef);
-    // Update the document with new data
+    const updatedName = document.getElementById("edit_subject_name").value;
+    const updatedColor = document.getElementById("edit_subject_color").value;
+
+    const subjectRef = db.collection("subjects").doc(subject_id_to_update);
+
     subjectRef
         .update({
             name: updatedName,
             color: updatedColor,
         })
         .then(() => {
-            console.log("asdf");
-            window.location.href = "home.html"; // Redirect to the thanks page
-            console.log("Subject successfully updated!");
+            // Update global list
+            const subject = subjectList.find((s) => s.id === subject_id_to_update);
+            
+            if (subject) {
+                subject.name = updatedName;
+                subject.color = updatedColor;
+            }
+
+            renderSubjectList();
+            showSuccessMessage("Successfully updated!");
+
+            editSubjectForm.classList.add("hidden");
+            subject_id_to_update = null;
         })
         .catch((error) => {
-            console.error("Error updating document: ", error);
+            console.error("Error updating subject:", error);
         });
 }
 
@@ -272,7 +312,7 @@ function openDeleteSubject() {
     chooseOption.classList.remove("flex");
 }
 
-function cancelToDelete() {
+function resetDeleteUI() {
     confirmDeleteSubject.classList.add("hidden");
     confirmDeleteSubject.classList.remove("flex");
     updateSubject.classList.add("hidden");
@@ -282,16 +322,21 @@ function cancelToDelete() {
 }
 
 function deleteSubject() {
-    let subjectRef = db.collection("subjects").doc(subject_id_to_update);
+    const subjectRef = db.collection("subjects").doc(subject_id_to_update);
 
-    // Delete the document
     subjectRef
         .delete()
         .then(() => {
-            console.log("Subject successfully deleted!");
-            window.location.href = "home.html";
+            // Remove from global list
+            subjectList = subjectList.filter((s) => s.id !== subject_id_to_update);
+
+            renderSubjectList();
+            showSuccessMessage("Successfully deleted!");
+
+            subject_id_to_update = null;
+            resetDeleteUI();
         })
         .catch((error) => {
-            console.error("Error deleting subject: ", error);
+            console.error("Error deleting subject:", error);
         });
 }
