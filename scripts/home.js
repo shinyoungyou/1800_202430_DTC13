@@ -2,8 +2,6 @@
 // Input parameter is a string representing the collection we are reading from
 //------------------------------------------------------------------------------
 function displaySubjectsDynamically(collection) {
-    const subjectTemplate = document.getElementById("subjectListTemplate"); // Retrieve the HTML element with the ID "subjectTemplate".
-
     firebase.auth().onAuthStateChanged((user) => {
         if (!user) {
             console.error("No user is logged in.");
@@ -42,30 +40,7 @@ function displaySubjectsDynamically(collection) {
                                 total_subject_time += (end - start) / 1000; // Calculate total time in seconds
                             });
 
-                            // Clone the subject template
-                            const newList =
-                                subjectTemplate.content.cloneNode(true);
-
-                            // Populate subject details
-                            newList
-                                .querySelector("#subjectName")
-                                .appendChild(
-                                    document.createTextNode(subject_name)
-                                );
-                            newList.querySelector(
-                                "#subjectName"
-                            ).href = `log.html?subject_id=${subject_id}&subject_name=${subject_name}`;
-                            newList.querySelector(
-                                "#totalSubjectTime"
-                            ).textContent = secondsToHHMMSS(total_subject_time);
-                            newList.querySelector("#subjectColor").style.color =
-                                subject_color;
-                            newList.querySelector("button").id = subject_id;
-
-                            // Append the populated subject to the list
-                            document
-                                .getElementById(collection + "-go-here")
-                                .appendChild(newList);
+                            addSubjectToDOM(subject_id, subject_name, subject_color, total_subject_time)
                         })
                         .catch((error) => {
                             console.error(
@@ -90,6 +65,38 @@ document.getElementById("cancel").onclick = () => {
     addSubjectForm.classList.add("hidden"); // Hide the form
 };
 
+successMessage.classList.remove("visible");
+let successMessageContent = document.querySelector(".successMessageText")
+
+function showSuccessMessage(content) {
+    successMessageContent.innerText = content;
+    successMessage.classList.add("visible");
+
+    successMessage.addEventListener("animationend", () => {
+        successMessage.classList.remove("visible");
+    }, { once: true });
+}
+
+function addSubjectToDOM(subject_id, subject_name, subject_color, total_subject_time) {
+    const subjectTemplate = document.getElementById("subjectListTemplate"); // Retrieve the HTML element with the ID "subjectTemplate".
+    const newList = subjectTemplate.content.cloneNode(true);
+
+    // Populate subject details
+    newList
+        .querySelector("#subjectName")
+        .appendChild(document.createTextNode(subject_name));
+    newList.querySelector(
+        "#subjectName"
+    ).href = `log.html?subject_id=${subject_id}&subject_name=${subject_name}`;
+    newList.querySelector("#totalSubjectTime").textContent =
+        secondsToHHMMSS(total_subject_time);
+    newList.querySelector("#subjectColor").style.color = subject_color;
+    newList.querySelector("button").id = subject_id;
+
+    // Append the populated subject to the list
+    document.getElementById("subjects-go-here").appendChild(newList);  
+}
+
 // Function to add a new subject
 function addSubject(event) {
     event.preventDefault();
@@ -105,8 +112,12 @@ function addSubject(event) {
                 color: subject_color,
                 user_id: user.uid,
             })
-            .then(() => {
-                window.location.href = "home.html"; // Redirect to the home page
+            .then((docRef) => {
+                addSubjectToDOM(docRef.id, subject_name, subject_color, 0);
+                showSuccessMessage("Successfully added!");
+                document.getElementById("subject_name").value = "";
+                document.getElementById("subject_color").value = "#000";
+                addSubjectForm.classList.add("hidden");
             })
             .catch((error) => {
                 console.error("Error adding subject:", error);

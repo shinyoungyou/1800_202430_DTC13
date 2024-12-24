@@ -353,3 +353,32 @@ h2.cover-heading {
     background-color: #ffd700; /* Yellow to indicate activity */
     border: 1px solid #ddd;
 }
+
+#successMessage {
+    opacity: 0;
+    z-index: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+#successMessage.visible {
+    animation: slide-in 2s ease-in-out;
+}
+
+@keyframes slide-in {
+    0% {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+    25% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    75% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    100% {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
