@@ -1,9 +1,15 @@
 # Project Title
 Study Buddy
 
+## Heuristic Analysis Report 📄
+We conducted a heuristic analysis to evaluate the usability of our application. 
+
+📥 [Click here to view the report](./docs/Heuristic_Analysis_Report.pdf)
+
 ## 1. Project Description
 StudyBuddy is a browser-based web application to help students to keep track of their study and manage their time by providing tools to record study time and personalized insights based on performance.
- 
+
+As part of our project development, we conducted a detailed usability analysis, documented in our [Heuristic Analysis Report](./docs/Heuristic_Analysis_Report.pdf). 
 
 ## 2. Names of Contributors
 List team members and/or short bio's here... 
@@ -55,6 +61,8 @@ Content of the project folder:
 
 It has the following subfolders and files:
 ├── .git                     # Folder for git repo
+├─ /docs
+├── /Heuristic_Analysis_Report.pdf
 ├── images                   # Folder for images
 ├── /avatar.png              # Avatar image for user profile
 ├── /background-logo.png     # Logo with background color
