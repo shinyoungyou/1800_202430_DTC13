@@ -96,56 +96,67 @@ async function fetchDailyTotalTime() {
 }
 
 // Save the elapsed time to Firestore
+// Save the elapsed time to Firestore
 async function saveStudyLog(subjectId, elapsedSeconds) {
-    firebase.auth().onAuthStateChanged(async (user) => {
-        if (!user) {
-            console.error("No user is logged in.");
-            return;
-        }
+    return new Promise((resolve, reject) => {
+        firebase.auth().onAuthStateChanged(async (user) => {
+            if (!user) {
+                console.error("No user is logged in.");
+                reject("No user is logged in.");
+                return;
+            }
 
-        const userId = user.uid; // Get the current user's UID
-        const db = firebase.firestore();
+            const userId = user.uid; // Get the current user's UID
+            const db = firebase.firestore();
 
-        const currentTimestamp = new Date();
-        const startTime = new Date(
-            currentTimestamp.getTime() - elapsedSeconds * 1000
-        );
+            const currentTimestamp = new Date();
+            const startTime = new Date(
+                currentTimestamp.getTime() - elapsedSeconds * 1000
+            );
 
-        try {
-            // Save the log entry to the logs collection
-            await db.collection("logs").add({
-                start: firebase.firestore.Timestamp.fromDate(startTime),
-                end: firebase.firestore.Timestamp.fromDate(currentTimestamp),
-                subject_id: subjectId,
-                user_id: userId,
-            });
-        } catch (error) {
-            console.error("Error saving study log:", error);
-        }
+            try {
+                // Save the log entry to the logs collection
+                await db.collection("logs").add({
+                    start: firebase.firestore.Timestamp.fromDate(startTime),
+                    end: firebase.firestore.Timestamp.fromDate(currentTimestamp),
+                    subject_id: subjectId,
+                    user_id: userId,
+                });
+                resolve();
+            } catch (error) {
+                console.error("Error saving study log:", error);
+                reject(error);
+            }
+        });
     });
 }
 
 // Add event listeners for stop and go back buttons
-pauseButton.addEventListener("click", async () => {
+pauseButton.addEventListener("click", () => {
     stopTimer();
-    await saveStudyLog(subject_id_to_record, elapsedSeconds);
-    localStorage.setItem("subjectName", subject_name);
-    localStorage.setItem("elapsedSeconds", `${elapsedSeconds}s logged`);
     
-    setInterval(() => {
-        window.location.href = "home.html";
-    }, 2500);
+    saveStudyLog(subject_id_to_record, elapsedSeconds)
+        .then(() => {
+            localStorage.setItem("subjectName", subject_name);
+            localStorage.setItem("elapsedSeconds", `${elapsedSeconds}s logged`);
+            window.location.href = "home.html";
+        })
+        .catch((error) => {
+            console.error("Failed to save log:", error);
+        });
 });
 
-goBack.addEventListener("click", async () => {
+goBack.addEventListener("click", () => {
     stopTimer();
-    await saveStudyLog(subject_id_to_record, elapsedSeconds);
-    localStorage.setItem("subjectName", subject_name);
-    localStorage.setItem("elapsedSeconds", `${elapsedSeconds}s logged`);
-
-    setInterval(() => {
-        window.location.href = "home.html";
-    }, 2500);
+    saveStudyLog(subject_id_to_record, elapsedSeconds)
+        .then(() => {
+            localStorage.setItem("subjectName", subject_name);
+            localStorage.setItem("elapsedSeconds", `${elapsedSeconds}s logged`);
+            window.location.href = "home.html";
+        })
+        .catch((error) => {
+            console.error("Failed to save log:", error);
+        });
 });
 
 // Initialize the display
