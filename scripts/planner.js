@@ -200,49 +200,47 @@ async function displayTodaySubjectsDynamically() {
                 )
                 .get();
 
-
             const subjectsContainer =
                 document.getElementById("subjects-go-here");
             subjectsContainer.innerHTML = ""; // Clear previous content
 
-            const gridContainer = document.querySelector(".grid");
-            gridContainer.innerHTML = ""; // Clear previous timelines
-
             const subjectTimes = {}; // Track total time per subject
 
-            logsQuery.forEach((logDoc) => {
-                const logData = logDoc.data();
-                const startTime = firestoreTimestampToDate(logData.start);
-                const endTime = firestoreTimestampToDate(logData.end);
-                const subjectId = logData.subject_id;
+            if (!logsQuery.empty) {
+                logsQuery.forEach((logDoc) => {
+                    const logData = logDoc.data();
+                    const startTime = firestoreTimestampToDate(logData.start);
+                    const endTime = firestoreTimestampToDate(logData.end);
+                    const subjectId = logData.subject_id;
 
-                const duration = (endTime - startTime) / 1000; // Duration in seconds
-                if (!subjectTimes[subjectId]) {
-                    subjectTimes[subjectId] = {
-                        totalTime: 0,
-                        color: "#000000",
-                    };
-                }
-                subjectTimes[subjectId].totalTime += duration;
+                    const duration = (endTime - startTime) / 1000; // Duration in seconds
+                    if (!subjectTimes[subjectId]) {
+                        subjectTimes[subjectId] = {
+                            totalTime: 0,
+                            color: "#000000",
+                        };
+                    }
+                    subjectTimes[subjectId].totalTime += duration;
 
-                // Fetch subject color
-                db.collection("subjects")
-                    .doc(subjectId)
-                    .get()
-                    .then((subjectDoc) => {
-                        if (subjectDoc.exists) {
-                            subjectTimes[subjectId].color =
-                                subjectDoc.data().color;
+                    // Fetch subject color
+                    db.collection("subjects")
+                        .doc(subjectId)
+                        .get()
+                        .then((subjectDoc) => {
+                            if (subjectDoc.exists) {
+                                subjectTimes[subjectId].color =
+                                    subjectDoc.data().color;
 
-                            // Fill the grid based on start and end times
-                            fillGrid(
-                                startTime,
-                                endTime,
-                                subjectTimes[subjectId].color
-                            );
-                        }
-                    });
-            });
+                                // Fill the grid based on start and end times
+                                fillGrid(
+                                    startTime,
+                                    endTime,
+                                    subjectTimes[subjectId].color
+                                );
+                            }
+                        });
+                });
+            }
 
             // Populate the subjects list
             Object.keys(subjectTimes).forEach((subjectId) => {
