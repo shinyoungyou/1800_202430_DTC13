@@ -324,11 +324,33 @@ function resetDeleteUI() {
 function deleteSubject() {
     const subjectRef = db.collection("subjects").doc(subject_id_to_update);
 
+    // Delete the subject document
     subjectRef
         .delete()
         .then(() => {
-            // Remove from global list
+            // Remove from the global list
             subjectList = subjectList.filter((s) => s.id !== subject_id_to_update);
+
+            // Query and delete related logs
+            const logsQuery = db.collection("logs").where("subject_id", "==", subject_id_to_update);
+
+            logsQuery
+                .get()
+                .then((logSnapshots) => {
+                    const batch = db.batch();
+
+                    logSnapshots.forEach((logDoc) => {
+                        batch.delete(logDoc.ref); // Add each log document to the batch
+                    });
+
+                    return batch.commit(); // Commit the batch deletion
+                })
+                .then(() => {
+                    console.log("Related logs deleted successfully.");
+                })
+                .catch((error) => {
+                    console.error("Error deleting related logs:", error);
+                });
 
             renderSubjectList();
             showSuccessMessage("Successfully deleted!");
