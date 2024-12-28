@@ -132,6 +132,36 @@ function updateTotalTime() {
 updateCurrentDate();
 updateTotalTime();
 
+window.addEventListener("load", () => {
+    const messageSubjectName = localStorage.getItem("subjectName");
+    const messageElapsedSeconds = localStorage.getItem("elapsedSeconds");
+    
+    if (messageSubjectName && messageElapsedSeconds) {
+        showLogSuccessModal(messageSubjectName, messageElapsedSeconds);
+        localStorage.removeItem("subjectName");
+        localStorage.removeItem("elapsedSeconds");
+    }
+});
+
+function showLogSuccessModal(messageSubjectName, messageElapsedSeconds) {
+    const modal = document.getElementById("logSuccessModal");
+    const messageSubjectElement = document.getElementById("logSuccessMessageH3");
+    const messageElement = document.getElementById("logSuccessMessage");
+
+    messageSubjectElement.textContent = messageSubjectName;
+    messageElement.textContent = messageElapsedSeconds;
+    modal.classList.remove("hidden");
+    wrapLogModal.classList.remove("hidden");
+    modal.classList.add("flex");
+}
+
+function closeLogSuccessModal() {
+    const modal = document.getElementById("logSuccessModal");
+    modal.classList.add("hidden");
+    wrapLogModal.classList.add("hidden");
+    modal.classList.remove("flex");
+}
+
 function addSubjectToDOM(subject) {
     const subjectTemplate = document.getElementById("subjectListTemplate");
     const newList = subjectTemplate.content.cloneNode(true);

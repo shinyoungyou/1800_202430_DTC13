@@ -158,6 +158,32 @@
                     </article>
                 </form>
 
+                <!-- Success Modal -->
+                <section id="wrapLogModal" class="hidden">
+                    <article
+                        onclick="closeLogSuccessModal()"
+                        class="z-40 absolute top-0 left-0 w-full h-full bg-[#000] bg-opacity-40"
+                    ></article>
+                    <article
+                        id="logSuccessModal"
+                        class="z-50 w-[70vw] md:w-[60vw] max-w-[25em] max-h-[190px] bg-[#fff] absolute top-1/4 translate-y-1/2 left-1/2 -translate-x-1/2 flex-col h-[50vw] rounded-3xl justify-between text-sm text-[#1a1c1d] font-light shadow items-center p-4 hidden"
+                    >
+                        <aside class="w-[90%] text-left flex flex-col gap-y-4">
+                            <h3 id="logSuccessMessageH3" class="text-base font-normal">
+                                comp1234
+                            </h3>
+                            <p id="logSuccessMessage" class="font-light text-sm">
+                            </p>
+                        </aside>
+                        <aside
+                            class="w-[80%] text-right text-sm font-normal justify-end"
+                        >
+                            <button onclick="closeLogSuccessModal()">Ok</button>
+                        </aside>
+                    </article>
+                </section>
+                
+
                 <section id="updateSubject" class="hidden">
                     <article
                         onclick="resetDeleteUI()"

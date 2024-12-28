@@ -129,6 +129,9 @@ async function saveStudyLog(subjectId, elapsedSeconds) {
 pauseButton.addEventListener("click", async () => {
     stopTimer();
     await saveStudyLog(subject_id_to_record, elapsedSeconds);
+    localStorage.setItem("subjectName", subject_name);
+    localStorage.setItem("elapsedSeconds", `${elapsedSeconds}s logged`);
+    
     setInterval(() => {
         window.location.href = "home.html";
     }, 2500);
@@ -137,6 +140,9 @@ pauseButton.addEventListener("click", async () => {
 goBack.addEventListener("click", async () => {
     stopTimer();
     await saveStudyLog(subject_id_to_record, elapsedSeconds);
+    localStorage.setItem("subjectName", subject_name);
+    localStorage.setItem("elapsedSeconds", `${elapsedSeconds}s logged`);
+
     setInterval(() => {
         window.location.href = "home.html";
     }, 2500);
