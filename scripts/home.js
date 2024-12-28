@@ -347,6 +347,7 @@ function deleteSubject() {
                 })
                 .then(() => {
                     console.log("Related logs deleted successfully.");
+                    updateTotalTime();
                 })
                 .catch((error) => {
                     console.error("Error deleting related logs:", error);
