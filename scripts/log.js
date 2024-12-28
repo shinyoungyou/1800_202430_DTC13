@@ -131,33 +131,32 @@ async function saveStudyLog(subjectId, elapsedSeconds) {
     });
 }
 
-// Add event listeners for stop and go back buttons
-pauseButton.addEventListener("click", () => {
+// Format elapsed seconds as "Xh Ym Zs"
+function formatElapsedTime(seconds) {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+
+    return `${hours > 0 ? `${hours}h ` : ""}${minutes > 0 ? `${minutes}m ` : ""}${secs}s logged`;
+}
+
+function handleStopAndNavigate() {
     stopTimer();
     
     saveStudyLog(subject_id_to_record, elapsedSeconds)
         .then(() => {
             localStorage.setItem("subjectName", subject_name);
-            localStorage.setItem("elapsedSeconds", `${elapsedSeconds}s logged`);
+            localStorage.setItem("elapsedSeconds", formatElapsedTime(elapsedSeconds)); // 포맷된 시간 저장
             window.location.href = "home.html";
         })
         .catch((error) => {
             console.error("Failed to save log:", error);
         });
-});
+}
 
-goBack.addEventListener("click", () => {
-    stopTimer();
-    saveStudyLog(subject_id_to_record, elapsedSeconds)
-        .then(() => {
-            localStorage.setItem("subjectName", subject_name);
-            localStorage.setItem("elapsedSeconds", `${elapsedSeconds}s logged`);
-            window.location.href = "home.html";
-        })
-        .catch((error) => {
-            console.error("Failed to save log:", error);
-        });
-});
+// Add event listeners for stop and go back buttons
+pauseButton.addEventListener("click", handleStopAndNavigate);
+goBack.addEventListener("click", handleStopAndNavigate);
 
 // Initialize the display
 timeDisplay.textContent = formatTime(elapsedSeconds);
